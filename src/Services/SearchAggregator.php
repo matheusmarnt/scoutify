@@ -22,14 +22,14 @@ final class SearchAggregator
      *
      * @return array<ResultDto>
      */
-    public function search(string $query, int $limit = 10): array
+    public function search(string $query, int $limit = 10, bool $onlyActive = false, bool $includeTrashed = false): array
     {
         if (blank($query)) {
             return [];
         }
 
-        $results = [];
         $iconResolver = IconResolver::make();
+        $results = [];
 
         foreach ($this->types as $modelClass => $meta) {
             if (! class_exists($modelClass)) {
@@ -42,10 +42,21 @@ final class SearchAggregator
 
             try {
                 /** @var Builder $builder */
-                $builder = $modelClass::search($query);
-                $models = $builder->take($limit)->get();
+                $builder = $modelClass::search($query)->take($limit);
+
+                // Apply trashed scope if model supports SoftDeletes
+                if ($includeTrashed && in_array(\Illuminate\Database\Eloquent\SoftDeletes::class, class_uses_recursive($modelClass))) {
+                    $builder->withTrashed();
+                }
+
+                $models = $builder->get();
             } catch (\Throwable) {
                 continue;
+            }
+
+            // Apply onlyActive filter at collection level if model has an `active` column convention
+            if ($onlyActive && method_exists($modelClass, 'scopeActive')) {
+                $models = $models->filter(fn ($m) => (bool) ($m->active ?? true));
             }
 
             $label = $meta['label'] ?? class_basename($modelClass);

@@ -30,17 +30,7 @@ class Modal extends Component
      */
     public array $results = [];
 
-    /**
-     * Available type chips populated from config.
-     *
-     * @var array<int, array<string, mixed>>
-     */
-    public array $availableTypes = [];
 
-    public function mount(): void
-    {
-        $this->availableTypes = $this->resolveAvailableTypes();
-    }
 
     #[On('scoutify:open')]
     public function open(?string $preset = null): void
@@ -63,12 +53,6 @@ class Modal extends Component
     }
 
     public function updatedQuery(): void
-    {
-        $this->activeIndex = 0;
-        $this->search();
-    }
-
-    public function updatedActiveTypes(): void
     {
         $this->activeIndex = 0;
         $this->search();
@@ -108,7 +92,12 @@ class Modal extends Component
 
         $limit = config('scoutify.modal_per_type', 25);
 
-        $dtos = SearchAggregator::make()->search($this->query, $limit);
+        $dtos = SearchAggregator::make()->search(
+            query: $this->query,
+            limit: $limit,
+            onlyActive: $this->onlyActive,
+            includeTrashed: $this->includeTrashed,
+        );
 
         // Filter by active types if any are toggled
         if (! empty($this->activeTypes)) {
@@ -137,25 +126,16 @@ class Modal extends Component
     }
 
     /**
-     * Build the available-type chips from the scoutify config.
-     *
      * @return array<int, array<string, mixed>>
      */
-    private function resolveAvailableTypes(): array
+    #[Computed]
+    public function availableTypes(): array
     {
-        $types = config('scoutify.types', []);
-        $chips = [];
-
-        foreach ($types as $modelClass => $meta) {
-            $chips[] = [
-                'key' => class_basename($modelClass),
-                'label' => $meta['label'] ?? class_basename($modelClass),
-                'icon' => $meta['icon'] ?? 'heroicon-o-magnifying-glass',
-                'color' => $meta['color'] ?? 'gray',
-            ];
-        }
-
-        return $chips;
+        return array_map(
+            fn ($key, $meta) => array_merge(['key' => $key], $meta),
+            array_keys(config('scoutify.types', [])),
+            array_values(config('scoutify.types', [])),
+        );
     }
 
     public function render(): View

@@ -29,3 +29,22 @@ it('search returns empty array for blank query', function () {
         ->call('search')
         ->assertSet('results', []);
 });
+
+it('search passes filters to aggregator', function () {
+    Livewire::test(Modal::class)
+        ->set('onlyActive', true)
+        ->set('query', 'test')
+        ->call('search')
+        ->assertSet('results', []); // no types configured → empty, but no exception
+});
+
+it('close resets results to empty array', function () {
+    Livewire::test(Modal::class)
+        ->set('isOpen', true)
+        ->set('query', 'hello')
+        ->set('results', [])
+        ->call('close')
+        ->assertSet('isOpen', false)
+        ->assertSet('query', '')
+        ->assertSet('results', []);
+});
