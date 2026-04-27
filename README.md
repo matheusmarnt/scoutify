@@ -34,6 +34,19 @@ Drops a production-ready ⌘K search experience into any Laravel application. Re
 ```bash
 composer require matheusmarnt/scoutify
 php artisan scoutify:install
+```
+
+This will:
+1. Prompt for a Scout driver (`meilisearch`, `algolia`, or `typesense`)
+2. Install the driver's Composer packages
+3. Publish `config/scoutify.php`
+4. Set `SCOUT_DRIVER` in `.env`
+
+## Registering Models
+
+Make your Eloquent models globally searchable:
+
+```bash
 php artisan scoutify:searchable
 ```
 
