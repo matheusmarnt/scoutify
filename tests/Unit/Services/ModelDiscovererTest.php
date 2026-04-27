@@ -11,3 +11,8 @@ it('can be constructed with custom path', function () {
     $discoverer = new ModelDiscoverer('/tmp');
     expect($discoverer)->toBeInstanceOf(ModelDiscoverer::class);
 });
+
+it('uses custom namespace when provided', function () {
+    $discoverer = new ModelDiscoverer('/tmp', 'Custom\\Models\\');
+    expect($discoverer)->toBeInstanceOf(ModelDiscoverer::class);
+});

@@ -17,11 +17,10 @@ final class IconResolver
      */
     public function resolve(string $icon): string
     {
-        if (str_contains($icon, '-') && str_starts_with($icon, $this->prefix)) {
+        if (str_starts_with($icon, $this->prefix)) {
             return $icon;
         }
 
-        // Already looks like a fully-qualified icon (contains a slash or another known prefix pattern)
         if (str_contains($icon, '/')) {
             return $icon;
         }

@@ -29,6 +29,7 @@ final class SearchAggregator
         }
 
         $results = [];
+        $iconResolver = IconResolver::make();
 
         foreach ($this->types as $modelClass => $meta) {
             if (! class_exists($modelClass)) {
@@ -48,15 +49,12 @@ final class SearchAggregator
             }
 
             $label = $meta['label'] ?? class_basename($modelClass);
-            $icon = $meta['icon'] ?? ($modelClass instanceof GloballySearchable
+            $icon = $meta['icon'] ?? (is_a($modelClass, GloballySearchable::class, true)
                 ? $modelClass::globalSearchIcon()
                 : 'heroicon-o-magnifying-glass');
-            $color = $meta['color'] ?? ($modelClass instanceof GloballySearchable
+            $color = $meta['color'] ?? (is_a($modelClass, GloballySearchable::class, true)
                 ? $modelClass::globalSearchColor()
                 : 'gray');
-
-            // Resolve icon FQCN from config prefix
-            $iconResolver = IconResolver::make();
 
             foreach ($models as $model) {
                 if ($model instanceof GloballySearchable) {

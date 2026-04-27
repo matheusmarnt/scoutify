@@ -8,11 +8,17 @@ use Symfony\Component\Finder\Finder;
 
 final class ModelDiscoverer
 {
-    public function __construct(private readonly string $modelsPath = '') {}
+    public function __construct(
+        private readonly string $modelsPath = '',
+        private readonly string $namespace = 'App\\Models\\',
+    ) {}
 
-    public static function make(?string $basePath = null): self
+    public static function make(?string $basePath = null, ?string $namespace = null): self
     {
-        return new self($basePath ?? app_path('Models'));
+        return new self(
+            $basePath ?? app_path('Models'),
+            $namespace ?? 'App\\Models\\',
+        );
     }
 
     /**
@@ -49,7 +55,7 @@ final class ModelDiscoverer
             ->replace(DIRECTORY_SEPARATOR, '\\')
             ->toString();
 
-        return 'App\\Models\\'.$relative;
+        return rtrim($this->namespace, '\\').'\\' . $relative;
     }
 
     private function isEloquentModel(string $fqcn): bool
