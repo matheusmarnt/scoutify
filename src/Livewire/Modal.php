@@ -69,6 +69,12 @@ class Modal extends Component
         $this->search();
     }
 
+    public function updatedActiveTypes(): void
+    {
+        $this->activeIndex = 0;
+        $this->search();
+    }
+
     public function toggleType(string $key): void
     {
         if (in_array($key, $this->activeTypes, true)) {
