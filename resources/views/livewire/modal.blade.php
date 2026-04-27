@@ -1,0 +1,1 @@
+<div><!-- scoutify modal --></div>
