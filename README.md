@@ -82,14 +82,14 @@ composer require matheusmarnt/scoutify
 ./vendor/bin/sail artisan scoutify:import         # index data
 ```
 
-`scoutify:install` detects Sail automatically, runs `./vendor/bin/sail:add meilisearch` to add the service to `compose.yaml`, and sets `MEILISEARCH_HOST=http://meilisearch:7700` in `.env`.
+`scoutify:install` detects Sail automatically, runs `sail:add meilisearch` to add the service to `docker-compose.yml`, and sets `MEILISEARCH_HOST=http://meilisearch:7700` in `.env`.
 
 #### Docker Compose (non-Sail)
 
 ```bash
 composer require matheusmarnt/scoutify
-docker compose exec app php artisan scoutify:install   # writes compose.scoutify.yaml + sets env vars
-docker compose -f compose.yaml -f compose.scoutify.yaml up -d
+docker compose exec app php artisan scoutify:install   # writes docker-compose.scoutify.yml + sets env vars
+docker compose -f docker-compose.yml -f docker-compose.scoutify.yml up -d
 docker compose exec app php artisan scoutify:doctor    # verify connectivity
 docker compose exec app php artisan scoutify:searchable
 docker compose exec app php artisan scoutify:import
@@ -163,7 +163,7 @@ Algolia is cloud-hosted — no local service needed. `scoutify:install` sets `SC
 composer require matheusmarnt/scoutify
 php artisan scoutify:install         # picks algolia, sets SCOUT_DRIVER + credential placeholders
 # Fill in ALGOLIA_APP_ID and ALGOLIA_SECRET in .env
-# Get credentials at: https://www.algolia.com/account/api-keys
+# Get credentials at: https://www.algolia.com/
 php artisan scoutify:doctor          # verifies credentials are present
 php artisan scoutify:searchable      # register models
 php artisan scoutify:import          # index data
