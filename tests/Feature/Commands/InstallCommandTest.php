@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Http;
 
 beforeEach(function () {
@@ -166,7 +167,7 @@ it('sail mode passes services to sail:add as a string not an array', function ()
     mkdir($this->tmpDir.'/vendor/laravel/sail', 0755, true);
 
     $captured = null;
-    \Illuminate\Support\Facades\Artisan::command('sail:add {services?}', function () use (&$captured) {
+    Artisan::command('sail:add {services?}', function () use (&$captured) {
         $captured = $this->argument('services');
     });
 
@@ -180,7 +181,7 @@ it('sail mode detects existing service in compose.yaml and skips sail:add', func
     file_put_contents($this->tmpDir.'/compose.yaml', "services:\n  meilisearch:\n    image: getmeili/meilisearch\n");
 
     $called = false;
-    \Illuminate\Support\Facades\Artisan::command('sail:add {services?}', function () use (&$called) {
+    Artisan::command('sail:add {services?}', function () use (&$called) {
         $called = true;
     });
 

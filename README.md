@@ -55,7 +55,7 @@ composer require matheusmarnt/scoutify
 > | Environment | Artisan invocation |
 > |---|---|
 > | `php artisan serve` (host) | `php artisan <command>` |
-> | Laravel Sail | `sail artisan <command>` |
+> | Laravel Sail | `./vendor/bin/sail artisan <command>` |
 > | Docker Compose (non-Sail) | `docker compose exec app php artisan <command>` |
 >
 > All `scoutify:*` commands below follow this pattern. Sail examples explicitly use `sail artisan`; Docker Compose examples use `docker compose exec app php artisan`.
@@ -74,22 +74,22 @@ composer require matheusmarnt/scoutify
 #### Laravel Sail
 
 ```bash
-sail composer require matheusmarnt/scoutify
-sail artisan scoutify:install        # picks meilisearch, adds Sail service, sets env vars
-sail down && sail up -d              # restart to bring the meilisearch container online
-sail artisan scoutify:doctor         # verify connectivity
-sail artisan scoutify:searchable     # register models
-sail artisan scoutify:import         # index data
+./vendor/bin/sail composer require matheusmarnt/scoutify
+./vendor/bin/sail artisan scoutify:install        # picks meilisearch, adds sail service, sets env vars
+./vendor/bin/sail down && ./vendor/bin/sail up -d              # restart to bring the meilisearch container online
+./vendor/bin/sail artisan scoutify:doctor         # verify connectivity
+./vendor/bin/sail artisan scoutify:searchable     # register models
+./vendor/bin/sail artisan scoutify:import         # index data
 ```
 
-`scoutify:install` detects Sail automatically, runs `sail:add meilisearch` to add the service to `docker-compose.yml`, and sets `MEILISEARCH_HOST=http://meilisearch:7700` in `.env`.
+`scoutify:install` detects Sail automatically, runs `./vendor/bin/sail:add meilisearch` to add the service to `compose.yaml`, and sets `MEILISEARCH_HOST=http://meilisearch:7700` in `.env`.
 
 #### Docker Compose (non-Sail)
 
 ```bash
 composer require matheusmarnt/scoutify
-docker compose exec app php artisan scoutify:install   # writes docker-compose.scoutify.yml + sets env vars
-docker compose -f docker-compose.yml -f docker-compose.scoutify.yml up -d
+docker compose exec app php artisan scoutify:install   # writes compose.scoutify.yaml + sets env vars
+docker compose -f compose.yaml -f compose.scoutify.yaml up -d
 docker compose exec app php artisan scoutify:doctor    # verify connectivity
 docker compose exec app php artisan scoutify:searchable
 docker compose exec app php artisan scoutify:import
