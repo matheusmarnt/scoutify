@@ -2,10 +2,9 @@
 
 namespace Matheusmarnt\Scoutify\Tests\Fixtures\Models;
 
-use Attribute;
 use Illuminate\Database\Eloquent\Model;
 
-#[Attribute]
+#[\AllowDynamicProperties]
 class WithAttributes extends Model
 {
     protected $fillable = ['name'];
