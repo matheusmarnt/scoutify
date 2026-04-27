@@ -5,6 +5,7 @@ namespace Matheusmarnt\Scoutify\Console;
 use Illuminate\Console\Command;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Support\Facades\Http;
+use Matheusmarnt\Scoutify\Contracts\GloballySearchable;
 
 class DoctorCommand extends Command
 {
@@ -23,6 +24,14 @@ class DoctorCommand extends Command
         }
 
         $this->line("  Scout driver: <info>{$driver}</info>");
+
+        $passed = $this->checkTypes();
+        $this->checkLivewireScripts();
+        $this->checkQueueConfig();
+
+        if (! $passed) {
+            return self::FAILURE;
+        }
 
         return match ($driver) {
             'meilisearch' => $this->checkMeilisearch(),
@@ -145,5 +154,69 @@ class DoctorCommand extends Command
         $this->warn("  Unknown driver '{$driver}'. No connectivity check available.");
 
         return self::SUCCESS;
+    }
+
+    private function checkTypes(): bool
+    {
+        $types = config('scoutify.types', []);
+        $ok = true;
+
+        foreach (array_keys($types) as $class) {
+            if (! class_exists($class)) {
+                $this->error("✗ Type class [{$class}] does not exist.");
+                $ok = false;
+
+                continue;
+            }
+
+            if (! is_a($class, GloballySearchable::class, true)) {
+                $this->error("✗ [{$class}] does not implement GloballySearchable.");
+                $ok = false;
+            }
+        }
+
+        if ($ok && ! empty($types)) {
+            $this->line('  <info>✓</info> All configured types exist and implement GloballySearchable.');
+        } elseif (empty($types)) {
+            $this->warn('  No types configured in scoutify.types. Add models to enable global search.');
+        }
+
+        return $ok;
+    }
+
+    private function checkLivewireScripts(): bool
+    {
+        $layouts = glob(resource_path('views/layouts/*.blade.php')) ?: [];
+
+        foreach ($layouts as $layout) {
+            $content = file_get_contents($layout);
+            if (str_contains($content, '@livewireScripts') || str_contains($content, '@livewire(\'scripts\')')) {
+                $this->line('  <info>✓</info> @livewireScripts found in layout.');
+
+                return true;
+            }
+        }
+
+        if (empty($layouts)) {
+            $this->warn('  No layout files found in resources/views/layouts. Ensure @livewireScripts is in your app layout.');
+        } else {
+            $this->warn('  @livewireScripts not found in resources/views/layouts. Add it before </body>.');
+        }
+
+        return true;
+    }
+
+    private function checkQueueConfig(): bool
+    {
+        $queueEnabled = config('scout.queue', false);
+
+        if (app()->environment('production') && ! $queueEnabled) {
+            $this->warn('  SCOUT_QUEUE=false in production. Indexing will happen synchronously on requests.');
+            $this->line('  Recommendation: set SCOUT_QUEUE=true in .env for production performance.');
+        } elseif ($queueEnabled) {
+            $this->line('  <info>✓</info> Scout queue enabled.');
+        }
+
+        return true;
     }
 }
