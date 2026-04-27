@@ -87,59 +87,140 @@ class InstallCommand extends Command
 
     private function configureForSail(string $driver): void
     {
-        if ($driver !== 'meilisearch') {
+        if ($driver === 'meilisearch') {
+            $composePath = base_path('docker-compose.yml');
+            $hasService = file_exists($composePath) && str_contains((string) file_get_contents($composePath), 'meilisearch:');
+
+            if (! $hasService && $this->getApplication()?->has('sail:add')) {
+                $this->info('Sail detected. Adding meilisearch service to docker-compose.yml...');
+                $this->call('sail:add', ['services' => ['meilisearch']]);
+            }
+
+            // sail:add sets MEILISEARCH_HOST, but update it if it's still the broken localhost default
+            $this->updateEnvValue('MEILISEARCH_HOST', 'http://meilisearch:7700', 'http://localhost:7700');
+            $this->setEnvValue('SCOUT_QUEUE', 'true');
+
+            $this->newLine();
+            $this->line('  <comment>Next:</comment> sail down && sail up -d');
+
             return;
         }
 
-        $composePath = base_path('docker-compose.yml');
-        $hasService = file_exists($composePath) && str_contains((string) file_get_contents($composePath), 'meilisearch:');
+        if ($driver === 'typesense') {
+            $composePath = base_path('docker-compose.yml');
+            $hasService = file_exists($composePath) && str_contains((string) file_get_contents($composePath), 'typesense:');
 
-        if (! $hasService && $this->getApplication()?->has('sail:add')) {
-            $this->info('Sail detected. Adding meilisearch service to docker-compose.yml...');
-            $this->call('sail:add', ['services' => ['meilisearch']]);
+            if (! $hasService && $this->getApplication()?->has('sail:add')) {
+                $this->info('Sail detected. Adding typesense service to docker-compose.yml...');
+                $this->call('sail:add', ['services' => ['typesense']]);
+            }
+
+            $this->updateEnvValue('TYPESENSE_HOST', 'typesense', 'localhost');
+            $this->setEnvValue('TYPESENSE_PORT', '8108');
+            $this->setEnvValue('TYPESENSE_PROTOCOL', 'http');
+            $this->setEnvValue('TYPESENSE_API_KEY', 'xyz');
+
+            $this->newLine();
+            $this->line('  <comment>Next:</comment> sail down && sail up -d');
+
+            return;
         }
 
-        // sail:add sets MEILISEARCH_HOST, but update it if it's still the broken localhost default
-        $this->updateEnvValue('MEILISEARCH_HOST', 'http://meilisearch:7700', 'http://localhost:7700');
-        $this->setEnvValue('SCOUT_QUEUE', 'true');
-
-        $this->newLine();
-        $this->line('  <comment>Next:</comment> sail down && sail up -d');
+        if ($driver === 'algolia') {
+            $this->configureAlgoliaCredentials();
+        }
     }
 
     private function configureForDocker(string $driver): void
     {
-        if ($driver !== 'meilisearch') {
+        if ($driver === 'meilisearch') {
+            $stubDest = base_path('docker-compose.scoutify.yml');
+
+            if (! file_exists($stubDest)) {
+                copy(__DIR__.'/../../stubs/docker-compose.scoutify.yml', $stubDest);
+                $this->info('Created docker-compose.scoutify.yml at project root.');
+            }
+
+            $this->updateEnvValue('MEILISEARCH_HOST', 'http://meilisearch:7700', 'http://localhost:7700');
+
+            $this->newLine();
+            $this->line('  <comment>Next:</comment> docker compose -f docker-compose.yml -f docker-compose.scoutify.yml up -d');
+            $this->line('  <comment>Note:</comment> Add `meilisearch` to your app service\'s depends_on in docker-compose.yml.');
+
             return;
         }
 
-        $stubDest = base_path('docker-compose.scoutify.yml');
+        if ($driver === 'typesense') {
+            $stubDest = base_path('docker-compose.scoutify.yml');
 
-        if (! file_exists($stubDest)) {
-            copy(__DIR__.'/../../stubs/docker-compose.scoutify.yml', $stubDest);
-            $this->info('Created docker-compose.scoutify.yml at project root.');
+            if (! file_exists($stubDest)) {
+                copy(__DIR__.'/../../stubs/docker-compose.typesense.yml', $stubDest);
+                $this->info('Created docker-compose.scoutify.yml at project root.');
+            }
+
+            $this->updateEnvValue('TYPESENSE_HOST', 'typesense', 'localhost');
+            $this->setEnvValue('TYPESENSE_PORT', '8108');
+            $this->setEnvValue('TYPESENSE_PROTOCOL', 'http');
+            $this->setEnvValue('TYPESENSE_API_KEY', 'xyz');
+
+            $this->newLine();
+            $this->line('  <comment>Next:</comment> docker compose -f docker-compose.yml -f docker-compose.scoutify.yml up -d');
+            $this->line('  <comment>Note:</comment> Add `typesense` to your app service\'s depends_on in docker-compose.yml.');
+
+            return;
         }
 
-        $this->updateEnvValue('MEILISEARCH_HOST', 'http://meilisearch:7700', 'http://localhost:7700');
-
-        $this->newLine();
-        $this->line('  <comment>Next:</comment> docker compose -f docker-compose.yml -f docker-compose.scoutify.yml up -d');
-        $this->line('  <comment>Note:</comment> Add `meilisearch` to your app service\'s depends_on in docker-compose.yml.');
+        if ($driver === 'algolia') {
+            $this->configureAlgoliaCredentials();
+        }
     }
 
     private function configureForHost(string $driver): void
     {
-        if ($driver !== 'meilisearch') {
+        if ($driver === 'meilisearch') {
+            $this->setEnvValue('MEILISEARCH_HOST', 'http://localhost:7700');
+
+            $this->newLine();
+            $this->line('  <comment>Note:</comment> Meilisearch is not running. Start it with one of:');
+            $this->line('    docker run -d --name meilisearch -p 7700:7700 \\');
+            $this->line('      -v $(pwd)/meili_data:/meili_data getmeili/meilisearch:latest');
+            $this->line('    or: https://www.meilisearch.com/docs/learn/getting_started/installation');
+
             return;
         }
 
-        $this->setEnvValue('MEILISEARCH_HOST', 'http://localhost:7700');
+        if ($driver === 'typesense') {
+            $this->setEnvValue('TYPESENSE_HOST', 'localhost');
+            $this->setEnvValue('TYPESENSE_PORT', '8108');
+            $this->setEnvValue('TYPESENSE_PROTOCOL', 'http');
+            $this->setEnvValue('TYPESENSE_API_KEY', 'xyz');
+
+            $this->newLine();
+            $this->line('  <comment>Note:</comment> Typesense is not running. Start it with:');
+            $this->line('    docker run -d --name typesense -p 8108:8108 \\');
+            $this->line('      -v $(pwd)/typesense_data:/data \\');
+            $this->line('      typesense/typesense:latest \\');
+            $this->line('      --data-dir /data --api-key=xyz --enable-cors');
+            $this->line('    or: https://typesense.org/docs/guide/install-typesense.html');
+
+            return;
+        }
+
+        if ($driver === 'algolia') {
+            $this->configureAlgoliaCredentials();
+        }
+    }
+
+    private function configureAlgoliaCredentials(): void
+    {
+        $this->setEnvValue('ALGOLIA_APP_ID', '');
+        $this->setEnvValue('ALGOLIA_SECRET', '');
 
         $this->newLine();
-        $this->line('  <comment>Note:</comment> Meilisearch is not running. Start it with one of:');
-        $this->line('    docker run -d --name meilisearch -p 7700:7700 \\');
-        $this->line('      -v $(pwd)/meili_data:/meili_data getmeili/meilisearch:latest');
-        $this->line('    or: https://www.meilisearch.com/docs/learn/getting_started/installation');
+        $this->warn('  Add your Algolia credentials to .env:');
+        $this->line('  ALGOLIA_APP_ID=your-app-id');
+        $this->line('  ALGOLIA_SECRET=your-admin-api-key');
+        $this->line('  Get credentials at: https://www.algolia.com/account/api-keys');
     }
 
     private function runComposerRequire(string ...$packages): void

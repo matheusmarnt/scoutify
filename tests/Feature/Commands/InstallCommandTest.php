@@ -96,29 +96,60 @@ it('does not overwrite a custom MEILISEARCH_HOST value', function () {
     expect(file_get_contents($this->tmpDir.'/.env'))->toContain('MEILISEARCH_HOST=http://custom-host:9999');
 });
 
-it('sail mode with non-meilisearch driver skips sail-specific config', function () {
+it('sail mode algolia writes ALGOLIA_APP_ID and ALGOLIA_SECRET placeholders', function () {
     mkdir($this->tmpDir.'/vendor/laravel/sail', 0755, true);
 
     $this->artisan('scoutify:install', ['--driver' => 'algolia'])
         ->assertSuccessful();
 
-    expect(file_get_contents($this->tmpDir.'/.env'))->not->toContain('MEILISEARCH_HOST');
+    $env = file_get_contents($this->tmpDir.'/.env');
+    expect($env)->toContain('ALGOLIA_APP_ID=');
+    expect($env)->toContain('ALGOLIA_SECRET=');
+    expect($env)->not->toContain('MEILISEARCH_HOST');
 });
 
-it('docker mode with non-meilisearch driver skips docker-compose stub', function () {
+it('docker mode algolia writes credentials and skips compose stub', function () {
     file_put_contents($this->tmpDir.'/docker-compose.yml', "services:\n  app:\n    image: php:8.3\n");
 
     $this->artisan('scoutify:install', ['--driver' => 'algolia'])
         ->assertSuccessful();
 
     expect(file_exists($this->tmpDir.'/docker-compose.scoutify.yml'))->toBeFalse();
+    expect(file_get_contents($this->tmpDir.'/.env'))->toContain('ALGOLIA_APP_ID=');
 });
 
-it('host mode with non-meilisearch driver does not write MEILISEARCH_HOST', function () {
+it('host mode algolia writes credentials and no MEILISEARCH_HOST', function () {
     $this->artisan('scoutify:install', ['--driver' => 'algolia'])
         ->assertSuccessful();
 
-    expect(file_get_contents($this->tmpDir.'/.env'))->not->toContain('MEILISEARCH_HOST');
+    $env = file_get_contents($this->tmpDir.'/.env');
+    expect($env)->toContain('ALGOLIA_APP_ID=');
+    expect($env)->not->toContain('MEILISEARCH_HOST');
+});
+
+it('host mode typesense writes TYPESENSE_HOST=localhost and port', function () {
+    $this->artisan('scoutify:install', ['--driver' => 'typesense']);
+
+    $env = file_get_contents($this->tmpDir.'/.env');
+    expect($env)->toContain('TYPESENSE_HOST=localhost');
+    expect($env)->toContain('TYPESENSE_PORT=8108');
+});
+
+it('sail mode typesense sets TYPESENSE_HOST=typesense', function () {
+    mkdir($this->tmpDir.'/vendor/laravel/sail', 0755, true);
+
+    $this->artisan('scoutify:install', ['--driver' => 'typesense']);
+
+    expect(file_get_contents($this->tmpDir.'/.env'))->toContain('TYPESENSE_HOST=typesense');
+});
+
+it('docker mode typesense creates docker-compose.scoutify.yml and sets container host', function () {
+    file_put_contents($this->tmpDir.'/docker-compose.yml', "services:\n  app:\n    image: php:8.3\n");
+
+    $this->artisan('scoutify:install', ['--driver' => 'typesense']);
+
+    expect(file_exists($this->tmpDir.'/docker-compose.scoutify.yml'))->toBeTrue();
+    expect(file_get_contents($this->tmpDir.'/.env'))->toContain('TYPESENSE_HOST=typesense');
 });
 
 it('does not write SCOUT_DRIVER when key already exists in .env', function () {

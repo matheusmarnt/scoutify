@@ -50,11 +50,22 @@ composer require matheusmarnt/scoutify
 
 ## Setup
 
-### Laravel Sail
+`scoutify:install` always:
+
+1. Prompts for a Scout driver (`meilisearch`, `algolia`, or `typesense`)
+2. Installs the driver's Composer packages
+3. Publishes `config/scoutify.php`
+4. Sets `SCOUT_DRIVER` in `.env`
+5. Configures the search backend for your environment
+6. Runs `scoutify:doctor` automatically to verify the setup
+
+### Meilisearch
+
+#### Laravel Sail
 
 ```bash
 sail composer require matheusmarnt/scoutify
-sail artisan scoutify:install        # picks driver, adds Sail meilisearch service, sets env vars
+sail artisan scoutify:install        # picks meilisearch, adds Sail service, sets env vars
 sail down && sail up -d              # restart to bring the meilisearch container online
 sail artisan scoutify:doctor         # verify connectivity
 sail artisan scoutify:searchable     # register models
@@ -63,7 +74,7 @@ sail artisan scoutify:import         # index data
 
 `scoutify:install` detects Sail automatically, runs `sail:add meilisearch` to add the service to `docker-compose.yml`, and sets `MEILISEARCH_HOST=http://meilisearch:7700` in `.env`.
 
-### Docker Compose (non-Sail)
+#### Docker Compose (non-Sail)
 
 ```bash
 composer require matheusmarnt/scoutify
@@ -76,7 +87,7 @@ php artisan scoutify:import          # index data
 
 `scoutify:install` detects an existing `docker-compose.yml`, generates a `docker-compose.scoutify.yml` overlay with a Meilisearch service, and sets `MEILISEARCH_HOST=http://meilisearch:7700` in `.env`.
 
-### Host (`php artisan serve`)
+#### Host (`php artisan serve`)
 
 ```bash
 # Start Meilisearch first (choose one):
@@ -91,16 +102,62 @@ php artisan scoutify:searchable      # register models
 php artisan scoutify:import          # index data
 ```
 
----
+### Typesense
 
-`scoutify:install` always:
+#### Laravel Sail
 
-1. Prompts for a Scout driver (`meilisearch`, `algolia`, or `typesense`)
-2. Installs the driver's Composer packages
-3. Publishes `config/scoutify.php`
-4. Sets `SCOUT_DRIVER` in `.env`
-5. Configures the search backend for your environment (see above)
-6. Runs `scoutify:doctor` automatically to verify the setup
+```bash
+sail composer require matheusmarnt/scoutify
+sail artisan scoutify:install        # picks typesense, adds Sail service, sets env vars
+sail down && sail up -d
+sail artisan scoutify:doctor
+sail artisan scoutify:searchable
+sail artisan scoutify:import
+```
+
+`scoutify:install` runs `sail:add typesense` and sets `TYPESENSE_HOST=typesense`, `TYPESENSE_PORT=8108`, `TYPESENSE_PROTOCOL=http`, and `TYPESENSE_API_KEY` in `.env`.
+
+#### Docker Compose (non-Sail)
+
+```bash
+composer require matheusmarnt/scoutify
+php artisan scoutify:install         # writes docker-compose.scoutify.yml + sets env vars
+docker compose -f docker-compose.yml -f docker-compose.scoutify.yml up -d
+php artisan scoutify:doctor
+php artisan scoutify:searchable
+php artisan scoutify:import
+```
+
+#### Host (`php artisan serve`)
+
+```bash
+# Start Typesense first:
+docker run -d --name typesense -p 8108:8108 \
+  -v $(pwd)/typesense_data:/data \
+  typesense/typesense:latest \
+  --data-dir /data --api-key=xyz --enable-cors
+# or: https://typesense.org/docs/guide/install-typesense.html
+
+composer require matheusmarnt/scoutify
+php artisan scoutify:install         # sets SCOUT_DRIVER + TYPESENSE_* env vars
+php artisan scoutify:doctor
+php artisan scoutify:searchable
+php artisan scoutify:import
+```
+
+### Algolia
+
+Algolia is cloud-hosted — no local service needed. `scoutify:install` sets `SCOUT_DRIVER=algolia`, installs the client package, and adds `ALGOLIA_APP_ID` and `ALGOLIA_SECRET` placeholders to `.env`.
+
+```bash
+composer require matheusmarnt/scoutify
+php artisan scoutify:install         # picks algolia, sets SCOUT_DRIVER + credential placeholders
+# Fill in ALGOLIA_APP_ID and ALGOLIA_SECRET in .env
+# Get credentials at: https://www.algolia.com/account/api-keys
+php artisan scoutify:doctor          # verifies credentials are present
+php artisan scoutify:searchable      # register models
+php artisan scoutify:import          # index data
+```
 
 ## Diagnostics
 
