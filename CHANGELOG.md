@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.0.1](https://github.com/matheusmarnt/scoutify/compare/v1.0.0...v1.0.1) (2026-04-27)
+
+
+### Bug Fixes
+
+* widen pest version constraint to support v3 and v4 ([#14](https://github.com/matheusmarnt/scoutify/issues/14)) ([1bc5622](https://github.com/matheusmarnt/scoutify/commit/1bc56227bea3e0fc5b26d8ecd206e4469d1a80b6))
+
+
+### Miscellaneous Chores
+
+* **deps:** update laravel/scout requirement from ^10.0 to ^11.1 ([#2](https://github.com/matheusmarnt/scoutify/issues/2)) ([2e3fbb8](https://github.com/matheusmarnt/scoutify/commit/2e3fbb80bea1fd88c097b2eb4c3c605299c323c4))
+
 ## 1.0.0 (2026-04-27)
 
 
