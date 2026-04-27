@@ -20,7 +20,7 @@ it('hides the label when label prop is false', function () {
     $html = Blade::render('<x-scoutify::gs.trigger :label="false" />');
 
     // The label span should not be rendered when label=false
-    expect($html)->not->toContain('hidden lg:inline"');
+    expect($html)->not->toContain('Search');
 });
 
 it('renders with custom class via attributes', function () {
