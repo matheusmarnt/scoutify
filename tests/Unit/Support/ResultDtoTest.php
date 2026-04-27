@@ -33,5 +33,5 @@ it('toArray returns all keys', function () {
     expect($dto->toArray())->toHaveKeys([
         'title', 'subtitle', 'url', 'icon', 'group', 'groupLabel', 'groupColor', 'modelKey',
     ])->and($dto->toArray()['subtitle'])->toBeNull()
-      ->and($dto->toArray()['modelKey'])->toBeNull();
+        ->and($dto->toArray()['modelKey'])->toBeNull();
 });
