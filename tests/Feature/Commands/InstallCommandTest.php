@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Http;
 
 beforeEach(function () {
@@ -159,4 +160,32 @@ it('does not write SCOUT_DRIVER when key already exists in .env', function () {
 
     expect(file_get_contents($this->tmpDir.'/.env'))->toContain('SCOUT_DRIVER=typesense');
     expect(substr_count(file_get_contents($this->tmpDir.'/.env'), 'SCOUT_DRIVER='))->toBe(1);
+});
+
+// Regression: sail:add was previously called with an array, causing TypeError in Sail's explode()
+it('sail mode passes services to sail:add as a string not an array', function () {
+    mkdir($this->tmpDir.'/vendor/laravel/sail', 0755, true);
+
+    $captured = null;
+    Artisan::command('sail:add {services?}', function () use (&$captured) {
+        $captured = $this->argument('services');
+    });
+
+    $this->artisan('scoutify:install', ['--driver' => 'meilisearch']);
+
+    expect($captured)->toBeString()->toBe('meilisearch');
+});
+
+it('sail mode detects existing service in compose.yaml and skips sail:add', function () {
+    mkdir($this->tmpDir.'/vendor/laravel/sail', 0755, true);
+    file_put_contents($this->tmpDir.'/compose.yaml', "services:\n  meilisearch:\n    image: getmeili/meilisearch\n");
+
+    $called = false;
+    Artisan::command('sail:add {services?}', function () use (&$called) {
+        $called = true;
+    });
+
+    $this->artisan('scoutify:install', ['--driver' => 'meilisearch']);
+
+    expect($called)->toBeFalse();
 });
