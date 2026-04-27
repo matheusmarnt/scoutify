@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.1.0](https://github.com/matheusmarnt/scoutify/compare/v1.0.1...v1.1.0) (2026-04-27)
+
+
+### Features
+
+* auto-inject Searchable trait + interface via scoutify:searchable ([#19](https://github.com/matheusmarnt/scoutify/issues/19)) ([5d1d202](https://github.com/matheusmarnt/scoutify/commit/5d1d20202c15cf21dfb6955e27984e09c645ce9e))
+
+
+### Miscellaneous Chores
+
+* **deps:** bump actions/checkout from 4 to 6 ([#17](https://github.com/matheusmarnt/scoutify/issues/17)) ([1c77f17](https://github.com/matheusmarnt/scoutify/commit/1c77f1776ca338f18dc04f7ebfd3b89f454d74d8))
+* **deps:** bump googleapis/release-please-action from 4 to 5 ([#18](https://github.com/matheusmarnt/scoutify/issues/18)) ([c9421ce](https://github.com/matheusmarnt/scoutify/commit/c9421ce57774ea2289a83c86c4ff760c336c5dac))
+
 ## [1.0.1](https://github.com/matheusmarnt/scoutify/compare/v1.0.0...v1.0.1) (2026-04-27)
 
 
