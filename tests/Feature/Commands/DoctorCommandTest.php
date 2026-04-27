@@ -86,3 +86,77 @@ it('exits 0 for unknown driver without crashing', function () {
 
     $this->artisan('scoutify:doctor')->assertSuccessful();
 });
+
+it('exits 1 when meilisearch returns a non-2xx status', function () {
+    Http::fake(['http://localhost:7700/health' => Http::response([], 500)]);
+
+    $this->artisan('scoutify:doctor')
+        ->assertFailed()
+        ->expectsOutputToContain('500');
+});
+
+it('exits 1 and prints sail-down hint when Sail + non-localhost host unreachable', function () {
+    putenv('LARAVEL_SAIL=1');
+    config(['scout.meilisearch.host' => 'http://meilisearch:7700']);
+
+    Http::fake(['http://meilisearch:7700/health' => function () {
+        throw new ConnectionException('Connection refused');
+    }]);
+
+    $this->artisan('scoutify:doctor')
+        ->assertFailed()
+        ->expectsOutputToContain('sail down');
+});
+
+it('exits 1 with custom-host hint on host with non-localhost meilisearch', function () {
+    config(['scout.meilisearch.host' => 'http://search.internal:7700']);
+
+    Http::fake(['http://search.internal:7700/health' => function () {
+        throw new ConnectionException('Connection refused');
+    }]);
+
+    $this->artisan('scoutify:doctor')
+        ->assertFailed()
+        ->expectsOutputToContain('search.internal');
+});
+
+it('exits 0 when typesense is healthy', function () {
+    config([
+        'scout.driver' => 'typesense',
+        'scout.typesense.client-settings.nodes' => [
+            ['host' => 'localhost', 'port' => '8108', 'protocol' => 'http'],
+        ],
+    ]);
+
+    Http::fake(['http://localhost:8108/health' => Http::response(['ok' => true], 200)]);
+
+    $this->artisan('scoutify:doctor')->assertSuccessful();
+});
+
+it('exits 1 when typesense is unreachable', function () {
+    config([
+        'scout.driver' => 'typesense',
+        'scout.typesense.client-settings.nodes' => [
+            ['host' => 'localhost', 'port' => '8108', 'protocol' => 'http'],
+        ],
+    ]);
+
+    Http::fake(['http://localhost:8108/health' => function () {
+        throw new ConnectionException('Connection refused');
+    }]);
+
+    $this->artisan('scoutify:doctor')->assertFailed();
+});
+
+it('exits 1 when typesense returns a non-2xx status', function () {
+    config([
+        'scout.driver' => 'typesense',
+        'scout.typesense.client-settings.nodes' => [
+            ['host' => 'localhost', 'port' => '8108', 'protocol' => 'http'],
+        ],
+    ]);
+
+    Http::fake(['http://localhost:8108/health' => Http::response([], 503)]);
+
+    $this->artisan('scoutify:doctor')->assertFailed();
+});

@@ -95,3 +95,37 @@ it('does not overwrite a custom MEILISEARCH_HOST value', function () {
 
     expect(file_get_contents($this->tmpDir.'/.env'))->toContain('MEILISEARCH_HOST=http://custom-host:9999');
 });
+
+it('sail mode with non-meilisearch driver skips sail-specific config', function () {
+    mkdir($this->tmpDir.'/vendor/laravel/sail', 0755, true);
+
+    $this->artisan('scoutify:install', ['--driver' => 'algolia'])
+        ->assertSuccessful();
+
+    expect(file_get_contents($this->tmpDir.'/.env'))->not->toContain('MEILISEARCH_HOST');
+});
+
+it('docker mode with non-meilisearch driver skips docker-compose stub', function () {
+    file_put_contents($this->tmpDir.'/docker-compose.yml', "services:\n  app:\n    image: php:8.3\n");
+
+    $this->artisan('scoutify:install', ['--driver' => 'algolia'])
+        ->assertSuccessful();
+
+    expect(file_exists($this->tmpDir.'/docker-compose.scoutify.yml'))->toBeFalse();
+});
+
+it('host mode with non-meilisearch driver does not write MEILISEARCH_HOST', function () {
+    $this->artisan('scoutify:install', ['--driver' => 'algolia'])
+        ->assertSuccessful();
+
+    expect(file_get_contents($this->tmpDir.'/.env'))->not->toContain('MEILISEARCH_HOST');
+});
+
+it('does not write SCOUT_DRIVER when key already exists in .env', function () {
+    file_put_contents($this->tmpDir.'/.env', "SCOUT_DRIVER=typesense\n");
+
+    $this->artisan('scoutify:install', ['--driver' => 'meilisearch']);
+
+    expect(file_get_contents($this->tmpDir.'/.env'))->toContain('SCOUT_DRIVER=typesense');
+    expect(substr_count(file_get_contents($this->tmpDir.'/.env'), 'SCOUT_DRIVER='))->toBe(1);
+});
