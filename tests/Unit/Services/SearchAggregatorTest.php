@@ -1,7 +1,6 @@
 <?php
 
 use Matheusmarnt\Scoutify\Services\SearchAggregator;
-use Matheusmarnt\Scoutify\Support\ResultDto;
 use Matheusmarnt\Scoutify\Tests\Fixtures\Models\Article;
 
 it('returns empty array for blank query', function () {

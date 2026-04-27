@@ -55,7 +55,7 @@ final class ModelDiscoverer
             ->replace(DIRECTORY_SEPARATOR, '\\')
             ->toString();
 
-        return rtrim($this->namespace, '\\').'\\' . $relative;
+        return rtrim($this->namespace, '\\').'\\'.$relative;
     }
 
     private function isEloquentModel(string $fqcn): bool
