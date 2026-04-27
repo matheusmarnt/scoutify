@@ -37,6 +37,7 @@ class SearchableCommand extends Command
         foreach ($chosen as $fqcn) {
             if (ScoutConfigurator::isAlreadySearchable($fqcn)) {
                 info("{$fqcn} is already searchable — skipping.");
+
                 continue;
             }
 
@@ -44,7 +45,7 @@ class SearchableCommand extends Command
             // In a real implementation, inject the trait via stub
             // For v0.1 we instruct the user to add the trait manually
             $this->line("  → Add '\\Matheusmarnt\\Scoutify\\Concerns\\Searchable;' to {$fqcn}");
-            $this->line("  → Implement GloballySearchable interface methods.");
+            $this->line('  → Implement GloballySearchable interface methods.');
         }
 
         return self::SUCCESS;
