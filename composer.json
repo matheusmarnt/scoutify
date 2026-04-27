@@ -1,6 +1,6 @@
 {
     "name": "matheusmarnt/scoutify",
-    "description": "Advanced global search for Laravel — Livewire UI + Scout integration",
+    "description": "⌘K global search modal for Laravel — multi-model Livewire UI powered by Scout",
     "keywords": [
         "laravel",
         "scout",
