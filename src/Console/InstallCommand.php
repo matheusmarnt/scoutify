@@ -43,7 +43,6 @@ class InstallCommand extends Command
             "Installing {$driver} driver...",
         );
 
-        $this->call('vendor:publish', ['--tag' => 'scout-config']);
         $this->call('vendor:publish', ['--tag' => 'scoutify-config']);
 
         $this->setEnvValue('SCOUT_DRIVER', $driver);

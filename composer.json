@@ -25,6 +25,7 @@
         "laravel/scout": "^11.1",
         "livewire/livewire": "^3.0|^4.0",
         "meilisearch/meilisearch-php": "^1.16",
+        "nikic/php-parser": "^5.0",
         "spatie/laravel-package-tools": "^1.16"
     },
     "require-dev": {
