@@ -26,7 +26,7 @@ final class IconResolver
             return $icon;
         }
 
-        return $this->prefix . ltrim($icon, '-');
+        return $this->prefix.ltrim($icon, '-');
     }
 
     public function prefix(): string

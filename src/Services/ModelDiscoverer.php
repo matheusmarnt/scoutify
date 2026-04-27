@@ -2,6 +2,7 @@
 
 namespace Matheusmarnt\Scoutify\Services;
 
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 use Symfony\Component\Finder\Finder;
 
@@ -29,7 +30,7 @@ final class ModelDiscoverer
 
         $models = [];
 
-        foreach ((new Finder())->files()->name('*.php')->in($path) as $file) {
+        foreach ((new Finder)->files()->name('*.php')->in($path) as $file) {
             $fqcn = $this->fileToFqcn($file->getRealPath(), $path);
 
             if ($fqcn !== null && $this->isEloquentModel($fqcn)) {
@@ -43,12 +44,12 @@ final class ModelDiscoverer
     private function fileToFqcn(string $filePath, string $basePath): ?string
     {
         $relative = Str::of($filePath)
-            ->after($basePath . DIRECTORY_SEPARATOR)
+            ->after($basePath.DIRECTORY_SEPARATOR)
             ->replaceLast('.php', '')
             ->replace(DIRECTORY_SEPARATOR, '\\')
             ->toString();
 
-        return 'App\\Models\\' . $relative;
+        return 'App\\Models\\'.$relative;
     }
 
     private function isEloquentModel(string $fqcn): bool
@@ -57,6 +58,6 @@ final class ModelDiscoverer
             return false;
         }
 
-        return is_subclass_of($fqcn, \Illuminate\Database\Eloquent\Model::class);
+        return is_subclass_of($fqcn, Model::class);
     }
 }

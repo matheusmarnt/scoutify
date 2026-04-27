@@ -18,7 +18,7 @@ final class ScoutConfigurator
         $contents = file_get_contents($file);
 
         return str_contains($contents, 'Matheusmarnt\\Scoutify\\Concerns\\Searchable')
-            || str_contains($contents, "use Searchable;");
+            || str_contains($contents, 'use Searchable;');
     }
 
     /**

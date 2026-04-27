@@ -2,6 +2,8 @@
 
 namespace Matheusmarnt\Scoutify\Services;
 
+use Illuminate\Database\Eloquent\Model;
+use Laravel\Scout\Builder;
 use Matheusmarnt\Scoutify\Contracts\GloballySearchable;
 use Matheusmarnt\Scoutify\Support\ResultDto;
 
@@ -33,12 +35,12 @@ final class SearchAggregator
                 continue;
             }
 
-            if (! is_subclass_of($modelClass, \Illuminate\Database\Eloquent\Model::class)) {
+            if (! is_subclass_of($modelClass, Model::class)) {
                 continue;
             }
 
             try {
-                /** @var \Laravel\Scout\Builder $builder */
+                /** @var Builder $builder */
                 $builder = $modelClass::search($query);
                 $models = $builder->take($limit)->get();
             } catch (\Throwable) {
