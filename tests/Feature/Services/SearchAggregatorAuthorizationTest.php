@@ -27,7 +27,7 @@ it('excludes records denied by view Gate', function () {
     $aggregator = new SearchAggregator([Article::class => ['label' => 'Articles']]);
     $results = $aggregator->search('Article');
 
-    $keys = collect($results)->pluck('modelKey')->all();
+    $keys = collect($results)->flatMap(fn ($g) => collect($g->results)->pluck('modelKey'))->all();
     expect($keys)->toContain((string) $allowed->getKey())
         ->and($keys)->not->toContain((string) $denied->getKey());
 });
@@ -40,7 +40,7 @@ it('includes records allowed by view Gate', function () {
     $aggregator = new SearchAggregator([Article::class => ['label' => 'Articles']]);
     $results = $aggregator->search('Allowed');
 
-    $keys = collect($results)->pluck('modelKey')->all();
+    $keys = collect($results)->flatMap(fn ($g) => collect($g->results)->pluck('modelKey'))->all();
     expect($keys)->toContain((string) $allowed->getKey());
 });
 

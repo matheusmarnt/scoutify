@@ -91,27 +91,28 @@ class Modal extends Component
 
         $limit = config('scoutify.modal_per_type', 25);
 
-        $dtos = SearchAggregator::make()->search(
+        $groups = SearchAggregator::make()->search(
             query: $this->query,
             limit: $limit,
             onlyActive: $this->onlyActive,
             includeTrashed: $this->includeTrashed,
         );
 
+        // Flatten groups into a single ResultDto list
+        $dtos = $groups->flatMap(fn ($group) => $group->results)->values();
+
         // Filter by active types if any are toggled
         if (! empty($this->activeTypes)) {
-            $dtos = array_filter($dtos, fn ($dto) => in_array($dto->group, $this->activeTypes, true));
-            $dtos = array_values($dtos);
+            $dtos = $dtos->filter(fn ($dto) => in_array($dto->group, $this->activeTypes, true))->values();
         }
 
         $highlighter = app(Highlighter::class);
-        $this->results = array_map(
+        $this->results = $dtos->map(
             fn ($dto) => $dto->toArray() + [
                 'titleHtml' => (string) $highlighter->highlight($dto->title, $this->query),
                 'subtitleHtml' => (string) $highlighter->highlight($dto->subtitle, $this->query),
             ],
-            $dtos,
-        );
+        )->all();
     }
 
     #[Computed]

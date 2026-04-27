@@ -5,11 +5,44 @@ namespace Matheusmarnt\Scoutify\Concerns;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Str;
 use Laravel\Folio\Folio;
+use Laravel\Scout\ModelObserver;
 use Laravel\Scout\Searchable as ScoutSearchable;
+use Laravel\Scout\SearchableScope;
+use Matheusmarnt\Scoutify\Support\GlobalSearchRegistry;
 
 trait Searchable
 {
     use ScoutSearchable;
+
+    public static function bootSearchable(): void
+    {
+        // Re-implement Scout's bootSearchable with correct LSB so Builder macros are registered.
+        static::addGlobalScope(new SearchableScope);
+
+        $whenBootedCallback = function () {
+            static::observe(new ModelObserver);
+            (new static)->registerSearchableMacros();
+        };
+
+        if (method_exists(static::class, 'whenBooted')) {
+            static::whenBooted($whenBootedCallback);
+        } else {
+            $whenBootedCallback();
+        }
+
+        // Register with Scoutify's global search registry.
+        if (app()->bound(GlobalSearchRegistry::class)) {
+            app(GlobalSearchRegistry::class)->register(
+                static::class,
+                [
+                    'key' => static::globalSearchGroup(),
+                    'label' => static::globalSearchGroup(),
+                    'icon' => static::globalSearchIcon(),
+                    'color' => static::globalSearchColor(),
+                ]
+            );
+        }
+    }
 
     public function toGloballySearchableArray(): array
     {
