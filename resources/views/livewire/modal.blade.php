@@ -4,7 +4,7 @@
         <div class="relative shrink-0 border-b border-zinc-100 px-2.5 py-2 dark:border-zinc-800">
             <x-scoutify::gs.search-field
                 wire-model="query"
-                :placeholder="__('Buscar…')"
+                :placeholder="__('scoutify::scoutify.search_placeholder')"
                 autofocus
                 controls-id="scoutify-listbox"
                 activedescendant-expr="'scoutify-result-' + activeIdx"
@@ -19,8 +19,8 @@
                 toggle-action="toggleType"
             >
                 <x-slot name="trailing">
-                    <x-scoutify::gs.toggle wire:model.live="onlyActive" :label="__('Apenas ativos')" />
-                    <x-scoutify::gs.toggle wire:model.live="includeTrashed" :label="__('Incluir excluídos')" />
+                    <x-scoutify::gs.toggle wire:model.live="onlyActive" :label="__('scoutify::scoutify.only_active')" />
+                    <x-scoutify::gs.toggle wire:model.live="includeTrashed" :label="__('scoutify::scoutify.include_trashed')" />
                 </x-slot>
             </x-scoutify::gs.filter-row>
         @endif
@@ -28,7 +28,7 @@
         {{-- Live region for screen readers --}}
         <div class="sr-only" role="status" aria-live="polite">
             @if (filled($this->query))
-                {{ trans_choice(':count resultado encontrado|:count resultados encontrados', $this->resultCount, ['count' => $this->resultCount]) }}
+                {{ trans_choice(__('scoutify::scoutify.results_count'), $this->resultCount, ['count' => $this->resultCount]) }}
             @endif
         </div>
 

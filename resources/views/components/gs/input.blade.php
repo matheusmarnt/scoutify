@@ -32,7 +32,7 @@
             x-cloak
             @click="value = ''"
             class="absolute inset-y-0 right-0 flex items-center pr-3 text-zinc-400 transition hover:text-zinc-600 dark:hover:text-zinc-300"
-            aria-label="{{ __('Limpar busca') }}"
+            aria-label="{{ __('scoutify::scoutify.clear_search_aria') }}"
         >
             <x-scoutify::gs.icon name="x-mark" class="size-4" />
         </button>

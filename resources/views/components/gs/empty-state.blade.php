@@ -1,7 +1,7 @@
 @props([
     'icon' => 'magnifying-glass',
-    'title' => __('Nenhum resultado'),
-    'description' => __('Tente outros termos ou ajuste os filtros.'),
+    'title' => __('scoutify::scoutify.no_results'),
+    'description' => __('scoutify::scoutify.no_results_hint'),
 ])
 
 <div class="flex flex-col items-center gap-3 px-6 py-14 text-center">
