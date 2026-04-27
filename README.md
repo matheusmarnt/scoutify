@@ -59,7 +59,7 @@ php artisan scoutify:install
 This will:
 1. Prompt for a Scout driver (`meilisearch`, `algolia`, or `typesense`)
 2. Install the driver's Composer packages
-3. Publish `config/scout.php` and `config/scoutify.php`
+3. Publish `config/scoutify.php`
 4. Set `SCOUT_DRIVER` in `.env`
 
 ## Registering Models
