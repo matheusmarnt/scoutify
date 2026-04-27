@@ -41,3 +41,17 @@ it('make() accepts custom basePath and namespace', function () {
 
     expect($discoverer->discover())->toBe([]);
 });
+
+it('skips php files whose FQCN does not exist as a class', function () {
+    $dir = sys_get_temp_dir().'/scoutify-test-'.uniqid();
+    mkdir($dir, 0755, true);
+    file_put_contents($dir.'/Phantom.php', '<?php'.PHP_EOL.'// no class');
+
+    $discoverer = new ModelDiscoverer($dir, 'NonExistent\\Namespace\\');
+    $result = $discoverer->discover();
+
+    expect($result)->toBe([]);
+
+    unlink($dir.'/Phantom.php');
+    rmdir($dir);
+});

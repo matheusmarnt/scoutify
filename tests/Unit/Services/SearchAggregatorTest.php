@@ -4,8 +4,11 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 use Matheusmarnt\Scoutify\Services\SearchAggregator;
 use Matheusmarnt\Scoutify\Support\ResultDto;
+use Matheusmarnt\Scoutify\Tests\Fixtures\Models\ActivePost;
 use Matheusmarnt\Scoutify\Tests\Fixtures\Models\Article;
+use Matheusmarnt\Scoutify\Tests\Fixtures\Models\BrokenModel;
 use Matheusmarnt\Scoutify\Tests\Fixtures\Models\Post;
+use Matheusmarnt\Scoutify\Tests\Fixtures\Models\SoftPost;
 
 beforeEach(function () {
     Schema::create('articles', function (Blueprint $table) {
@@ -19,6 +22,20 @@ beforeEach(function () {
         $table->id();
         $table->string('name')->nullable();
         $table->string('title')->nullable();
+        $table->timestamps();
+    });
+
+    Schema::create('soft_posts', function (Blueprint $table) {
+        $table->id();
+        $table->string('name')->nullable();
+        $table->timestamps();
+        $table->softDeletes();
+    });
+
+    Schema::create('active_posts', function (Blueprint $table) {
+        $table->id();
+        $table->string('name')->nullable();
+        $table->boolean('active')->default(true);
         $table->timestamps();
     });
 });
@@ -39,7 +56,7 @@ it('skips non-existent model classes gracefully', function () {
 });
 
 it('skips class that is not a Model subclass', function () {
-    $aggregator = new SearchAggregator([\stdClass::class => ['label' => 'Test']]);
+    $aggregator = new SearchAggregator([stdClass::class => ['label' => 'Test']]);
     expect($aggregator->search('hello'))->toBe([]);
 });
 
@@ -111,4 +128,30 @@ it('make() creates instance from config', function () {
 it('make() accepts explicit types array', function () {
     $aggregator = SearchAggregator::make([Article::class => []]);
     expect($aggregator)->toBeInstanceOf(SearchAggregator::class);
+});
+
+it('calls withTrashed on SoftDeletes model when includeTrashed is true', function () {
+    SoftPost::create(['name' => 'Soft One']);
+
+    $aggregator = new SearchAggregator([SoftPost::class => ['label' => 'SoftPosts']]);
+    $results = $aggregator->search('Soft', includeTrashed: true);
+
+    expect($results)->toBeArray();
+});
+
+it('swallows Throwable when model search errors', function () {
+    $aggregator = new SearchAggregator([BrokenModel::class => ['label' => 'Broken']]);
+    $results = $aggregator->search('anything');
+
+    expect($results)->toBe([]);
+});
+
+it('filters by active scope when onlyActive is true', function () {
+    ActivePost::create(['name' => 'Active One', 'active' => true]);
+    ActivePost::create(['name' => 'Inactive One', 'active' => false]);
+
+    $aggregator = new SearchAggregator([ActivePost::class => ['label' => 'ActivePosts']]);
+    $results = $aggregator->search('One', onlyActive: true);
+
+    expect($results)->toBeArray();
 });
