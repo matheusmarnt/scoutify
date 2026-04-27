@@ -50,17 +50,139 @@ composer require matheusmarnt/scoutify
 
 ## Setup
 
-Run the interactive installer to choose your Scout driver and publish the config:
+`scoutify:install` always:
+
+1. Prompts for a Scout driver (`meilisearch`, `algolia`, or `typesense`)
+2. Installs the driver's Composer packages
+3. Publishes `config/scoutify.php`
+4. Sets `SCOUT_DRIVER` in `.env`
+5. Configures the search backend for your environment
+6. Runs `scoutify:doctor` automatically to verify the setup
+
+### Meilisearch
+
+#### Laravel Sail
 
 ```bash
-php artisan scoutify:install
+sail composer require matheusmarnt/scoutify
+sail artisan scoutify:install        # picks meilisearch, adds Sail service, sets env vars
+sail down && sail up -d              # restart to bring the meilisearch container online
+sail artisan scoutify:doctor         # verify connectivity
+sail artisan scoutify:searchable     # register models
+sail artisan scoutify:import         # index data
 ```
 
-This will:
-1. Prompt for a Scout driver (`meilisearch`, `algolia`, or `typesense`)
-2. Install the driver's Composer packages
-3. Publish `config/scoutify.php`
-4. Set `SCOUT_DRIVER` in `.env`
+`scoutify:install` detects Sail automatically, runs `sail:add meilisearch` to add the service to `docker-compose.yml`, and sets `MEILISEARCH_HOST=http://meilisearch:7700` in `.env`.
+
+#### Docker Compose (non-Sail)
+
+```bash
+composer require matheusmarnt/scoutify
+php artisan scoutify:install         # writes docker-compose.scoutify.yml + sets env vars
+docker compose -f docker-compose.yml -f docker-compose.scoutify.yml up -d
+php artisan scoutify:doctor          # verify connectivity
+php artisan scoutify:searchable      # register models
+php artisan scoutify:import          # index data
+```
+
+`scoutify:install` detects an existing `docker-compose.yml`, generates a `docker-compose.scoutify.yml` overlay with a Meilisearch service, and sets `MEILISEARCH_HOST=http://meilisearch:7700` in `.env`.
+
+#### Host (`php artisan serve`)
+
+```bash
+# Start Meilisearch first (choose one):
+docker run -d --name meilisearch -p 7700:7700 \
+  -v $(pwd)/meili_data:/meili_data getmeili/meilisearch:latest
+# or: https://www.meilisearch.com/docs/learn/getting_started/installation
+
+composer require matheusmarnt/scoutify
+php artisan scoutify:install         # sets SCOUT_DRIVER + MEILISEARCH_HOST=http://localhost:7700
+php artisan scoutify:doctor          # verify connectivity
+php artisan scoutify:searchable      # register models
+php artisan scoutify:import          # index data
+```
+
+### Typesense
+
+#### Laravel Sail
+
+```bash
+sail composer require matheusmarnt/scoutify
+sail artisan scoutify:install        # picks typesense, adds Sail service, sets env vars
+sail down && sail up -d
+sail artisan scoutify:doctor
+sail artisan scoutify:searchable
+sail artisan scoutify:import
+```
+
+`scoutify:install` runs `sail:add typesense` and sets `TYPESENSE_HOST=typesense`, `TYPESENSE_PORT=8108`, `TYPESENSE_PROTOCOL=http`, and `TYPESENSE_API_KEY` in `.env`.
+
+#### Docker Compose (non-Sail)
+
+```bash
+composer require matheusmarnt/scoutify
+php artisan scoutify:install         # writes docker-compose.scoutify.yml + sets env vars
+docker compose -f docker-compose.yml -f docker-compose.scoutify.yml up -d
+php artisan scoutify:doctor
+php artisan scoutify:searchable
+php artisan scoutify:import
+```
+
+#### Host (`php artisan serve`)
+
+```bash
+# Start Typesense first:
+docker run -d --name typesense -p 8108:8108 \
+  -v $(pwd)/typesense_data:/data \
+  typesense/typesense:latest \
+  --data-dir /data --api-key=xyz --enable-cors
+# or: https://typesense.org/docs/guide/install-typesense.html
+
+composer require matheusmarnt/scoutify
+php artisan scoutify:install         # sets SCOUT_DRIVER + TYPESENSE_* env vars
+php artisan scoutify:doctor
+php artisan scoutify:searchable
+php artisan scoutify:import
+```
+
+### Algolia
+
+Algolia is cloud-hosted — no local service needed. `scoutify:install` sets `SCOUT_DRIVER=algolia`, installs the client package, and adds `ALGOLIA_APP_ID` and `ALGOLIA_SECRET` placeholders to `.env`.
+
+```bash
+composer require matheusmarnt/scoutify
+php artisan scoutify:install         # picks algolia, sets SCOUT_DRIVER + credential placeholders
+# Fill in ALGOLIA_APP_ID and ALGOLIA_SECRET in .env
+# Get credentials at: https://www.algolia.com/account/api-keys
+php artisan scoutify:doctor          # verifies credentials are present
+php artisan scoutify:searchable      # register models
+php artisan scoutify:import          # index data
+```
+
+## Diagnostics
+
+```bash
+php artisan scoutify:doctor
+```
+
+Checks your driver configuration and connectivity. Reports the configured driver, the search backend URL, and whether it is reachable. Prints environment-aware remediation steps on failure:
+
+```
+  Scout driver: meilisearch
+  Meilisearch host: http://meilisearch:7700
+  ✓ Meilisearch reachable and healthy.
+```
+
+On failure inside a Sail container:
+
+```
+  ✗ Cannot reach Meilisearch at http://localhost:7700.
+  Sail detected but MEILISEARCH_HOST points to localhost (wrong inside container).
+  Fix: set MEILISEARCH_HOST=http://meilisearch:7700 in .env, then:
+       sail down && sail up -d
+```
+
+Exit code `0` = healthy, `1` = issue found — usable in CI health checks.
 
 ## Registering Models
 
@@ -97,17 +219,42 @@ class User extends Model implements GloballySearchable
 }
 ```
 
-Title, group, icon, and color are supplied by the trait (`$this->name`, `"User"`, magnifying-glass icon, gray). Add them to your model to override:
+All remaining interface methods are provided by the `Searchable` trait with sensible defaults. Override any of them directly in your model:
 
 ```php
+// Title shown in bold in each search result row
+// Default: $this->name
 public function globalSearchTitle(): string
 {
-    return $this->full_name;  // override default ($this->name)
+    return $this->full_name;
 }
 
+// Gray subtitle line below the title (null = hidden)
+// Default: null
+public function globalSearchSubtitle(): ?string
+{
+    return $this->email;
+}
+
+// Section header grouping results of this type
+// Default: class basename, e.g. "User"
 public static function globalSearchGroup(): string
 {
-    return 'Team Members';    // override default ("User")
+    return 'Team Members';
+}
+
+// Heroicon name shown left of each result row
+// Default: 'heroicon-o-magnifying-glass'
+public static function globalSearchIcon(): string
+{
+    return 'heroicon-o-user';
+}
+
+// Icon tint colour (Tailwind colour name or 'gray')
+// Default: 'gray'
+public static function globalSearchColor(): string
+{
+    return 'blue';
 }
 ```
 

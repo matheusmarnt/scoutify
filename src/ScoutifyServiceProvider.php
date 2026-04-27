@@ -4,6 +4,7 @@ namespace Matheusmarnt\Scoutify;
 
 use Livewire\Livewire;
 use Livewire\LivewireManager;
+use Matheusmarnt\Scoutify\Console\DoctorCommand;
 use Matheusmarnt\Scoutify\Console\FlushCommand;
 use Matheusmarnt\Scoutify\Console\ImportCommand;
 use Matheusmarnt\Scoutify\Console\InstallCommand;
@@ -24,6 +25,7 @@ class ScoutifyServiceProvider extends PackageServiceProvider
             ->hasTranslations()
             ->hasCommands([
                 InstallCommand::class,
+                DoctorCommand::class,
                 SearchableCommand::class,
                 FlushCommand::class,
                 ImportCommand::class,
