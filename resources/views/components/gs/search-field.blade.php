@@ -24,6 +24,7 @@
         :aria-label="$placeholder"
         @compositionstart="composing = true"
         @compositionend="composing = false"
+        @keydown.backspace="if ($wire.query === '') $wire.call('clearFilters')"
         {{ $attributes }}
     />
 

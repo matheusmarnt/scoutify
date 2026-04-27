@@ -87,6 +87,15 @@ class Modal extends Component
         $this->search();
     }
 
+    public function clearFilters(): void
+    {
+        $this->activeTypes = [];
+        $this->includeTrashed = false;
+        $this->onlyActive = false;
+        $this->activeIndex = 0;
+        $this->search();
+    }
+
     public function search(): void
     {
         if (blank($this->query)) {
