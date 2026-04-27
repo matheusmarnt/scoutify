@@ -130,10 +130,7 @@ final class SearchAggregator
     private function canView(mixed $record): bool
     {
         try {
-            $hasPolicy = Gate::getPolicyFor($record) !== null;
-            $hasAbility = Gate::has('view');
-
-            if (! $hasPolicy && ! $hasAbility) {
+            if (Gate::getPolicyFor($record) === null && ! Gate::has('view')) {
                 return true;
             }
 

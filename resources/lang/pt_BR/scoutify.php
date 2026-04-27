@@ -19,4 +19,5 @@ return [
     'hint_open' => 'abrir',
     'hint_close' => 'fechar',
     'results_count' => '{0} Nenhum resultado|[1] :count resultado|[2,*] :count resultados',
+    'results_listbox_label' => 'Resultados da busca',
 ];

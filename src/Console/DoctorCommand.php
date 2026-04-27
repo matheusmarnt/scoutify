@@ -184,7 +184,7 @@ class DoctorCommand extends Command
         return $ok;
     }
 
-    private function checkLivewireScripts(): bool
+    private function checkLivewireScripts(): void
     {
         $layouts = glob(resource_path('views/layouts/*.blade.php')) ?: [];
 
@@ -193,7 +193,7 @@ class DoctorCommand extends Command
             if (str_contains($content, '@livewireScripts') || str_contains($content, '@livewire(\'scripts\')')) {
                 $this->line('  <info>✓</info> @livewireScripts found in layout.');
 
-                return true;
+                return;
             }
         }
 
@@ -202,8 +202,6 @@ class DoctorCommand extends Command
         } else {
             $this->warn('  @livewireScripts not found in resources/views/layouts. Add it before </body>.');
         }
-
-        return true;
     }
 
     private function checkQueueConfig(): bool
