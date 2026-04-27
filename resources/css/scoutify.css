@@ -1,0 +1,26 @@
+/*
+ * Scoutify — Tailwind v4 styling partial.
+ *
+ * Add to your resources/css/app.css (scoutify:install does this automatically):
+ *   @import "../../vendor/matheusmarnt/scoutify/resources/css/scoutify.css";
+ */
+
+@source "../views/**/*.blade.php";
+
+/* Dynamic badge color safelist (matches SearchableConfig 'color' values at runtime). */
+@source inline("bg-{blue,emerald,amber,rose,violet,teal,indigo,sky,zinc}-{50,100,500,600,700}");
+@source inline("text-{blue,emerald,amber,rose,violet,teal,indigo,sky,zinc}-{300,400,600,700}");
+@source inline("dark:bg-{blue,emerald,amber,rose,violet,teal,indigo,sky,zinc}-{800,900}");
+@source inline("dark:text-{blue,emerald,amber,rose,violet,teal,indigo,sky,zinc}-{300,400}");
+
+@theme {
+    --color-scoutify-accent: var(--color-neutral-800);
+    --color-scoutify-accent-foreground: var(--color-white);
+}
+
+@layer theme {
+    .dark {
+        --color-scoutify-accent: var(--color-white);
+        --color-scoutify-accent-foreground: var(--color-neutral-900);
+    }
+}
