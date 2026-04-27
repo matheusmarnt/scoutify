@@ -331,7 +331,7 @@ Add the trigger button and modal to your layout:
 <livewire:scoutify::modal />
 ```
 
-The trigger renders a `⌘K` / `Ctrl+K` button. The modal opens automatically on keyboard shortcut or when the `scoutify:open` Livewire event is dispatched.
+The trigger renders a `⌘K` (macOS) / `Ctrl K` (other) badge. The modal component wires global keyboard shortcuts automatically — `Ctrl+K`, `⌘K`, and `/` (when not focused on an input) all open the modal. No extra layout markup needed.
 
 Dispatch from anywhere:
 
@@ -341,12 +341,15 @@ Dispatch from anywhere:
 
 ## Tailwind CSS v4
 
-Add Scoutify's views as a Tailwind source so utility classes are included in your build:
+`scoutify:install` automatically adds the Scoutify CSS partial to your `resources/css/app.css`. To add it manually:
 
 ```css
 /* resources/css/app.css */
-@source "../vendor/matheusmarnt/scoutify/resources/views/**/*.blade.php";
+@import 'tailwindcss';
+@import "../../vendor/matheusmarnt/scoutify/resources/css/scoutify.css";
 ```
+
+The partial covers `@source` for all Scoutify blade views, theme tokens (`--color-scoutify-accent`), and the dynamic badge color safelist — no additional configuration required.
 
 ## Customization
 

@@ -15,5 +15,9 @@
     @if ($label)
         <span class="hidden lg:inline">{{ __('scoutify::scoutify.open') }}</span>
     @endif
-    <x-scoutify::gs.kbd class="ml-auto hidden lg:inline-flex">⌘K</x-scoutify::gs.kbd>
+    <x-scoutify::gs.kbd
+        class="ml-auto hidden lg:inline-flex"
+        x-data
+        x-text="navigator.platform.toUpperCase().includes('MAC') ? '⌘K' : 'Ctrl K'"
+    >Ctrl K</x-scoutify::gs.kbd>
 </button>

@@ -1,5 +1,19 @@
 # Changelog
 
+## [Unreleased]
+
+### Added
+
+* Global keyboard shortcuts (`Ctrl+K`, `⌘K`, `/`) wired inside the modal component — no extra layout markup required.
+* Self-contained CSS partial `resources/css/scoutify.css` with `@source` for all package views, `--color-scoutify-accent` theme tokens, and dynamic badge color safelist.
+* `scoutify:install` now injects the CSS `@import` line into `resources/css/app.css` automatically (idempotent).
+
+### Changed
+
+* Replaced `--color-accent` dependency with namespaced `--color-scoutify-accent` to avoid clashing with consumer themes.
+* `<x-scoutify::gs.trigger />` kbd badge renders `⌘K` on macOS and `Ctrl K` on other platforms.
+* README install steps simplified: manual `@source` directive replaced by single `@import` line.
+
 ## [1.3.1](https://github.com/matheusmarnt/scoutify/compare/v1.3.0...v1.3.1) (2026-04-27)
 
 

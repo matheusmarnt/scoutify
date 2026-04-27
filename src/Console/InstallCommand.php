@@ -45,6 +45,8 @@ class InstallCommand extends Command
 
         $this->call('vendor:publish', ['--tag' => 'scoutify-config']);
 
+        $this->injectTailwindImport();
+
         $this->setEnvValue('SCOUT_DRIVER', $driver);
 
         match ($this->detectEnvironment()) {
@@ -231,6 +233,41 @@ class InstallCommand extends Command
         }
 
         return false;
+    }
+
+    private function injectTailwindImport(): void
+    {
+        $cssPath = base_path('resources/css/app.css');
+
+        if (! is_file($cssPath)) {
+            $this->components->warn('resources/css/app.css not found — add the import manually:');
+            $this->line('  @import "../../vendor/matheusmarnt/scoutify/resources/css/scoutify.css";');
+
+            return;
+        }
+
+        $contents = (string) file_get_contents($cssPath);
+        $importLine = '@import "../../vendor/matheusmarnt/scoutify/resources/css/scoutify.css";';
+
+        if (str_contains($contents, 'matheusmarnt/scoutify/resources/css/scoutify.css')) {
+            $this->components->info('Scoutify CSS already imported in resources/css/app.css.');
+
+            return;
+        }
+
+        $patched = preg_replace(
+            '/(@import\s+["\']tailwindcss["\'];)/',
+            "$1\n{$importLine}",
+            $contents,
+            1,
+        );
+
+        if ($patched === null || $patched === $contents) {
+            $patched = $importLine."\n".$contents;
+        }
+
+        file_put_contents($cssPath, $patched);
+        $this->components->info('Added Scoutify @import to resources/css/app.css.');
     }
 
     private function runComposerRequire(string ...$packages): void

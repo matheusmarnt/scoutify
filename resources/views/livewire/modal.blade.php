@@ -1,4 +1,9 @@
-<div x-data="scoutifyModal()">
+<div
+    x-data="scoutifyModal()"
+    @keydown.window.prevent.ctrl.k="$dispatch('scoutify:open')"
+    @keydown.window.prevent.cmd.k="$dispatch('scoutify:open')"
+    @keydown.window="if (event.key === '/' && !['INPUT','TEXTAREA','SELECT'].includes(document.activeElement?.tagName) && !document.activeElement?.isContentEditable) { event.preventDefault(); $dispatch('scoutify:open') }"
+>
     <x-scoutify::gs.shell wire="isOpen" id="scoutify-search">
         {{-- Header: search input --}}
         <div class="relative shrink-0 border-b border-zinc-100 px-2.5 py-2 dark:border-zinc-800">
