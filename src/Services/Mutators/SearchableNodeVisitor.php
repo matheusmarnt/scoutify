@@ -35,10 +35,13 @@ final class SearchableNodeVisitor extends NodeVisitorAbstract
     public function enterNode(Node $node): ?Node
     {
         if ($node instanceof Namespace_) {
+            $this->addedImports = [];
             $this->ensureImports($node);
         }
 
         if ($node instanceof Class_) {
+            $this->addedInterface = false;
+            $this->addedTraitUse = false;
             $this->ensureImplements($node);
             $this->ensureTraitUse($node);
         }
