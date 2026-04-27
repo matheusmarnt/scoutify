@@ -1,0 +1,3 @@
+public static function globalSearchGroup(): string { return '{{ group }}'; }
+public static function globalSearchIcon(): string { return '{{ icon }}'; }
+public static function globalSearchColor(): string { return '{{ color }}'; }
