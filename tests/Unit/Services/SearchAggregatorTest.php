@@ -1,7 +1,44 @@
 <?php
 
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 use Matheusmarnt\Scoutify\Services\SearchAggregator;
+use Matheusmarnt\Scoutify\Support\ResultDto;
+use Matheusmarnt\Scoutify\Tests\Fixtures\Models\ActivePost;
 use Matheusmarnt\Scoutify\Tests\Fixtures\Models\Article;
+use Matheusmarnt\Scoutify\Tests\Fixtures\Models\BrokenModel;
+use Matheusmarnt\Scoutify\Tests\Fixtures\Models\Post;
+use Matheusmarnt\Scoutify\Tests\Fixtures\Models\SoftPost;
+
+beforeEach(function () {
+    Schema::create('articles', function (Blueprint $table) {
+        $table->id();
+        $table->string('name')->nullable();
+        $table->string('body')->nullable();
+        $table->timestamps();
+    });
+
+    Schema::create('posts', function (Blueprint $table) {
+        $table->id();
+        $table->string('name')->nullable();
+        $table->string('title')->nullable();
+        $table->timestamps();
+    });
+
+    Schema::create('soft_posts', function (Blueprint $table) {
+        $table->id();
+        $table->string('name')->nullable();
+        $table->timestamps();
+        $table->softDeletes();
+    });
+
+    Schema::create('active_posts', function (Blueprint $table) {
+        $table->id();
+        $table->string('name')->nullable();
+        $table->boolean('active')->default(true);
+        $table->timestamps();
+    });
+});
 
 it('returns empty array for blank query', function () {
     $aggregator = new SearchAggregator([]);
@@ -18,16 +55,103 @@ it('skips non-existent model classes gracefully', function () {
     expect($aggregator->search('hello'))->toBe([]);
 });
 
-it('returns ResultDto array for GloballySearchable model with collection driver', function () {
-    // collection driver indexes in memory — create an Article, import it, search
-    $article = new Article(['name' => 'Test Article']);
-    $article->id = 1;
+it('skips class that is not a Model subclass', function () {
+    $aggregator = new SearchAggregator([stdClass::class => ['label' => 'Test']]);
+    expect($aggregator->search('hello'))->toBe([]);
+});
+
+it('returns ResultDto array for GloballySearchable model with results', function () {
+    Article::create(['name' => 'Laravel Scout Tutorial']);
+
+    $aggregator = new SearchAggregator([Article::class => ['label' => 'Articles']]);
+    $results = $aggregator->search('Laravel');
+
+    expect($results)->not->toBeEmpty()
+        ->and($results[0])->toBeInstanceOf(ResultDto::class)
+        ->and($results[0]->group)->toBe('articles')
+        ->and($results[0]->groupLabel)->toBe('Articles')
+        ->and($results[0]->icon)->toBe('heroicon-o-document')
+        ->and($results[0]->groupColor)->toBe('blue');
+});
+
+it('returns ResultDto for non-GloballySearchable model', function () {
+    Post::create(['name' => 'Hello World Post']);
 
     $aggregator = new SearchAggregator([
-        Article::class => ['label' => 'Articles'],
+        Post::class => ['label' => 'Posts', 'icon' => 'heroicon-o-pencil', 'color' => 'green'],
     ]);
+    $results = $aggregator->search('Hello');
 
-    // collection driver searches in-memory; with no DB, search returns empty but should not throw
-    $results = $aggregator->search('Test');
+    expect($results)->not->toBeEmpty()
+        ->and($results[0])->toBeInstanceOf(ResultDto::class)
+        ->and($results[0]->groupLabel)->toBe('Posts')
+        ->and($results[0]->groupColor)->toBe('green')
+        ->and($results[0]->url)->toBe(url('/'));
+});
+
+it('uses class_basename as label when meta has no label', function () {
+    Article::create(['name' => 'Fallback Label Test']);
+
+    $aggregator = new SearchAggregator([Article::class => []]);
+    $results = $aggregator->search('Fallback');
+
+    expect($results)->not->toBeEmpty()
+        ->and($results[0]->groupLabel)->toBe('Article');
+});
+
+it('uses GloballySearchable icon and color when meta omits them', function () {
+    Article::create(['name' => 'Icon Test']);
+
+    $aggregator = new SearchAggregator([Article::class => ['label' => 'Articles']]);
+    $results = $aggregator->search('Icon');
+
+    expect($results)->not->toBeEmpty()
+        ->and($results[0]->icon)->toBe('heroicon-o-document')
+        ->and($results[0]->groupColor)->toBe('blue');
+});
+
+it('uses fallback icon and color for non-GloballySearchable with no meta', function () {
+    Post::create(['name' => 'Fallback Icon']);
+
+    $aggregator = new SearchAggregator([Post::class => []]);
+    $results = $aggregator->search('Fallback');
+
+    expect($results)->not->toBeEmpty()
+        ->and($results[0]->groupColor)->toBe('gray');
+});
+
+it('make() creates instance from config', function () {
+    config(['scoutify.types' => []]);
+    expect(SearchAggregator::make())->toBeInstanceOf(SearchAggregator::class);
+});
+
+it('make() accepts explicit types array', function () {
+    $aggregator = SearchAggregator::make([Article::class => []]);
+    expect($aggregator)->toBeInstanceOf(SearchAggregator::class);
+});
+
+it('calls withTrashed on SoftDeletes model when includeTrashed is true', function () {
+    SoftPost::create(['name' => 'Soft One']);
+
+    $aggregator = new SearchAggregator([SoftPost::class => ['label' => 'SoftPosts']]);
+    $results = $aggregator->search('Soft', includeTrashed: true);
+
+    expect($results)->toBeArray();
+});
+
+it('swallows Throwable when model search errors', function () {
+    $aggregator = new SearchAggregator([BrokenModel::class => ['label' => 'Broken']]);
+    $results = $aggregator->search('anything');
+
+    expect($results)->toBe([]);
+});
+
+it('filters by active scope when onlyActive is true', function () {
+    ActivePost::create(['name' => 'Active One', 'active' => true]);
+    ActivePost::create(['name' => 'Inactive One', 'active' => false]);
+
+    $aggregator = new SearchAggregator([ActivePost::class => ['label' => 'ActivePosts']]);
+    $results = $aggregator->search('One', onlyActive: true);
+
     expect($results)->toBeArray();
 });
