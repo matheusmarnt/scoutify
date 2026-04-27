@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.2](https://github.com/matheusmarnt/scoutify/compare/v1.3.1...v1.3.2) (2026-04-27)
+
+
+### Bug Fixes
+
+* **modal:** wire keyboard shortcuts and ship self-contained CSS partial ([#32](https://github.com/matheusmarnt/scoutify/issues/32)) ([95ac910](https://github.com/matheusmarnt/scoutify/commit/95ac91020c21d30c0e0a0aa0b755672467e5950a))
+
 ## [Unreleased]
 
 ### Added
