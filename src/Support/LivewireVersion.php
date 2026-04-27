@@ -4,6 +4,12 @@ namespace Matheusmarnt\Scoutify\Support;
 
 use Composer\InstalledVersions;
 
+/**
+ * Detects the installed Livewire major version at runtime.
+ *
+ * Returns 0 when Livewire is not installed, version is unknown (path repo),
+ * or version string starts with 'dev-'.
+ */
 final class LivewireVersion
 {
     public static function major(): int
@@ -14,7 +20,11 @@ final class LivewireVersion
 
         $version = InstalledVersions::getVersion('livewire/livewire');
 
-        return (int) explode('.', ltrim((string) $version, 'v'))[0];
+        if ($version === null || str_starts_with($version, 'dev-')) {
+            return 0;
+        }
+
+        return (int) explode('.', ltrim($version, 'v'))[0];
     }
 
     public static function isV4OrAbove(): bool

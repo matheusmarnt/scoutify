@@ -14,7 +14,7 @@ it('isV4OrAbove returns bool', function () {
     expect(LivewireVersion::isV4OrAbove())->toBeBool();
 });
 
-it('major returns 0 when livewire is not installed', function () {
+it('LivewireVersion class exposes expected public API', function () {
     // Use reflection or mock InstalledVersions — since we cannot uninstall livewire,
     // test the branch by calling the private logic directly.
     // Instead, verify the class compiles and the method signature is correct.
