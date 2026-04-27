@@ -23,9 +23,9 @@ class InstallCommand extends Command
         );
 
         $packages = [
-            'algolia'     => 'algolia/algoliasearch-client-php',
+            'algolia' => 'algolia/algoliasearch-client-php',
             'meilisearch' => 'meilisearch/meilisearch-php http-interop/http-factory-guzzle',
-            'typesense'   => 'typesense/typesense-php',
+            'typesense' => 'typesense/typesense-php',
         ];
 
         if (isset($packages[$driver])) {
