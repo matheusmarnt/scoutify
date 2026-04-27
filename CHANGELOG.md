@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.0](https://github.com/matheusmarnt/scoutify/compare/v1.2.2...v1.3.0) (2026-04-27)
+
+
+### Features
+
+* **install:** detect environment and configure search backend automatically ([#28](https://github.com/matheusmarnt/scoutify/issues/28)) ([0ec8711](https://github.com/matheusmarnt/scoutify/commit/0ec8711098f7ed950124fb278b07f7041fbb27e2))
+
 ## [1.2.2](https://github.com/matheusmarnt/scoutify/compare/v1.2.1...v1.2.2) (2026-04-27)
 
 
