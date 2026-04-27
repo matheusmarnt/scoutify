@@ -1,54 +1,49 @@
 {
-    "name": ":vendor_slug/:package_slug",
-    "description": ":package_description",
-    "keywords": [
-        ":vendor_name",
-        "laravel",
-        ":package_slug"
-    ],
-    "homepage": "https://github.com/:vendor_slug/:package_slug",
+    "name": "matheusmarnt/scoutify",
+    "description": "Advanced global search for Laravel — Livewire UI + Scout integration",
+    "keywords": ["laravel", "scout", "livewire", "search"],
     "license": "MIT",
     "authors": [
         {
-            "name": ":author_name",
-            "email": "author@domain.com",
+            "name": "Matheus Mariano",
+            "email": "matheus.marnt@gmail.com",
             "role": "Developer"
         }
     ],
     "require": {
-        "php": "^8.4",
-        "spatie/laravel-package-tools": "^1.16",
-        "illuminate/contracts": "^11.0||^12.0||^13.0"
+        "php": "^8.2",
+        "illuminate/contracts": "^11.0|^12.0",
+        "livewire/livewire": "^3.0|^4.0",
+        "laravel/scout": "^10.0",
+        "laravel/prompts": "^0.1|^1.0",
+        "blade-ui-kit/blade-icons": "^1.6",
+        "blade-ui-kit/blade-heroicons": "^2.5",
+        "spatie/laravel-package-tools": "^1.16"
     },
     "require-dev": {
-        "laravel/pint": "^1.14",
-        "nunomaduro/collision": "^8.8",
-        "larastan/larastan": "^3.0",
-        "orchestra/testbench": "^10.0.0||^9.0.0",
+        "orchestra/testbench": "^9.0|^10.0",
         "pestphp/pest": "^4.0",
-        "pestphp/pest-plugin-arch": "^4.0",
         "pestphp/pest-plugin-laravel": "^4.0",
-        "phpstan/extension-installer": "^1.4",
-        "phpstan/phpstan-deprecation-rules": "^2.0",
-        "phpstan/phpstan-phpunit": "^2.0",
-        "spatie/laravel-ray": "^1.35"
+        "pestphp/pest-plugin-livewire": "^4.0",
+        "laravel/pint": "^1.14",
+        "nunomaduro/collision": "^8.0"
+    },
+    "suggest": {
+        "algolia/algoliasearch-client-php": "Algolia driver for Scout",
+        "meilisearch/meilisearch-php": "Meilisearch driver for Scout",
+        "typesense/typesense-php": "Typesense driver for Scout"
     },
     "autoload": {
         "psr-4": {
-            "VendorName\\Skeleton\\": "src/",
-            "VendorName\\Skeleton\\Database\\Factories\\": "database/factories/"
+            "Matheusmarnt\\Scoutify\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "VendorName\\Skeleton\\Tests\\": "tests/",
-            "Workbench\\App\\": "workbench/app/"
+            "Matheusmarnt\\Scoutify\\Tests\\": "tests/"
         }
     },
     "scripts": {
-        "post-autoload-dump": "@composer run prepare",
-        "prepare": "@php vendor/bin/testbench package:discover --ansi",
-        "analyse": "vendor/bin/phpstan analyse",
         "test": "vendor/bin/pest",
         "test-coverage": "vendor/bin/pest --coverage",
         "format": "vendor/bin/pint"
@@ -56,18 +51,12 @@
     "config": {
         "sort-packages": true,
         "allow-plugins": {
-            "pestphp/pest-plugin": true,
-            "phpstan/extension-installer": true
+            "pestphp/pest-plugin": true
         }
     },
     "extra": {
         "laravel": {
-            "providers": [
-                "VendorName\\Skeleton\\SkeletonServiceProvider"
-            ],
-            "aliases": {
-                "Skeleton": "VendorName\\Skeleton\\Facades\\Skeleton"
-            }
+            "providers": ["Matheusmarnt\\Scoutify\\ScoutifyServiceProvider"]
         }
     },
     "minimum-stability": "dev",
