@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.0](https://github.com/matheusmarnt/scoutify/compare/v1.1.0...v1.2.0) (2026-04-27)
+
+
+### Features
+
+* inject smart globalSearchUrl stub via scoutify:searchable ([#21](https://github.com/matheusmarnt/scoutify/issues/21)) ([d7a08eb](https://github.com/matheusmarnt/scoutify/commit/d7a08eb9bb154b091d31625b5f71caf6bcb3ec9b))
+
 ## [1.1.0](https://github.com/matheusmarnt/scoutify/compare/v1.0.1...v1.1.0) (2026-04-27)
 
 
