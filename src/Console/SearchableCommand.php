@@ -7,6 +7,8 @@ use Matheusmarnt\Scoutify\Services\ModelDiscoverer;
 use Matheusmarnt\Scoutify\Services\ModelSourceMutation;
 use Matheusmarnt\Scoutify\Services\ModelSourceMutator;
 use Matheusmarnt\Scoutify\Services\ScoutConfigurator;
+use Matheusmarnt\Scoutify\Services\SearchableStubBuilder;
+use Matheusmarnt\Scoutify\Services\StubPlan;
 use ReflectionClass;
 use Throwable;
 
@@ -19,11 +21,12 @@ class SearchableCommand extends Command
     protected $signature = 'scoutify:searchable
         {model? : FQCN of a specific model to register}
         {--all : Register all discovered models without prompting}
-        {--dry-run : Show planned mutations without writing files}';
+        {--dry-run : Show planned mutations without writing files}
+        {--no-stubs : Skip injecting the globalSearchUrl() stub into the model}';
 
     protected $description = 'Register Eloquent models as globally searchable';
 
-    public function handle(ModelSourceMutator $mutator): int
+    public function handle(ModelSourceMutator $mutator, SearchableStubBuilder $stubBuilder): int
     {
         if ($this->argument('model')) {
             $chosen = [$this->argument('model')];
@@ -46,6 +49,7 @@ class SearchableCommand extends Command
         }
 
         $dryRun = (bool) $this->option('dry-run');
+        $withStubs = ! $this->option('no-stubs');
 
         foreach ($chosen as $fqcn) {
             if (ScoutConfigurator::isAlreadySearchable($fqcn)) {
@@ -54,10 +58,12 @@ class SearchableCommand extends Command
                 continue;
             }
 
+            $stubPlan = $withStubs ? $stubBuilder->buildFor($fqcn) : null;
+
             try {
                 $mutation = $dryRun
-                    ? $this->planMutation($mutator, $fqcn)
-                    : $mutator->mutate($fqcn);
+                    ? $this->planMutation($mutator, $fqcn, $stubPlan)
+                    : $mutator->mutate($fqcn, $stubPlan);
             } catch (Throwable $e) {
                 warning("Failed to mutate {$fqcn}: {$e->getMessage()}");
 
@@ -82,7 +88,7 @@ class SearchableCommand extends Command
         return self::SUCCESS;
     }
 
-    private function planMutation(ModelSourceMutator $mutator, string $fqcn): ModelSourceMutation
+    private function planMutation(ModelSourceMutator $mutator, string $fqcn, ?StubPlan $stubPlan = null): ModelSourceMutation
     {
         $reflection = new ReflectionClass($fqcn);
         $original = $reflection->getFileName();
@@ -95,7 +101,7 @@ class SearchableCommand extends Command
         copy($original, $tmp);
 
         try {
-            return $mutator->mutateFile($tmp);
+            return $mutator->mutateFile($tmp, $stubPlan);
         } finally {
             @unlink($tmp);
         }
