@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.2](https://github.com/matheusmarnt/scoutify/compare/v1.2.1...v1.2.2) (2026-04-27)
+
+
+### Bug Fixes
+
+* **ci:** remove broken auto-merge step, add workflow_dispatch trigger ([#26](https://github.com/matheusmarnt/scoutify/issues/26)) ([b286527](https://github.com/matheusmarnt/scoutify/commit/b286527a53a360a70f84b4cb60a278242e5f9886))
+
 ## [1.2.1](https://github.com/matheusmarnt/scoutify/compare/v1.2.0...v1.2.1) (2026-04-27)
 
 
