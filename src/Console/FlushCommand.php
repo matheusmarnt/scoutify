@@ -27,7 +27,12 @@ class FlushCommand extends Command
             : $types;
 
         foreach (array_keys($targets) as $model) {
-            $this->callSilent('scout:flush', ['model' => $model]);
+            $exitCode = $this->call('scout:flush', ['model' => $model]);
+
+            if ($exitCode !== self::SUCCESS) {
+                return self::FAILURE;
+            }
+
             info("Flushed {$model}.");
         }
 

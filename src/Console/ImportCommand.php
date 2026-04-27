@@ -27,7 +27,12 @@ class ImportCommand extends Command
             : $types;
 
         foreach (array_keys($targets) as $model) {
-            $this->callSilent('scout:import', ['model' => $model]);
+            $exitCode = $this->call('scout:import', ['model' => $model]);
+
+            if ($exitCode !== self::SUCCESS) {
+                return self::FAILURE;
+            }
+
             info("Imported {$model}.");
         }
 

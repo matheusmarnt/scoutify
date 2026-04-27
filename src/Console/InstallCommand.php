@@ -3,6 +3,7 @@
 namespace Matheusmarnt\Scoutify\Console;
 
 use Illuminate\Console\Command;
+use Symfony\Component\Process\Process;
 
 use function Laravel\Prompts\info;
 use function Laravel\Prompts\select;
@@ -14,29 +15,36 @@ class InstallCommand extends Command
 
     protected $description = 'Install and configure Scoutify with a Scout search driver';
 
+    /** @var array<string, list<string>> */
+    private const DRIVER_PACKAGES = [
+        'algolia' => ['algolia/algoliasearch-client-php'],
+        'meilisearch' => ['meilisearch/meilisearch-php', 'http-interop/http-factory-guzzle'],
+        'typesense' => ['typesense/typesense-php'],
+    ];
+
     public function handle(): int
     {
+        $allowedDrivers = array_keys(self::DRIVER_PACKAGES);
+
         $driver = $this->option('driver') ?? select(
             label: 'Which Scout driver do you want to use?',
-            options: ['meilisearch', 'algolia', 'typesense'],
+            options: $allowedDrivers,
             default: 'meilisearch',
         );
 
-        $packages = [
-            'algolia' => 'algolia/algoliasearch-client-php',
-            'meilisearch' => 'meilisearch/meilisearch-php http-interop/http-factory-guzzle',
-            'typesense' => 'typesense/typesense-php',
-        ];
+        if (! in_array($driver, $allowedDrivers, strict: true)) {
+            $this->error("Unknown driver '{$driver}'. Allowed: ".implode(', ', $allowedDrivers));
 
-        if (isset($packages[$driver])) {
-            spin(
-                fn () => $this->runComposerRequire($packages[$driver]),
-                "Installing {$driver} driver...",
-            );
+            return self::FAILURE;
         }
 
-        $this->callSilent('vendor:publish', ['--tag' => 'scout-config', '--force' => false]);
-        $this->callSilent('vendor:publish', ['--tag' => 'scoutify-config', '--force' => false]);
+        spin(
+            fn () => $this->runComposerRequire(...self::DRIVER_PACKAGES[$driver]),
+            "Installing {$driver} driver...",
+        );
+
+        $this->call('vendor:publish', ['--tag' => 'scout-config']);
+        $this->call('vendor:publish', ['--tag' => 'scoutify-config']);
 
         $this->setEnvValue('SCOUT_DRIVER', $driver);
 
@@ -45,9 +53,10 @@ class InstallCommand extends Command
         return self::SUCCESS;
     }
 
-    private function runComposerRequire(string $packages): void
+    private function runComposerRequire(string ...$packages): void
     {
-        exec("composer require {$packages} --no-interaction --quiet");
+        $process = new Process(['composer', 'require', ...$packages, '--no-interaction', '--quiet']);
+        $process->run();
     }
 
     private function setEnvValue(string $key, string $value): void

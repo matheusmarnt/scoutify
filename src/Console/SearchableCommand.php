@@ -12,7 +12,7 @@ use function Laravel\Prompts\warning;
 
 class SearchableCommand extends Command
 {
-    protected $signature = 'scoutify:searchable {model? : FQCN of a specific model to register}';
+    protected $signature = 'scoutify:searchable {model? : FQCN of a specific model to register} {--all : Register all discovered models without prompting}';
 
     protected $description = 'Register Eloquent models as globally searchable';
 
@@ -28,11 +28,13 @@ class SearchableCommand extends Command
 
         $chosen = $this->argument('model')
             ? [$this->argument('model')]
-            : multiselect(
-                label: 'Which models should be searchable?',
-                options: array_combine($models, array_map('class_basename', $models)),
-                required: true,
-            );
+            : ($this->option('all') || ! $this->input->isInteractive()
+                ? $models
+                : multiselect(
+                    label: 'Which models should be searchable?',
+                    options: array_combine($models, array_map('class_basename', $models)),
+                    required: true,
+                ));
 
         foreach ($chosen as $fqcn) {
             if (ScoutConfigurator::isAlreadySearchable($fqcn)) {
