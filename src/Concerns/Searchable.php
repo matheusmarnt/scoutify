@@ -29,6 +29,10 @@ trait Searchable
         return $attr ? (string) $this->{$attr} : null;
     }
 
+    /**
+     * Returns the URL for this model's global search result.
+     * Models should override this method to return the correct resource URL.
+     */
     public function globalSearchUrl(): string
     {
         return url('/');
@@ -42,5 +46,20 @@ trait Searchable
     protected function globalSearchSubtitleAttribute(): ?string
     {
         return null;
+    }
+
+    public static function globalSearchGroup(): string
+    {
+        return class_basename(static::class);
+    }
+
+    public static function globalSearchIcon(): string
+    {
+        return 'heroicon-o-magnifying-glass';
+    }
+
+    public static function globalSearchColor(): string
+    {
+        return 'gray';
     }
 }

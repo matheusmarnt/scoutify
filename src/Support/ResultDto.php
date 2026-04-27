@@ -28,4 +28,22 @@ final readonly class ResultDto
             'modelKey' => $this->modelKey,
         ];
     }
+
+    public static function fromModel(
+        \Matheusmarnt\Scoutify\Contracts\GloballySearchable $model,
+        string $url,
+        string $groupLabel = '',
+        ?string $modelKey = null,
+    ): self {
+        return new self(
+            title: method_exists($model, 'globalSearchTitle') ? $model->globalSearchTitle() : '',
+            subtitle: method_exists($model, 'globalSearchSubtitle') ? $model->globalSearchSubtitle() : null,
+            url: $url,
+            icon: $model::globalSearchIcon(),
+            group: $model::globalSearchGroup(),
+            groupLabel: $groupLabel ?: $model::globalSearchGroup(),
+            groupColor: $model::globalSearchColor(),
+            modelKey: $modelKey,
+        );
+    }
 }

@@ -29,3 +29,19 @@ it('implements GloballySearchable contract', function () {
         ->and(Article::globalSearchIcon())->toBe('heroicon-o-document')
         ->and(Article::globalSearchColor())->toBe('blue');
 });
+
+it('provides default group, icon and color from class basename', function () {
+    expect(Article::globalSearchGroup())->toBe('articles')
+        ->and(Article::globalSearchIcon())->toBe('heroicon-o-document')
+        ->and(Article::globalSearchColor())->toBe('blue');
+});
+
+it('searchable trait provides defaults when not overridden', function () {
+    $model = new class extends \Illuminate\Database\Eloquent\Model {
+        use \Matheusmarnt\Scoutify\Concerns\Searchable;
+    };
+
+    expect(strlen($model::globalSearchGroup()))->toBeGreaterThan(0)
+        ->and($model::globalSearchIcon())->toBe('heroicon-o-magnifying-glass')
+        ->and($model::globalSearchColor())->toBe('gray');
+});
