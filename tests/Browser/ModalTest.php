@@ -114,5 +114,7 @@ it('navigateTo with blank url returns null without redirecting', function () {
     Livewire::test(Modal::class)
         ->set('isOpen', true)
         ->call('navigateTo', '')
-        ->assertSet('isOpen', false);
+        ->assertSet('isOpen', false)
+        ->assertSet('query', '')
+        ->assertDispatched('scoutify:closed');
 });
