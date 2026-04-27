@@ -302,6 +302,46 @@ App\Filament\Clusters\{Models}\Resources\{Model}Resource (v5 clusters)
 
 Re-running the command is safe — it tops up only what's missing on partially-registered models. An existing `globalSearchUrl()` in the model is never overwritten.
 
+### Linking a result row to your model's detail page
+
+`globalSearchUrl()` powers the result row's `<a href>` (with `wire:navigate`).
+Override it on the model whenever the cascade default isn't what you need.
+
+#### Named route convention
+
+```php
+public function globalSearchUrl(): string
+{
+    try {
+        return route('users.edit', $this);
+    } catch (\Throwable) {
+        return url('/');
+    }
+}
+```
+
+#### Filament resource
+
+```php
+public function globalSearchUrl(): string
+{
+    return \App\Filament\Resources\UserResource::getUrl('view', ['record' => $this]);
+}
+```
+
+#### Manual URL helper
+
+```php
+public function globalSearchUrl(): string
+{
+    return url("/projects/{$this->slug}");
+}
+```
+
+> Result rows use `wire:navigate`. Your layout must include `@livewireScripts`
+> (Livewire's SPA navigation prerequisite). Without it clicks fall back to
+> full-page reloads.
+
 > **Note:** The registration command rewrites the model file using a PHP pretty-printer, which normalises whitespace and formatting across the entire file. Commit your model file (or ensure it's clean) before running the command if you want a minimal diff.
 
 Use `--dry-run` to preview the planned edits without touching files:

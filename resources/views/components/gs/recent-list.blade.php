@@ -4,7 +4,7 @@
 
 <div
     x-data="{
-        recent: $persist([]).as('gs-recent').using(localStorage),
+        recent: $persist([]).as('scoutify-recent').using(localStorage),
         clear() { this.recent = []; }
     }"
     x-show="recent.length"

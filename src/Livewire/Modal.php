@@ -7,6 +7,7 @@ use Livewire\Attributes\Computed;
 use Livewire\Attributes\On;
 use Livewire\Component;
 use Matheusmarnt\Scoutify\Services\SearchAggregator;
+use Matheusmarnt\Scoutify\Support\Highlighter;
 
 class Modal extends Component
 {
@@ -103,24 +104,20 @@ class Modal extends Component
             $dtos = array_values($dtos);
         }
 
-        $this->results = array_map(fn ($dto) => $dto->toArray(), $dtos);
+        $highlighter = app(Highlighter::class);
+        $this->results = array_map(
+            fn ($dto) => $dto->toArray() + [
+                'titleHtml' => (string) $highlighter->highlight($dto->title, $this->query),
+                'subtitleHtml' => (string) $highlighter->highlight($dto->subtitle, $this->query),
+            ],
+            $dtos,
+        );
     }
 
     #[Computed]
     public function resultCount(): int
     {
         return count($this->results);
-    }
-
-    public function navigateTo(string $url): mixed
-    {
-        $this->close();
-
-        if (blank($url)) {
-            return null;
-        }
-
-        return $this->redirect($url, navigate: true);
     }
 
     /**

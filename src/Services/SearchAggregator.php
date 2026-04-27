@@ -4,6 +4,7 @@ namespace Matheusmarnt\Scoutify\Services;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Gate;
 use Laravel\Scout\Builder;
 use Matheusmarnt\Scoutify\Contracts\GloballySearchable;
 use Matheusmarnt\Scoutify\Support\ResultDto;
@@ -55,6 +56,8 @@ final class SearchAggregator
                 continue;
             }
 
+            $models = $models->filter(fn ($record) => $this->canView($record))->values();
+
             // Apply onlyActive filter at collection level if model has an `active` column convention
             if ($onlyActive && method_exists($modelClass, 'scopeActive')) {
                 $models = $models->filter(fn ($m) => (bool) ($m->active ?? true));
@@ -94,5 +97,21 @@ final class SearchAggregator
         }
 
         return $results;
+    }
+
+    private function canView(mixed $record): bool
+    {
+        try {
+            $hasPolicy = Gate::getPolicyFor($record) !== null;
+            $hasAbility = Gate::has('view');
+
+            if (! $hasPolicy && ! $hasAbility) {
+                return true;
+            }
+
+            return Gate::check('view', $record);
+        } catch (\Throwable) {
+            return true;
+        }
     }
 }
