@@ -35,6 +35,54 @@ Drops a production-ready ⌘K search experience into any Laravel application. Re
 composer require matheusmarnt/scoutify
 php artisan scoutify:install
 php artisan scoutify:searchable
+```
+
+The command discovers Eloquent models under `app/Models/`, prompts you to pick which to register (or pass `--all`), and **automatically edits each chosen model file** to:
+
+1. Import `Matheusmarnt\Scoutify\Concerns\Searchable` and `Matheusmarnt\Scoutify\Contracts\GloballySearchable`
+2. Add `implements GloballySearchable` to the class declaration
+3. Insert `use Searchable;` as the first statement in the class body
+
+The `Searchable` trait already provides sensible defaults for every interface method (`globalSearchTitle`, `globalSearchUrl`, etc.), so your model is searchable instantly. Override any method later for custom behavior:
+
+```php
+public function globalSearchTitle(): string
+{
+    return $this->title;
+}
+
+public function globalSearchUrl(): string
+{
+    return route('articles.show', $this);
+}
+
+public static function globalSearchGroup(): string
+{
+    return 'Articles';
+}
+
+public static function globalSearchIcon(): string
+{
+    return 'heroicon-o-document-text';
+}
+
+public static function globalSearchColor(): string
+{
+    return 'blue';
+}
+```
+
+Re-running the command is safe — it tops up only what's missing on partially-registered models.
+
+Use `--dry-run` to preview the planned edits without touching files:
+
+```bash
+php artisan scoutify:searchable --dry-run
+```
+
+Then import your models into the Scout index:
+
+```bash
 php artisan scoutify:import
 ```
 
