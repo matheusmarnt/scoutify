@@ -9,7 +9,6 @@ use Matheusmarnt\Scoutify\Console\ImportCommand;
 use Matheusmarnt\Scoutify\Console\InstallCommand;
 use Matheusmarnt\Scoutify\Console\SearchableCommand;
 use Matheusmarnt\Scoutify\Console\SyncCommand;
-use Matheusmarnt\Scoutify\Livewire\Modal;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 
@@ -33,8 +32,8 @@ class ScoutifyServiceProvider extends PackageServiceProvider
 
     public function packageBooted(): void
     {
-        if (class_exists(LivewireManager::class) && $this->app->bound('livewire')) {
-            Livewire::component('scoutify::modal', Modal::class);
+        if (class_exists(LivewireManager::class) && ($this->app->bound('livewire') || $this->app->bound(LivewireManager::class))) {
+            Livewire::addNamespace('scoutify', classNamespace: 'Matheusmarnt\\Scoutify\\Livewire');
         }
     }
 }
