@@ -33,6 +33,10 @@ class ModelSourceMutator
 
         $source = file_get_contents($path);
 
+        if ($source === false) {
+            throw new RuntimeException("Failed to read model source file: {$path}");
+        }
+
         $parser = (new ParserFactory)->createForNewestSupportedVersion();
         $stmts = $parser->parse($source);
 

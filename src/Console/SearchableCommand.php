@@ -87,6 +87,10 @@ class SearchableCommand extends Command
         $reflection = new ReflectionClass($fqcn);
         $original = $reflection->getFileName();
 
+        if (! $original) {
+            throw new \RuntimeException("Cannot resolve source file for: {$fqcn}");
+        }
+
         $tmp = tempnam(sys_get_temp_dir(), 'scoutify-dry-');
         copy($original, $tmp);
 
