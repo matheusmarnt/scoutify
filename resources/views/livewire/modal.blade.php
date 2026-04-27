@@ -46,7 +46,11 @@
 
             <div wire:loading.remove.delay.long wire:target="query,toggleType,onlyActive,includeTrashed">
                 @if (blank($this->query))
-                    <x-scoutify::gs.idle-state />
+                    @if (config('scoutify.recents.enabled'))
+                        <x-scoutify::gs.recent-list />
+                    @else
+                        <x-scoutify::gs.idle-state />
+                    @endif
                 @elseif (empty($this->results))
                     <x-scoutify::gs.empty-state />
                 @else
@@ -71,8 +75,8 @@
                                     :id="'scoutify-result-'.$idx"
                                     :url="$result['url']"
                                     :icon="$result['icon']"
-                                    :title-html="$result['title']"
-                                    :subtitle-html="$result['subtitle']"
+                                    :title-html="$result['titleHtml']"
+                                    :subtitle-html="$result['subtitleHtml']"
                                     :index="$idx"
                                     :remember-query="$this->query"
                                 />

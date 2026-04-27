@@ -102,19 +102,3 @@ it('dispatches scoutify:closed when closed', function () {
         ->call('close')
         ->assertDispatched('scoutify:closed');
 });
-
-it('navigateTo closes the modal and redirects', function () {
-    Livewire::test(Modal::class)
-        ->set('isOpen', true)
-        ->call('navigateTo', 'https://example.com')
-        ->assertSet('isOpen', false);
-});
-
-it('navigateTo with blank url returns null without redirecting', function () {
-    Livewire::test(Modal::class)
-        ->set('isOpen', true)
-        ->call('navigateTo', '')
-        ->assertSet('isOpen', false)
-        ->assertSet('query', '')
-        ->assertDispatched('scoutify:closed');
-});

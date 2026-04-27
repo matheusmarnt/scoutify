@@ -21,6 +21,10 @@
 @layer theme {
     .dark {
         --color-scoutify-accent: var(--color-white);
-        --color-scoutify-accent-foreground: var(--color-neutral-900);
+        --color-scoutify-accent-foreground: var(--color-neutral-800);
     }
+}
+
+.scoutify-mark {
+    @apply rounded-sm bg-scoutify-accent/15 px-0.5 text-scoutify-accent;
 }
