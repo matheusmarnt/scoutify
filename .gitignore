@@ -33,3 +33,6 @@ testbench.yaml
 
 # Worktrees
 .worktrees/
+
+# Claude Code
+.claude/
