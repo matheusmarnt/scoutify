@@ -397,6 +397,39 @@ Prefix each command with the appropriate Artisan invocation for your environment
 | `scoutify:flush` | Flush all registered models from Scout index |
 | `scoutify:sync` | Flush then re-import (shortcut) |
 
+## Updating
+
+```bash
+# Host
+composer update matheusmarnt/scoutify
+
+# Laravel Sail
+./vendor/bin/sail composer update matheusmarnt/scoutify
+
+# Docker Compose (non-Sail)
+docker compose exec app composer update matheusmarnt/scoutify
+```
+
+After updating, check if the config file has new keys and merge them:
+
+```bash
+php artisan vendor:publish --tag=scoutify-config --force
+```
+
+> **Note:** `--force` overwrites your published config. Back it up first or diff manually against `vendor/matheusmarnt/scoutify/config/scoutify.php`.
+
+Run `scoutify:doctor` to verify the setup is still healthy:
+
+```bash
+php artisan scoutify:doctor
+```
+
+If the new version changes Scout index structure, re-import:
+
+```bash
+php artisan scoutify:sync
+```
+
 ## Testing
 
 ```bash
