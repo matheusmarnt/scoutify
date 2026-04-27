@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use Matheusmarnt\Scoutify\Services\SearchableStubBuilder;
+use Matheusmarnt\Scoutify\Tests\Fixtures\Models\AlreadyRegistered;
 use Matheusmarnt\Scoutify\Tests\Fixtures\Models\Plain;
 
 beforeEach(function () {
@@ -21,7 +22,7 @@ it('returns route stub when named route exists', function () {
     Route::shouldReceive('has')->with(Mockery::any())->andReturn(true);
 
     // Use a class whose Filament resource does not exist
-    $plan = (new SearchableStubBuilder)->buildFor(\Matheusmarnt\Scoutify\Tests\Fixtures\Models\AlreadyRegistered::class);
+    $plan = (new SearchableStubBuilder)->buildFor(AlreadyRegistered::class);
 
     expect($plan->urlBody)->toContain("route('already_registereds.show'");
     expect($plan->urlImports)->toBe([]);
@@ -30,7 +31,7 @@ it('returns route stub when named route exists', function () {
 it('returns todo stub when no filament resource or route found', function () {
     Route::shouldReceive('has')->with(Mockery::any())->andReturn(false);
 
-    $plan = (new SearchableStubBuilder)->buildFor(\Matheusmarnt\Scoutify\Tests\Fixtures\Models\AlreadyRegistered::class);
+    $plan = (new SearchableStubBuilder)->buildFor(AlreadyRegistered::class);
 
     expect($plan->urlBody)->toContain('TODO');
     expect($plan->urlBody)->toContain("url('/')");

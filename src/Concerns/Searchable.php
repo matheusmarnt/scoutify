@@ -4,6 +4,7 @@ namespace Matheusmarnt\Scoutify\Concerns;
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Str;
+use Laravel\Folio\Folio;
 use Laravel\Scout\Searchable as ScoutSearchable;
 
 trait Searchable
@@ -111,7 +112,7 @@ trait Searchable
 
     private function resolveFolioUrl(): ?string
     {
-        if (! class_exists(\Laravel\Folio\Folio::class)) {
+        if (! class_exists(Folio::class)) {
             return null;
         }
 

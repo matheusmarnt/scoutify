@@ -4,6 +4,7 @@ namespace Matheusmarnt\Scoutify\Services;
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Str;
+use Laravel\Folio\Folio;
 
 class SearchableStubBuilder
 {
@@ -59,7 +60,7 @@ class SearchableStubBuilder
 
     private function hasFolioPage(string $snakePlural): bool
     {
-        if (! class_exists(\Laravel\Folio\Folio::class)) {
+        if (! class_exists(Folio::class)) {
             return false;
         }
 
