@@ -87,6 +87,8 @@ public static function globalSearchColor(): string
 
 Re-running the command is safe — it tops up only what's missing on partially-registered models.
 
+> **Note:** The registration command rewrites the model file using a PHP pretty-printer, which normalises whitespace and formatting across the entire file. Commit your model file (or ensure it's clean) before running the command if you want a minimal diff.
+
 Use `--dry-run` to preview the planned edits without touching files:
 
 ```bash
