@@ -3,6 +3,7 @@
 namespace Matheusmarnt\Scoutify\Services;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Laravel\Scout\Builder;
 use Matheusmarnt\Scoutify\Contracts\GloballySearchable;
 use Matheusmarnt\Scoutify\Support\ResultDto;
@@ -45,7 +46,7 @@ final class SearchAggregator
                 $builder = $modelClass::search($query)->take($limit);
 
                 // Apply trashed scope if model supports SoftDeletes
-                if ($includeTrashed && in_array(\Illuminate\Database\Eloquent\SoftDeletes::class, class_uses_recursive($modelClass))) {
+                if ($includeTrashed && in_array(SoftDeletes::class, class_uses_recursive($modelClass))) {
                     $builder->withTrashed();
                 }
 

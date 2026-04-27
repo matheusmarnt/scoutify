@@ -30,8 +30,6 @@ class Modal extends Component
      */
     public array $results = [];
 
-
-
     #[On('scoutify:open')]
     public function open(?string $preset = null): void
     {
