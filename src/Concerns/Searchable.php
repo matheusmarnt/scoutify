@@ -16,7 +16,6 @@ trait Searchable
 
     public static function bootSearchable(): void
     {
-        // Re-implement Scout's bootSearchable with correct LSB so Builder macros are registered.
         static::addGlobalScope(new SearchableScope);
 
         $whenBootedCallback = function () {
@@ -30,7 +29,6 @@ trait Searchable
             $whenBootedCallback();
         }
 
-        // Register with Scoutify's global search registry.
         if (app()->bound(GlobalSearchRegistry::class)) {
             app(GlobalSearchRegistry::class)->register(
                 static::class,
@@ -65,12 +63,6 @@ trait Searchable
         return $attr ? (string) $this->{$attr} : null;
     }
 
-    /**
-     * Returns the URL for this model's global search result.
-     *
-     * Resolves automatically via: Filament resource → named route → Folio page → url('/').
-     * Override this method in your model to provide a custom URL.
-     */
     public function globalSearchUrl(): string
     {
         $filamentUrl = $this->resolveFilamentResourceUrl();
@@ -135,7 +127,6 @@ trait Searchable
                 try {
                     return $resource::getUrl('view', ['record' => $this]);
                 } catch (\Throwable) {
-                    // Resource exists but URL generation failed — try next
                 }
             }
         }

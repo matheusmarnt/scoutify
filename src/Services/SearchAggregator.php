@@ -35,7 +35,6 @@ final class SearchAggregator
 
         $iconResolver = IconResolver::make();
 
-        // Merge registry entries with config-supplied types; config wins on overlap.
         $registryTypes = app()->bound(GlobalSearchRegistry::class)
             ? app(GlobalSearchRegistry::class)->all()
             : [];
@@ -64,7 +63,6 @@ final class SearchAggregator
                 /** @var Builder $builder */
                 $builder = $modelClass::search($query)->take($limit);
 
-                // Apply trashed scope if model supports SoftDeletes
                 if ($includeTrashed && in_array(SoftDeletes::class, class_uses_recursive($modelClass))) {
                     $builder->withTrashed();
                 }
@@ -76,7 +74,6 @@ final class SearchAggregator
 
             $models = $models->filter(fn ($record) => $this->canView($record))->values();
 
-            // Apply onlyActive filter at collection level if model has an `active` column convention
             if ($onlyActive && method_exists($modelClass, 'scopeActive')) {
                 $models = $models->filter(fn ($m) => (bool) ($m->active ?? true));
             }
@@ -92,7 +89,7 @@ final class SearchAggregator
             $color = $meta['color'] ?? (is_a($modelClass, GloballySearchable::class, true)
                 ? $modelClass::globalSearchColor()
                 : 'gray');
-            $key = $meta['key'] ?? $meta['group'] ?? class_basename($modelClass);
+            $key = $meta['key'] ?? class_basename($modelClass);
 
             $dtos = [];
             foreach ($models as $model) {

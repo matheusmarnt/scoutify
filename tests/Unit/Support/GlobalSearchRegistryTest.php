@@ -13,7 +13,7 @@ it('registers and retrieves a model class', function () {
 it('returns null for unregistered class', function () {
     $registry = new GlobalSearchRegistry;
 
-    expect($registry->get('NonExistent::class'))->toBeNull();
+    expect($registry->get('NonExistent'))->toBeNull();
 });
 
 it('returns all registered entries', function () {

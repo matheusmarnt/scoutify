@@ -53,3 +53,18 @@ it('does not include empty groups', function () {
 
     expect($groups)->toBeEmpty();
 });
+
+it('config metadata overrides registry defaults', function () {
+    Article::create(['name' => 'Test Article']);
+
+    config(['scoutify.types' => [
+        Article::class => ['label' => 'Config Label', 'icon' => 'heroicon-o-star', 'color' => 'red'],
+    ]]);
+
+    $aggregator = SearchAggregator::make();
+    $groups = $aggregator->search('Test');
+
+    $group = $groups->first();
+    expect($group->label)->toBe('Config Label')
+        ->and($group->color)->toBe('red');
+});
