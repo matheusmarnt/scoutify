@@ -7,7 +7,7 @@
     'dataFocus' => 'gs-input',
 ])
 
-<div class="relative">
+<div class="relative" x-data="{ composing: false }">
     <x-scoutify::gs.input
         :wire-model="$wireModel"
         :icon="'magnifying-glass'"
@@ -22,6 +22,8 @@
         :aria-controls="$controlsId"
         :aria-activedescendant="$activedescendantExpr"
         :aria-label="$placeholder"
+        @compositionstart="composing = true"
+        @compositionend="composing = false"
         {{ $attributes }}
     />
 
