@@ -12,6 +12,6 @@
 ## Checklist
 
 - [ ] Tests added / updated
-- [ ] `vendor/bin/pest --compact` passes
+- [ ] `vendor/bin/pest --no-coverage --compact` passes
 - [ ] `vendor/bin/pint` has no issues
 - [ ] Commit messages follow [Conventional Commits](https://www.conventionalcommits.org/)
