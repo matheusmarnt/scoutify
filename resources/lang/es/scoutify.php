@@ -18,5 +18,5 @@ return [
     'hint_navigate' => 'navegar',
     'hint_open' => 'abrir',
     'hint_close' => 'cerrar',
-    'results_count' => ':count resultado encontrado|:count resultados encontrados',
+    'results_count' => '{0} Sin resultados|[1] :count resultado|[2,*] :count resultados',
 ];

@@ -28,7 +28,7 @@
         {{-- Live region for screen readers --}}
         <div class="sr-only" role="status" aria-live="polite">
             @if (filled($this->query))
-                {{ trans_choice(__('scoutify::scoutify.results_count'), $this->resultCount, ['count' => $this->resultCount]) }}
+                {{ trans_choice('scoutify::scoutify.results_count', $this->resultCount, ['count' => $this->resultCount]) }}
             @endif
         </div>
 
