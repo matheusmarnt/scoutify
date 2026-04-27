@@ -50,17 +50,82 @@ composer require matheusmarnt/scoutify
 
 ## Setup
 
-Run the interactive installer to choose your Scout driver and publish the config:
+### Laravel Sail
 
 ```bash
-php artisan scoutify:install
+sail composer require matheusmarnt/scoutify
+sail artisan scoutify:install        # picks driver, adds Sail meilisearch service, sets env vars
+sail down && sail up -d              # restart to bring the meilisearch container online
+sail artisan scoutify:doctor         # verify connectivity
+sail artisan scoutify:searchable     # register models
+sail artisan scoutify:import         # index data
 ```
 
-This will:
-1. Prompt for a Scout driver (`meilisearch`, `algolia`, or `typesense`)
-2. Install the driver's Composer packages
-3. Publish `config/scoutify.php`
-4. Set `SCOUT_DRIVER` in `.env`
+`scoutify:install` detects Sail automatically, runs `sail:add meilisearch` to add the service to `docker-compose.yml`, and sets `MEILISEARCH_HOST=http://meilisearch:7700` in `.env`.
+
+### Docker Compose (non-Sail)
+
+```bash
+composer require matheusmarnt/scoutify
+php artisan scoutify:install         # writes docker-compose.scoutify.yml + sets env vars
+docker compose -f docker-compose.yml -f docker-compose.scoutify.yml up -d
+php artisan scoutify:doctor          # verify connectivity
+php artisan scoutify:searchable      # register models
+php artisan scoutify:import          # index data
+```
+
+`scoutify:install` detects an existing `docker-compose.yml`, generates a `docker-compose.scoutify.yml` overlay with a Meilisearch service, and sets `MEILISEARCH_HOST=http://meilisearch:7700` in `.env`.
+
+### Host (`php artisan serve`)
+
+```bash
+# Start Meilisearch first (choose one):
+docker run -d --name meilisearch -p 7700:7700 \
+  -v $(pwd)/meili_data:/meili_data getmeili/meilisearch:latest
+# or: https://www.meilisearch.com/docs/learn/getting_started/installation
+
+composer require matheusmarnt/scoutify
+php artisan scoutify:install         # sets SCOUT_DRIVER + MEILISEARCH_HOST=http://localhost:7700
+php artisan scoutify:doctor          # verify connectivity
+php artisan scoutify:searchable      # register models
+php artisan scoutify:import          # index data
+```
+
+---
+
+`scoutify:install` always:
+
+1. Prompts for a Scout driver (`meilisearch`, `algolia`, or `typesense`)
+2. Installs the driver's Composer packages
+3. Publishes `config/scoutify.php`
+4. Sets `SCOUT_DRIVER` in `.env`
+5. Configures the search backend for your environment (see above)
+6. Runs `scoutify:doctor` automatically to verify the setup
+
+## Diagnostics
+
+```bash
+php artisan scoutify:doctor
+```
+
+Checks your driver configuration and connectivity. Reports the configured driver, the search backend URL, and whether it is reachable. Prints environment-aware remediation steps on failure:
+
+```
+  Scout driver: meilisearch
+  Meilisearch host: http://meilisearch:7700
+  ✓ Meilisearch reachable and healthy.
+```
+
+On failure inside a Sail container:
+
+```
+  ✗ Cannot reach Meilisearch at http://localhost:7700.
+  Sail detected but MEILISEARCH_HOST points to localhost (wrong inside container).
+  Fix: set MEILISEARCH_HOST=http://meilisearch:7700 in .env, then:
+       sail down && sail up -d
+```
+
+Exit code `0` = healthy, `1` = issue found — usable in CI health checks.
 
 ## Registering Models
 
