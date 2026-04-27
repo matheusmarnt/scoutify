@@ -4,6 +4,7 @@ namespace Matheusmarnt\Scoutify\Services;
 
 use Matheusmarnt\Scoutify\Concerns\Searchable;
 use Matheusmarnt\Scoutify\Contracts\GloballySearchable;
+use Matheusmarnt\Scoutify\Services\Mutators\SearchableMethodStubVisitor;
 use Matheusmarnt\Scoutify\Services\Mutators\SearchableNodeVisitor;
 use PhpParser\NodeTraverser;
 use PhpParser\ParserFactory;
@@ -18,14 +19,14 @@ class ModelSourceMutator
         return new self;
     }
 
-    public function mutate(string $fqcn): ModelSourceMutation
+    public function mutate(string $fqcn, ?StubPlan $stubPlan = null): ModelSourceMutation
     {
         $path = $this->resolveFilePath($fqcn);
 
-        return $this->mutateFile($path);
+        return $this->mutateFile($path, $stubPlan);
     }
 
-    public function mutateFile(string $path): ModelSourceMutation
+    public function mutateFile(string $path, ?StubPlan $stubPlan = null): ModelSourceMutation
     {
         if (! is_file($path) || ! is_readable($path) || ! is_writable($path)) {
             throw new RuntimeException("Model source file is not accessible: {$path}");
@@ -53,10 +54,22 @@ class ModelSourceMutator
         $traverser->addVisitor($visitor);
         $newStmts = $traverser->traverse($stmts);
 
+        $stubVisitor = null;
+        if ($stubPlan !== null) {
+            $stubVisitor = new SearchableMethodStubVisitor($stubPlan);
+            $stubTraverser = new NodeTraverser;
+            $stubTraverser->addVisitor($stubVisitor);
+            $newStmts = $stubTraverser->traverse($newStmts);
+        }
+
         $mutation = new ModelSourceMutation(
-            addedImports: $visitor->addedImports(),
+            addedImports: array_merge(
+                $visitor->addedImports(),
+                $stubVisitor?->addedImports() ?? [],
+            ),
             addedInterface: $visitor->addedInterface(),
             addedTraitUse: $visitor->addedTraitUse(),
+            addedUrlStub: $stubVisitor?->addedUrlStub() ?? false,
         );
 
         if ($mutation->alreadyComplete()) {

@@ -11,11 +11,12 @@ final class ModelSourceMutation
         public readonly array $addedImports,
         public readonly bool $addedInterface,
         public readonly bool $addedTraitUse,
+        public readonly bool $addedUrlStub = false,
     ) {}
 
     public function alreadyComplete(): bool
     {
-        return $this->addedImports === [] && ! $this->addedInterface && ! $this->addedTraitUse;
+        return $this->addedImports === [] && ! $this->addedInterface && ! $this->addedTraitUse && ! $this->addedUrlStub;
     }
 
     /**
@@ -35,6 +36,10 @@ final class ModelSourceMutation
 
         if ($this->addedTraitUse) {
             $lines[] = 'Added use Searchable; to class body';
+        }
+
+        if ($this->addedUrlStub) {
+            $lines[] = 'Injected globalSearchUrl() stub';
         }
 
         return $lines;

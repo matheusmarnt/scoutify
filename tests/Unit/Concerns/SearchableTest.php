@@ -1,8 +1,20 @@
 <?php
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Route;
 use Matheusmarnt\Scoutify\Concerns\Searchable;
+use Matheusmarnt\Scoutify\Tests\Fixtures\Models\AlreadyRegistered;
 use Matheusmarnt\Scoutify\Tests\Fixtures\Models\Article;
+use Matheusmarnt\Scoutify\Tests\Fixtures\Models\PartiallyRegistered;
+
+beforeEach(function () {
+    if (! class_exists('App\Filament\Resources\ArticleResource')) {
+        require __DIR__.'/../../Fixtures/Filament/ArticleResource.php';
+    }
+    if (! class_exists('App\Filament\Resources\PartiallyRegisteredResource')) {
+        require __DIR__.'/../../Fixtures/Filament/PartiallyRegisteredResource.php';
+    }
+});
 
 it('returns globallySearchableArray with title subtitle and url', function () {
     $article = new Article(['name' => 'Hello World']);
@@ -47,4 +59,26 @@ it('searchable trait provides defaults when not overridden', function () {
     expect(strlen($model::globalSearchGroup()))->toBeGreaterThan(0)
         ->and($model::globalSearchIcon())->toBe('heroicon-o-magnifying-glass')
         ->and($model::globalSearchColor())->toBe('gray');
+});
+
+it('globalSearchUrl resolves filament resource url', function () {
+    $article = new Article;
+    $article->id = 42;
+
+    expect($article->globalSearchUrl())->toBe('/articles/42');
+});
+
+it('globalSearchUrl skips filament resource that throws and falls back', function () {
+    $model = new PartiallyRegistered;
+
+    expect($model->globalSearchUrl())->toBe(url('/'));
+});
+
+it('globalSearchUrl falls back to named route when no filament resource', function () {
+    Route::get('/already-registereds/{model}', ['as' => 'already_registereds.show', 'uses' => fn () => '']);
+
+    $model = new AlreadyRegistered;
+    $model->id = 7;
+
+    expect($model->globalSearchUrl())->toContain('/already-registereds/7');
 });

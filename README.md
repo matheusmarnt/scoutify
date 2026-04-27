@@ -76,36 +76,67 @@ The command discovers Eloquent models under `app/Models/`, prompts you to pick w
 2. Add `implements GloballySearchable` to the class declaration
 3. Insert `use Searchable;` as the first statement in the class body
 
-The `Searchable` trait already provides sensible defaults for every interface method (`globalSearchTitle`, `globalSearchUrl`, etc.), so your model is searchable instantly. Override any method later for custom behavior:
+The command also **injects a concrete `globalSearchUrl()` method** into the model, auto-resolved to the right URL for that model. All other interface methods (`globalSearchTitle`, `globalSearchGroup`, `globalSearchIcon`, `globalSearchColor`, `globalSearchSubtitle`) come from the `Searchable` trait — they already resolve dynamically based on the model name and attributes. Override them in your model at any time.
+
+**Example — registering `App\Models\User` with a Filament resource present:**
+
+```php
+use App\Filament\Resources\UserResource;
+use Illuminate\Database\Eloquent\Model;
+use Matheusmarnt\Scoutify\Concerns\Searchable;
+use Matheusmarnt\Scoutify\Contracts\GloballySearchable;
+
+class User extends Model implements GloballySearchable
+{
+    use Searchable;
+
+    public function globalSearchUrl(): string
+    {
+        return UserResource::getUrl('view', ['record' => $this]);
+    }
+}
+```
+
+Title, group, icon, and color are supplied by the trait (`$this->name`, `"User"`, magnifying-glass icon, gray). Add them to your model to override:
 
 ```php
 public function globalSearchTitle(): string
 {
-    return $this->title;
-}
-
-public function globalSearchUrl(): string
-{
-    return route('articles.show', $this);
+    return $this->full_name;  // override default ($this->name)
 }
 
 public static function globalSearchGroup(): string
 {
-    return 'Articles';
-}
-
-public static function globalSearchIcon(): string
-{
-    return 'heroicon-o-document-text';
-}
-
-public static function globalSearchColor(): string
-{
-    return 'blue';
+    return 'Team Members';    // override default ("User")
 }
 ```
 
-Re-running the command is safe — it tops up only what's missing on partially-registered models.
+### URL resolution cascade
+
+When registering a model, the command detects the best URL in this order:
+
+| Priority | Condition | Generated stub |
+|---|---|---|
+| 1 | Filament resource class exists | `UserResource::getUrl('view', ['record' => $this])` |
+| 2 | Named route `{plural}.show` exists | `route('users.show', $this)` |
+| 3 | Folio page `pages/users/[user].blade.php` exists | `url('/users/'.$this->getKey())` |
+| 4 | None of the above | `// TODO: customize URL…` + `url('/')` placeholder |
+
+The `Searchable` trait itself also applies the same cascade at runtime — so models registered with `--no-stubs` or those that already have the trait without a stub still resolve URLs automatically, without any extra code.
+
+#### Filament conventions detected
+
+The command probes all common Filament namespace patterns (v3, v4, v5):
+
+```
+App\Filament\Resources\{Model}Resource          (v3)
+App\Filament\Resources\{Models}\{Model}Resource (v4 per-resource folder)
+App\Filament\Admin\Resources\{Model}Resource    (v5 admin panel)
+App\Filament\Admin\Resources\{Models}\{Model}Resource
+App\Filament\Clusters\{Models}\Resources\{Model}Resource (v5 clusters)
+```
+
+Re-running the command is safe — it tops up only what's missing on partially-registered models. An existing `globalSearchUrl()` in the model is never overwritten.
 
 > **Note:** The registration command rewrites the model file using a PHP pretty-printer, which normalises whitespace and formatting across the entire file. Commit your model file (or ensure it's clean) before running the command if you want a minimal diff.
 
@@ -113,6 +144,12 @@ Use `--dry-run` to preview the planned edits without touching files:
 
 ```bash
 php artisan scoutify:searchable --dry-run
+```
+
+Use `--no-stubs` to skip injecting `globalSearchUrl()` (the trait's runtime cascade still applies):
+
+```bash
+php artisan scoutify:searchable --no-stubs
 ```
 
 Then import your models into the Scout index:
@@ -181,7 +218,8 @@ php artisan vendor:publish --tag=scoutify-translations
 | Command | Description |
 |---|---|
 | `scoutify:install` | Install driver packages and publish config |
-| `scoutify:searchable` | Register models as globally searchable |
+| `scoutify:searchable` | Register models as globally searchable (injects `globalSearchUrl` stub) |
+| `scoutify:searchable --no-stubs` | Register without injecting method stubs (URL resolved by trait cascade at runtime) |
 | `scoutify:import` | Import all registered models into Scout index |
 | `scoutify:flush` | Flush all registered models from Scout index |
 | `scoutify:sync` | Flush then re-import (shortcut) |

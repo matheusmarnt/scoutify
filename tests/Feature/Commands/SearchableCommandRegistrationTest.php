@@ -13,7 +13,7 @@ it('calls mutator and outputs registration info', function () {
     );
 
     $mutator = Mockery::mock(ModelSourceMutator::class);
-    $mutator->expects('mutate')->with(Plain::class)->andReturn($mutation);
+    $mutator->expects('mutate')->with(Plain::class, Mockery::any())->andReturn($mutation);
     $this->app->instance(ModelSourceMutator::class, $mutator);
 
     $exit = Artisan::call('scoutify:searchable', ['model' => Plain::class]);
@@ -30,7 +30,7 @@ it('skips and shows already-searchable when mutation is a no-op', function () {
     $mutation = new ModelSourceMutation(addedImports: [], addedInterface: false, addedTraitUse: false);
 
     $mutator = Mockery::mock(ModelSourceMutator::class);
-    $mutator->expects('mutate')->with(Plain::class)->andReturn($mutation);
+    $mutator->expects('mutate')->with(Plain::class, Mockery::any())->andReturn($mutation);
     $this->app->instance(ModelSourceMutator::class, $mutator);
 
     $exit = Artisan::call('scoutify:searchable', ['model' => Plain::class]);
