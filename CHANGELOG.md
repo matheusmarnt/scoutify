@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.2.1](https://github.com/matheusmarnt/scoutify/compare/v1.2.0...v1.2.1) (2026-04-27)
+
+
+### Bug Fixes
+
+* **ci:** extract PR number from release-please JSON output before merging ([#23](https://github.com/matheusmarnt/scoutify/issues/23)) ([0bc6bf5](https://github.com/matheusmarnt/scoutify/commit/0bc6bf5d0ad34a4df625475b8198ed94c837db3a))
+* **ci:** pass --repo flag to gh pr merge so it works without checkout ([#25](https://github.com/matheusmarnt/scoutify/issues/25)) ([1379b14](https://github.com/matheusmarnt/scoutify/commit/1379b1434c4f5850c09a138b8483bdc1c2de6993))
+
 ## [1.2.0](https://github.com/matheusmarnt/scoutify/compare/v1.1.0...v1.2.0) (2026-04-27)
 
 
