@@ -1,6 +1,6 @@
 @props([
     'wireModel' => null,
-    'placeholder' => __('Buscar…'),
+    'placeholder' => __('scoutify::scoutify.search_placeholder'),
     'autofocus' => false,
     'controlsId' => null,
     'activedescendantExpr' => null,

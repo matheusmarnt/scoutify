@@ -1,8 +1,8 @@
 @props([
     'hints' => [
-        ['key' => '↑↓', 'label' => 'navegar'],
-        ['key' => '↵',  'label' => 'abrir'],
-        ['key' => 'esc','label' => 'fechar'],
+        ['key' => '↑↓', 'label' => 'scoutify::scoutify.hint_navigate'],
+        ['key' => '↵',  'label' => 'scoutify::scoutify.hint_open'],
+        ['key' => 'esc','label' => 'scoutify::scoutify.hint_close'],
     ],
 ])
 
@@ -25,6 +25,6 @@
 <div class="flex shrink-0 items-center justify-end border-t border-zinc-100 px-3 py-2 sm:hidden dark:border-zinc-800">
     <span class="flex items-center gap-1 text-[11px] text-zinc-500 dark:text-zinc-400">
         <x-scoutify::gs.kbd>esc</x-scoutify::gs.kbd>
-        {{ __('fechar') }}
+        {{ __('scoutify::scoutify.hint_close') }}
     </span>
 </div>

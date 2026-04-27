@@ -30,7 +30,7 @@
     id="{{ $id }}"
     role="dialog"
     aria-modal="true"
-    aria-label="{{ $ariaLabel ?? __('Busca global') }}"
+    aria-label="{{ $ariaLabel ?? __('scoutify::scoutify.aria_dialog') }}"
     class="fixed inset-0 z-[100] flex items-end justify-center md:items-start md:pt-[12vh]"
 >
     {{-- Scrim --}}
