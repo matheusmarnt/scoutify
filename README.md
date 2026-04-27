@@ -162,17 +162,42 @@ class User extends Model implements GloballySearchable
 }
 ```
 
-Title, group, icon, and color are supplied by the trait (`$this->name`, `"User"`, magnifying-glass icon, gray). Add them to your model to override:
+All remaining interface methods are provided by the `Searchable` trait with sensible defaults. Override any of them directly in your model:
 
 ```php
+// Title shown in bold in each search result row
+// Default: $this->name
 public function globalSearchTitle(): string
 {
-    return $this->full_name;  // override default ($this->name)
+    return $this->full_name;
 }
 
+// Gray subtitle line below the title (null = hidden)
+// Default: null
+public function globalSearchSubtitle(): ?string
+{
+    return $this->email;
+}
+
+// Section header grouping results of this type
+// Default: class basename, e.g. "User"
 public static function globalSearchGroup(): string
 {
-    return 'Team Members';    // override default ("User")
+    return 'Team Members';
+}
+
+// Heroicon name shown left of each result row
+// Default: 'heroicon-o-magnifying-glass'
+public static function globalSearchIcon(): string
+{
+    return 'heroicon-o-user';
+}
+
+// Icon tint colour (Tailwind colour name or 'gray')
+// Default: 'gray'
+public static function globalSearchColor(): string
+{
+    return 'blue';
 }
 ```
 
