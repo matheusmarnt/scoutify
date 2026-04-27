@@ -88,12 +88,11 @@ class InstallCommand extends Command
     private function configureForSail(string $driver): void
     {
         if ($driver === 'meilisearch') {
-            $composePath = base_path('docker-compose.yml');
-            $hasService = file_exists($composePath) && str_contains((string) file_get_contents($composePath), 'meilisearch:');
+            $hasService = $this->composeFilesContain('meilisearch:');
 
             if (! $hasService && $this->getApplication()?->has('sail:add')) {
                 $this->info('Sail detected. Adding meilisearch service to docker-compose.yml...');
-                $this->call('sail:add', ['services' => ['meilisearch']]);
+                $this->call('sail:add', ['services' => 'meilisearch']);
             }
 
             // sail:add sets MEILISEARCH_HOST, but update it if it's still the broken localhost default
@@ -107,12 +106,11 @@ class InstallCommand extends Command
         }
 
         if ($driver === 'typesense') {
-            $composePath = base_path('docker-compose.yml');
-            $hasService = file_exists($composePath) && str_contains((string) file_get_contents($composePath), 'typesense:');
+            $hasService = $this->composeFilesContain('typesense:');
 
             if (! $hasService && $this->getApplication()?->has('sail:add')) {
                 $this->info('Sail detected. Adding typesense service to docker-compose.yml...');
-                $this->call('sail:add', ['services' => ['typesense']]);
+                $this->call('sail:add', ['services' => 'typesense']);
             }
 
             $this->updateEnvValue('TYPESENSE_HOST', 'typesense', 'localhost');
@@ -221,6 +219,18 @@ class InstallCommand extends Command
         $this->line('  ALGOLIA_APP_ID=your-app-id');
         $this->line('  ALGOLIA_SECRET=your-admin-api-key');
         $this->line('  Get credentials at: https://www.algolia.com/account/api-keys');
+    }
+
+    private function composeFilesContain(string $needle): bool
+    {
+        foreach (['docker-compose.yml', 'docker-compose.yaml', 'compose.yml', 'compose.yaml'] as $file) {
+            $path = base_path($file);
+            if (file_exists($path) && str_contains((string) file_get_contents($path), $needle)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private function runComposerRequire(string ...$packages): void
