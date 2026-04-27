@@ -1,7 +1,12 @@
 {
     "name": "matheusmarnt/scoutify",
     "description": "Advanced global search for Laravel — Livewire UI + Scout integration",
-    "keywords": ["laravel", "scout", "livewire", "search"],
+    "keywords": [
+        "laravel",
+        "scout",
+        "livewire",
+        "search"
+    ],
     "license": "MIT",
     "authors": [
         {
@@ -59,7 +64,9 @@
     },
     "extra": {
         "laravel": {
-            "providers": ["Matheusmarnt\\Scoutify\\ScoutifyServiceProvider"]
+            "providers": [
+                "Matheusmarnt\\Scoutify\\ScoutifyServiceProvider"
+            ]
         }
     },
     "minimum-stability": "dev",
