@@ -16,10 +16,30 @@
         activeIdx = (activeIdx - 1 + i.length) % i.length;
         i[activeIdx]?.scrollIntoView({ block: 'nearest' });
     "
-    @keydown.enter.prevent="allResults[activeIdx]?.click()"
+    @keydown.enter.prevent="if (! $event.isComposing) allResults[activeIdx]?.click()"
+    @keydown.home.prevent="
+        if (! allResults.length) return;
+        activeIdx = 0;
+        allResults[0]?.scrollIntoView({ block: 'nearest' });
+    "
+    @keydown.end.prevent="
+        if (! allResults.length) return;
+        activeIdx = allResults.length - 1;
+        allResults[activeIdx]?.scrollIntoView({ block: 'nearest' });
+    "
+    @keydown.page-down.prevent="
+        if (! allResults.length) return;
+        activeIdx = Math.min(activeIdx + 5, allResults.length - 1);
+        allResults[activeIdx]?.scrollIntoView({ block: 'nearest' });
+    "
+    @keydown.page-up.prevent="
+        if (! allResults.length) return;
+        activeIdx = Math.max(activeIdx - 5, 0);
+        allResults[activeIdx]?.scrollIntoView({ block: 'nearest' });
+    "
     id="{{ $id }}"
     role="listbox"
-    aria-label="{{ $ariaLabel ?? __('Resultados da busca') }}"
+    aria-label="{{ $ariaLabel ?? __('scoutify::scoutify.results_listbox_label') }}"
     class="min-h-0 flex-1 overflow-y-auto"
 >
     {{ $slot }}

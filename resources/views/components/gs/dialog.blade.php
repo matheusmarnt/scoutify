@@ -27,6 +27,13 @@
     x-cloak
     x-show="open"
     @keydown.escape.window="open = false"
+    @keydown.window="
+        if (open && event.altKey && /^[1-9]$/.test(event.key)) {
+            event.preventDefault();
+            const idx = parseInt(event.key) - 1;
+            document.querySelectorAll('[data-search-result]')[idx]?.click();
+        }
+    "
     id="{{ $id }}"
     role="dialog"
     aria-modal="true"

@@ -5,11 +5,53 @@ namespace Matheusmarnt\Scoutify\Concerns;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Str;
 use Laravel\Folio\Folio;
+use Laravel\Scout\ModelObserver;
 use Laravel\Scout\Searchable as ScoutSearchable;
+use Laravel\Scout\SearchableScope;
+use Matheusmarnt\Scoutify\Support\GlobalSearchRegistry;
 
 trait Searchable
 {
     use ScoutSearchable;
+
+    public function searchableAs()
+    {
+        $base = config('scout.prefix').$this->getTable();
+
+        if (app()->environment('testing')) {
+            return $base.'_testing';
+        }
+
+        return $base;
+    }
+
+    public static function bootSearchable(): void
+    {
+        static::addGlobalScope(new SearchableScope);
+
+        $whenBootedCallback = function () {
+            static::observe(new ModelObserver);
+            (new static)->registerSearchableMacros();
+        };
+
+        if (method_exists(static::class, 'whenBooted')) {
+            static::whenBooted($whenBootedCallback);
+        } else {
+            $whenBootedCallback();
+        }
+
+        if (app()->bound(GlobalSearchRegistry::class)) {
+            app(GlobalSearchRegistry::class)->register(
+                static::class,
+                [
+                    'key' => static::globalSearchGroup(),
+                    'label' => static::globalSearchGroup(),
+                    'icon' => static::globalSearchIcon(),
+                    'color' => static::globalSearchColor(),
+                ]
+            );
+        }
+    }
 
     public function toGloballySearchableArray(): array
     {
@@ -32,12 +74,6 @@ trait Searchable
         return $attr ? (string) $this->{$attr} : null;
     }
 
-    /**
-     * Returns the URL for this model's global search result.
-     *
-     * Resolves automatically via: Filament resource → named route → Folio page → url('/').
-     * Override this method in your model to provide a custom URL.
-     */
     public function globalSearchUrl(): string
     {
         $filamentUrl = $this->resolveFilamentResourceUrl();
@@ -102,7 +138,6 @@ trait Searchable
                 try {
                     return $resource::getUrl('view', ['record' => $this]);
                 } catch (\Throwable) {
-                    // Resource exists but URL generation failed — try next
                 }
             }
         }
