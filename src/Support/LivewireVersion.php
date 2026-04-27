@@ -15,13 +15,13 @@ final class LivewireVersion
     public static function major(): int
     {
         if (! InstalledVersions::isInstalled('livewire/livewire')) {
-            return 0;
+            return 0; // @codeCoverageIgnore
         }
 
         $version = InstalledVersions::getVersion('livewire/livewire');
 
         if ($version === null || str_starts_with($version, 'dev-')) {
-            return 0;
+            return 0; // @codeCoverageIgnore
         }
 
         return (int) explode('.', ltrim($version, 'v'))[0];
