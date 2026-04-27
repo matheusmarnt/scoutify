@@ -17,6 +17,7 @@
     ],
     "require": {
         "php": "^8.2",
+        "algolia/algoliasearch-client-php": "^4.42",
         "blade-ui-kit/blade-heroicons": "^2.5",
         "blade-ui-kit/blade-icons": "^1.6",
         "http-interop/http-factory-guzzle": "^1.2",
@@ -26,7 +27,8 @@
         "livewire/livewire": "^3.0|^4.0",
         "meilisearch/meilisearch-php": "^1.16",
         "nikic/php-parser": "^5.0",
-        "spatie/laravel-package-tools": "^1.16"
+        "spatie/laravel-package-tools": "^1.16",
+        "typesense/typesense-php": "^6.0"
     },
     "require-dev": {
         "orchestra/testbench": "^9.0|^10.0",

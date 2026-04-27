@@ -14,6 +14,17 @@ trait Searchable
 {
     use ScoutSearchable;
 
+    public function searchableAs()
+    {
+        $base = config('scout.prefix').$this->getTable();
+
+        if (app()->environment('testing')) {
+            return $base.'_testing';
+        }
+
+        return $base;
+    }
+
     public static function bootSearchable(): void
     {
         static::addGlobalScope(new SearchableScope);
