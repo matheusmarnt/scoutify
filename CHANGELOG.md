@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.4](https://github.com/matheusmarnt/scoutify/compare/v1.3.3...v1.3.4) (2026-04-27)
+
+
+### Bug Fixes
+
+* **modal:** authorize results, render highlights, restore recents ([#36](https://github.com/matheusmarnt/scoutify/issues/36)) ([3381405](https://github.com/matheusmarnt/scoutify/commit/3381405656134be0628a39c42a61b9627bce06f6))
+
 ## [1.3.3](https://github.com/matheusmarnt/scoutify/compare/v1.3.2...v1.3.3) (2026-04-27)
 
 
