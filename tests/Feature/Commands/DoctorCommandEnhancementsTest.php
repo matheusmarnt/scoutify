@@ -69,3 +69,16 @@ it('confirms queue enabled when active', function () {
     $this->artisan('scoutify:doctor')
         ->expectsOutputToContain('Scout queue enabled');
 });
+
+it('passes livewire scripts check when @livewireScripts present in layout', function () {
+    $layoutDir = resource_path('views/layouts');
+    $layoutFile = $layoutDir.'/app.blade.php';
+    @mkdir($layoutDir, 0755, true);
+    file_put_contents($layoutFile, '<html><body>@livewireScripts</body></html>');
+
+    $this->artisan('scoutify:doctor')
+        ->expectsOutputToContain('@livewireScripts found in layout');
+
+    @unlink($layoutFile);
+    @rmdir($layoutDir);
+});

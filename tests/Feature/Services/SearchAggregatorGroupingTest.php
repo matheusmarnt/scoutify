@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Schema;
 use Matheusmarnt\Scoutify\Services\SearchAggregator;
 use Matheusmarnt\Scoutify\Support\GlobalSearchGroup;
 use Matheusmarnt\Scoutify\Tests\Fixtures\Models\Article;
+use Matheusmarnt\Scoutify\Tests\Fixtures\Models\Post;
 
 beforeEach(function () {
     Schema::create('articles', function (Blueprint $table) {
@@ -52,6 +53,25 @@ it('does not include empty groups', function () {
     $groups = $aggregator->search('NonExistent');
 
     expect($groups)->toBeEmpty();
+});
+
+it('groups non-GloballySearchable models using basic ResultDto fallback', function () {
+    Schema::create('posts', function (Blueprint $table) {
+        $table->id();
+        $table->string('name')->nullable();
+        $table->string('title')->nullable();
+        $table->timestamps();
+    });
+
+    Post::create(['name' => 'Plain Post']);
+
+    $aggregator = new SearchAggregator([Post::class => ['label' => 'Posts']]);
+    $groups = $aggregator->search('Plain');
+    $group = $groups->first();
+
+    expect($group)->toBeInstanceOf(GlobalSearchGroup::class)
+        ->and($group->label)->toBe('Posts')
+        ->and($group->results)->toHaveCount(1);
 });
 
 it('config metadata overrides registry defaults', function () {
