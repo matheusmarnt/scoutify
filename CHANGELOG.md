@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.0](https://github.com/matheusmarnt/scoutify/compare/v1.3.4...v1.4.0) (2026-04-27)
+
+
+### Features
+
+* **modal:** grouped search results, visual parity, power UX (v1.4.0) ([#38](https://github.com/matheusmarnt/scoutify/issues/38)) ([e33b8d2](https://github.com/matheusmarnt/scoutify/commit/e33b8d2d00dc8d122a2574e0fe76a0da5c7b83f7))
+
 ## [1.3.4](https://github.com/matheusmarnt/scoutify/compare/v1.3.3...v1.3.4) (2026-04-27)
 
 
