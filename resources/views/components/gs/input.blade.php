@@ -6,6 +6,7 @@
 
 @php
     $hasIcon = filled($icon);
+    $inputClass = config('scoutify.classes.input', '');
 @endphp
 
 <div class="relative" x-data="{ value: @entangle($wireModel).live }">
@@ -18,7 +19,7 @@
     <input
         x-model.debounce.250ms="value"
         {{ $attributes->merge([
-            'class' => 'block w-full rounded-lg border border-zinc-200 bg-white py-2 text-sm text-zinc-900 placeholder-zinc-400 outline-none transition focus-visible:border-zinc-300 focus-visible:ring-2 focus-visible:ring-accent/30 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100 dark:placeholder-zinc-500 [&::-webkit-search-cancel-button]:hidden [&::-webkit-search-decoration]:hidden '
+            'class' => $inputClass . ' '
                 . ($hasIcon ? 'pl-9 ' : 'pl-3 ')
                 . ($clearable ? 'pr-9' : 'pr-3'),
         ]) }}

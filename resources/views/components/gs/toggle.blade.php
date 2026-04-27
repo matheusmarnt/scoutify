@@ -2,6 +2,11 @@
     'label' => null,
 ])
 
+@php
+    $activeClass = config('scoutify.classes.toggle_active', '');
+    $inactiveClass = config('scoutify.classes.toggle_inactive', '');
+@endphp
+
 <label class="inline-flex cursor-pointer select-none items-center gap-2">
     <button
         type="button"
@@ -10,8 +15,8 @@
         :aria-checked="value ? 'true' : 'false'"
         @click="value = ! value"
         :class="value
-            ? 'bg-indigo-600 dark:bg-indigo-500'
-            : 'bg-zinc-200 dark:bg-zinc-700'"
+            ? '{{ $activeClass }}'
+            : '{{ $inactiveClass }}'"
         class="relative inline-flex h-4 w-7 shrink-0 items-center rounded-full transition-colors duration-150 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-indigo-500/40"
     >
         <span

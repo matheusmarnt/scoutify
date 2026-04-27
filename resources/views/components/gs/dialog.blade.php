@@ -4,6 +4,11 @@
     'ariaLabel' => null,
 ])
 
+@php
+    $scrimClass = config('scoutify.classes.dialog_scrim', '');
+    $panelClass = config('scoutify.classes.dialog_panel', '');
+@endphp
+
 <div
     x-data="{
         open: @entangle($wire),
@@ -38,7 +43,7 @@
         x-transition:leave-start="opacity-100"
         x-transition:leave-end="opacity-0"
         @click="open = false"
-        class="absolute inset-0 bg-zinc-950/50"
+        class="{{ $scrimClass }}"
         aria-hidden="true"
     ></div>
 
@@ -58,7 +63,7 @@
         x-transition:leave="motion-safe:transition motion-safe:duration-100 motion-safe:ease-in"
         x-transition:leave-start="opacity-100 translate-y-0 md:scale-100"
         x-transition:leave-end="opacity-0 translate-y-2 md:translate-y-0 md:scale-95"
-        class="relative w-full md:max-w-2xl"
+        class="{{ $panelClass }}"
     >
         {{ $slot }}
     </div>

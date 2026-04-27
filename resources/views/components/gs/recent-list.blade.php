@@ -1,3 +1,7 @@
+@php
+    $recentLimit = config('scoutify.recents.limit', 5);
+@endphp
+
 <div
     x-data="{
         recent: $persist([]).as('gs-recent').using(localStorage),
@@ -22,7 +26,7 @@
         </button>
     </div>
 
-    <template x-for="(term, idx) in recent.slice(0, 5)" :key="idx">
+    <template x-for="(term, idx) in recent.slice(0, {{ $recentLimit }})" :key="idx">
         <button
             type="button"
             class="flex w-full items-center gap-3 rounded-lg px-2.5 py-2 text-left transition-colors hover:bg-zinc-50 dark:hover:bg-zinc-800/80"
