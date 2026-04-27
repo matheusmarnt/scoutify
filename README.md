@@ -50,6 +50,16 @@ composer require matheusmarnt/scoutify
 
 ## Setup
 
+> **Running Artisan commands** — choose the invocation that matches your environment:
+>
+> | Environment | Artisan invocation |
+> |---|---|
+> | `php artisan serve` (host) | `php artisan <command>` |
+> | Laravel Sail | `sail artisan <command>` |
+> | Docker Compose (non-Sail) | `docker compose exec app php artisan <command>` |
+>
+> All `scoutify:*` commands below follow this pattern. Sail examples explicitly use `sail artisan`; Docker Compose examples use `docker compose exec app php artisan`.
+
 `scoutify:install` always:
 
 1. Prompts for a Scout driver (`meilisearch`, `algolia`, or `typesense`)
@@ -78,14 +88,14 @@ sail artisan scoutify:import         # index data
 
 ```bash
 composer require matheusmarnt/scoutify
-php artisan scoutify:install         # writes docker-compose.scoutify.yml + sets env vars
+docker compose exec app php artisan scoutify:install   # writes docker-compose.scoutify.yml + sets env vars
 docker compose -f docker-compose.yml -f docker-compose.scoutify.yml up -d
-php artisan scoutify:doctor          # verify connectivity
-php artisan scoutify:searchable      # register models
-php artisan scoutify:import          # index data
+docker compose exec app php artisan scoutify:doctor    # verify connectivity
+docker compose exec app php artisan scoutify:searchable
+docker compose exec app php artisan scoutify:import
 ```
 
-`scoutify:install` detects an existing `docker-compose.yml`, generates a `docker-compose.scoutify.yml` overlay with a Meilisearch service, and sets `MEILISEARCH_HOST=http://meilisearch:7700` in `.env`.
+`scoutify:install` detects an existing compose file (`docker-compose.yml`, `compose.yaml`, etc.), generates a `docker-compose.scoutify.yml` overlay with a Meilisearch service, and sets `MEILISEARCH_HOST=http://meilisearch:7700` in `.env`.
 
 #### Host (`php artisan serve`)
 
@@ -121,11 +131,11 @@ sail artisan scoutify:import
 
 ```bash
 composer require matheusmarnt/scoutify
-php artisan scoutify:install         # writes docker-compose.scoutify.yml + sets env vars
+docker compose exec app php artisan scoutify:install   # writes docker-compose.scoutify.yml + sets env vars
 docker compose -f docker-compose.yml -f docker-compose.scoutify.yml up -d
-php artisan scoutify:doctor
-php artisan scoutify:searchable
-php artisan scoutify:import
+docker compose exec app php artisan scoutify:doctor
+docker compose exec app php artisan scoutify:searchable
+docker compose exec app php artisan scoutify:import
 ```
 
 #### Host (`php artisan serve`)
@@ -162,7 +172,14 @@ php artisan scoutify:import          # index data
 ## Diagnostics
 
 ```bash
+# Host (php artisan serve)
 php artisan scoutify:doctor
+
+# Laravel Sail
+sail artisan scoutify:doctor
+
+# Docker Compose (non-Sail)
+docker compose exec app php artisan scoutify:doctor
 ```
 
 Checks your driver configuration and connectivity. Reports the configured driver, the search backend URL, and whether it is reachable. Prints environment-aware remediation steps on failure:
@@ -362,9 +379,18 @@ php artisan vendor:publish --tag=scoutify-translations
 
 ## Commands Reference
 
+Prefix each command with the appropriate Artisan invocation for your environment:
+
+| Environment | Prefix |
+|---|---|
+| Host (`php artisan serve`) | `php artisan` |
+| Laravel Sail | `sail artisan` |
+| Docker Compose (non-Sail) | `docker compose exec app php artisan` |
+
 | Command | Description |
 |---|---|
-| `scoutify:install` | Install driver packages and publish config |
+| `scoutify:install` | Install driver packages, publish config, and configure the search backend |
+| `scoutify:doctor` | Verify driver configuration and backend connectivity |
 | `scoutify:searchable` | Register models as globally searchable (injects `globalSearchUrl` stub) |
 | `scoutify:searchable --no-stubs` | Register without injecting method stubs (URL resolved by trait cascade at runtime) |
 | `scoutify:import` | Import all registered models into Scout index |
