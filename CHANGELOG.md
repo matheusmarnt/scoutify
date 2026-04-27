@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.3](https://github.com/matheusmarnt/scoutify/compare/v1.3.2...v1.3.3) (2026-04-27)
+
+
+### Bug Fixes
+
+* **modal:** restore panel width to match reference (md:max-w-2xl) ([#34](https://github.com/matheusmarnt/scoutify/issues/34)) ([a65e889](https://github.com/matheusmarnt/scoutify/commit/a65e8898d41c241ae7f937399495696fc49329e8))
+
 ## [1.3.2](https://github.com/matheusmarnt/scoutify/compare/v1.3.1...v1.3.2) (2026-04-27)
 
 
