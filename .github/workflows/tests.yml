@@ -45,10 +45,13 @@ jobs:
           extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, sqlite, pdo_sqlite, bcmath, intl, fileinfo
           coverage: xdebug
 
+      - name: Constrain versions
+        run: composer require "laravel/framework:${{ matrix.laravel }}" "livewire/livewire:${{ matrix.livewire }}" --no-update --no-interaction
+
       - name: Install dependencies
-        run: |
-          composer require "laravel/framework:${{ matrix.laravel }}" "livewire/livewire:${{ matrix.livewire }}" --no-interaction --no-update
-          composer install --no-interaction --prefer-dist
+        run: composer update --prefer-dist --no-interaction --no-progress
+        env:
+          COMPOSER_ROOT_VERSION: "dev-main"
 
       - name: Run tests with coverage
         run: vendor/bin/pest --coverage --min=90
