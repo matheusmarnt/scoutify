@@ -2,6 +2,8 @@
 
 namespace Matheusmarnt\Scoutify\Support;
 
+use Matheusmarnt\Scoutify\Contracts\GloballySearchable;
+
 final readonly class ResultDto
 {
     public function __construct(
@@ -30,7 +32,7 @@ final readonly class ResultDto
     }
 
     public static function fromModel(
-        \Matheusmarnt\Scoutify\Contracts\GloballySearchable $model,
+        GloballySearchable $model,
         string $url,
         string $groupLabel = '',
         ?string $modelKey = null,

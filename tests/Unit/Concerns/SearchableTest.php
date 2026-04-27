@@ -1,5 +1,7 @@
 <?php
 
+use Illuminate\Database\Eloquent\Model;
+use Matheusmarnt\Scoutify\Concerns\Searchable;
 use Matheusmarnt\Scoutify\Tests\Fixtures\Models\Article;
 
 it('returns globallySearchableArray with title subtitle and url', function () {
@@ -37,8 +39,9 @@ it('provides default group, icon and color from class basename', function () {
 });
 
 it('searchable trait provides defaults when not overridden', function () {
-    $model = new class extends \Illuminate\Database\Eloquent\Model {
-        use \Matheusmarnt\Scoutify\Concerns\Searchable;
+    $model = new class extends Model
+    {
+        use Searchable;
     };
 
     expect(strlen($model::globalSearchGroup()))->toBeGreaterThan(0)
