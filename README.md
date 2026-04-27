@@ -1,12 +1,27 @@
+<p align="center">
+    <img src="art/scoutify.png" alt="Scoutify" width="750" />
+</p>
+
+<p align="center">
+    <a href="https://packagist.org/packages/matheusmarnt/scoutify"><img src="https://img.shields.io/packagist/v/matheusmarnt/scoutify.svg?style=flat-square" alt="Latest Version on Packagist" /></a>
+    <a href="https://github.com/matheusmarnt/scoutify/actions?query=workflow%3Atests+branch%3Amain"><img src="https://img.shields.io/github/actions/workflow/status/matheusmarnt/scoutify/tests.yml?branch=main&label=tests&style=flat-square" alt="Tests" /></a>
+    <a href="https://github.com/matheusmarnt/scoutify/actions?query=workflow%3Apint+branch%3Amain"><img src="https://img.shields.io/github/actions/workflow/status/matheusmarnt/scoutify/pint.yml?branch=main&label=code+style&style=flat-square" alt="Code Style" /></a>
+    <a href="LICENSE.md"><img src="https://img.shields.io/badge/license-MIT-brightgreen?style=flat-square" alt="License" /></a>
+    <a href="https://laravel.com"><img src="https://img.shields.io/badge/Laravel-11%7C12-FF2D20?style=flat-square&logo=laravel&logoColor=white" alt="Laravel" /></a>
+    <a href="https://livewire.laravel.com"><img src="https://img.shields.io/badge/Livewire-3%7C4-FB70A9?style=flat-square" alt="Livewire" /></a>
+    <a href="https://pestphp.com"><img src="https://img.shields.io/badge/Pest-3%7C4-16B280?style=flat-square" alt="Pest" /></a>
+    <a href="https://laravel.com/docs/scout"><img src="https://img.shields.io/badge/Scout-11-FF2D20?style=flat-square&logo=laravel&logoColor=white" alt="Scout" /></a>
+</p>
+
 # Scoutify
 
-Advanced global search for Laravel — Livewire modal UI + Laravel Scout integration.
+⌘K global search modal for Laravel — multi-model Livewire UI powered by Scout.
 
-[![Latest Version on Packagist](https://img.shields.io/packagist/v/matheusmarnt/scoutify.svg?style=flat-square)](https://packagist.org/packages/matheusmarnt/scoutify)
-[![Tests](https://img.shields.io/github/actions/workflow/status/matheusmarnt/scoutify/tests.yml?branch=main&label=tests&style=flat-square)](https://github.com/matheusmarnt/scoutify/actions?query=workflow%3Atests+branch%3Amain)
-[![Code Style](https://img.shields.io/github/actions/workflow/status/matheusmarnt/scoutify/pint.yml?branch=main&label=code+style&style=flat-square)](https://github.com/matheusmarnt/scoutify/actions?query=workflow%3Apint+branch%3Amain)
-[![Total Downloads](https://img.shields.io/packagist/dt/matheusmarnt/scoutify.svg?style=flat-square)](https://packagist.org/packages/matheusmarnt/scoutify)
-[![License](https://img.shields.io/packagist/l/matheusmarnt/scoutify.svg?style=flat-square)](https://packagist.org/packages/matheusmarnt/scoutify)
+Scoutify drops a **production-ready ⌘K search experience** into any Laravel application with a single Artisan command. Register your Eloquent models, choose your Scout driver — Meilisearch, Algolia, or Typesense — and ship a keyboard-triggered modal that queries multiple model types simultaneously, groups results by type, and persists recent search history to session.
+
+The UI is a zero-JavaScript Livewire component with built-in type filtering, dark mode, WCAG AA accessibility, and mobile-first layout. Every CSS class is overridable via `config/scoutify.php` — no view publishing required for basic customization. Ships with translations for `en`, `pt_BR`, and `es`.
+
+---
 
 ## Features
 
