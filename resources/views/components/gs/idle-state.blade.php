@@ -1,5 +1,7 @@
 <div>
-    <x-scoutify::gs.recent-list />
+    @if (config('scoutify.recents.enabled'))
+        <x-scoutify::gs.recent-list />
+    @endif
 
     <div class="flex flex-col items-center justify-center gap-2 px-6 py-12 text-center">
         <x-scoutify::gs.icon name="magnifying-glass" class="size-7 text-zinc-300 dark:text-zinc-700" />

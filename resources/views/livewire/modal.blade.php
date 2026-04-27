@@ -46,11 +46,7 @@
 
             <div wire:loading.remove.delay.long wire:target="query,toggleType,onlyActive,includeTrashed">
                 @if (blank($this->query))
-                    @if (config('scoutify.recents.enabled'))
-                        <x-scoutify::gs.recent-list />
-                    @else
-                        <x-scoutify::gs.idle-state />
-                    @endif
+                    <x-scoutify::gs.idle-state />
                 @elseif (empty($this->results))
                     <x-scoutify::gs.empty-state />
                 @else
