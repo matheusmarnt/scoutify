@@ -104,6 +104,10 @@
         triggerEl: null,
         activeIdx: 0,
 
+        get isOpen() {
+            return this.$wire.isOpen;
+        },
+
         get allResults() {
             return [...document.querySelectorAll('#scoutify-listbox [data-search-result]')];
         },
