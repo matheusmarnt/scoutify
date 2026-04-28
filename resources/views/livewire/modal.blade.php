@@ -140,6 +140,9 @@
         },
 
         init() {
+            window.addEventListener('scoutify:open', () => {
+                this.$wire.call('open');
+            });
             window.addEventListener('scoutify:opened', () => {
                 this.triggerEl = document.activeElement;
                 this.activeIdx = 0;

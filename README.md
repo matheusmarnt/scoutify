@@ -108,6 +108,27 @@ Add to your layout:
 <livewire:scoutify::modal />
 ```
 
+## Opening the Modal Programmatically
+
+Any element can open Scoutify without the official trigger component.
+
+**Alpine (recommended):**
+```html
+<button x-data @click="$dispatch('scoutify:open')">Search</button>
+```
+
+**Plain JS / any context:**
+```js
+window.dispatchEvent(new CustomEvent('scoutify:open'))
+```
+
+**Inside a Livewire component:**
+```html
+<button wire:click="$dispatchTo('scoutify::modal', 'scoutify:open')">Search</button>
+```
+
+> **Do not use** `wire:click="$dispatch('scoutify:open')"` on plain Blade elements — outside a Livewire component tree, Livewire.js never initialises those directives.
+
 ## Commands
 
 | Command | Description |
