@@ -2,6 +2,8 @@
 
 namespace Matheusmarnt\Scoutify\Contracts;
 
+use Laravel\Scout\Builder;
+
 interface GloballySearchable
 {
     public function toGloballySearchableArray(): array;
@@ -23,4 +25,6 @@ interface GloballySearchable
     public static function globalSearchIcon(): string;
 
     public static function globalSearchColor(): string;
+
+    public function globalSearchBuilder(Builder $builder, string $query): Builder;
 }

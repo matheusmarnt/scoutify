@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Lang;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Str;
 use Laravel\Folio\Folio;
+use Laravel\Scout\Builder;
 use Laravel\Scout\ModelObserver;
 use Laravel\Scout\Searchable as ScoutSearchable;
 use Laravel\Scout\SearchableScope;
@@ -117,6 +118,11 @@ trait Searchable
     public static function globalSearchColor(): string
     {
         return 'gray';
+    }
+
+    public function globalSearchBuilder(Builder $builder, string $query): Builder
+    {
+        return $builder;
     }
 
     public static function globalSearchLabel(): string
