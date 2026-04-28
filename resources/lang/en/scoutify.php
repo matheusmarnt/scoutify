@@ -22,7 +22,9 @@ return [
     'results_listbox_label' => 'Search results',
     'type_filter' => 'Type:',
     'types' => [
-        // 'users_plural' => 'Users',
-        // 'articles_plural' => 'Articles',
+        // Add one entry per model using the pattern '<snake_class>_plural'.
+        // Example: for App\Models\User → 'user_plural' => 'Users'
+        // 'user_plural'    => 'Users',
+        // 'article_plural' => 'Articles',
     ],
 ];

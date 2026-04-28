@@ -46,7 +46,6 @@ trait Searchable
                 static::class,
                 [
                     'key' => static::globalSearchGroup(),
-                    'label' => static::globalSearchGroup(),
                     'icon' => static::globalSearchIcon(),
                     'color' => static::globalSearchColor(),
                 ]

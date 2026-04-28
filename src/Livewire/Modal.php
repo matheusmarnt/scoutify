@@ -156,7 +156,15 @@ class Modal extends Component
         }
 
         return array_values(array_map(
-            fn ($class, $meta) => array_merge(['key' => $meta['key'] ?? $class], $meta),
+            function ($class, $meta) {
+                // Resolve label dynamically at request time so locale changes
+                // after boot are reflected correctly in the chip label.
+                if (! isset($meta['label']) && method_exists($class, 'globalSearchLabel')) {
+                    $meta['label'] = $class::globalSearchLabel();
+                }
+
+                return array_merge(['key' => $meta['key'] ?? $class], $meta);
+            },
             array_keys($merged),
             array_values($merged),
         ));
