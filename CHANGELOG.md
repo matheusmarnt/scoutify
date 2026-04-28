@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.6.1](https://github.com/matheusmarnt/scoutify/compare/v1.6.0...v1.6.1) (2026-04-28)
+
+
+### Bug Fixes
+
+* zero-config discovery pipeline — 7 cooperating defects ([#50](https://github.com/matheusmarnt/scoutify/issues/50)) ([20d12fc](https://github.com/matheusmarnt/scoutify/commit/20d12fcaa06e171cbc34dc44c0f90640b7b9319b))
+
 ## [1.6.0](https://github.com/matheusmarnt/scoutify/compare/v1.5.3...v1.6.0) (2026-04-28)
 
 
