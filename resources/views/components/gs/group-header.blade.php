@@ -1,7 +1,7 @@
 @props(['icon', 'label', 'total' => null, 'color' => 'zinc'])
 
 @php
-    $tileClasses = config("scoutify.colors.$color", config('scoutify.colors.zinc', 'bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400'));
+    $tileClasses = \Matheusmarnt\Scoutify\Enums\Color::resolveClasses($color);
 @endphp
 
 <div class="mb-1 flex items-center gap-1.5 px-2 pb-0.5">

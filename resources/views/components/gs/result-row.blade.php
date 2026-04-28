@@ -11,7 +11,7 @@
 ])
 
 @php
-    $tileClasses = config("scoutify.colors.$groupColor", config('scoutify.colors.zinc', 'bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400'));
+    $tileClasses = \Matheusmarnt\Scoutify\Enums\Color::resolveClasses($groupColor);
 @endphp
 
 <a

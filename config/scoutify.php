@@ -20,19 +20,11 @@ return [
             // app_path('Models'),
         ],
     ],
+    // Extension point for custom color tokens not in Matheusmarnt\Scoutify\Enums\Color.
+    // Built-in TailwindCSS v4 colors are handled by the enum automatically.
+    // Example: 'coral' => 'bg-coral-100 text-coral-600 dark:bg-coral-900/40 dark:text-coral-300'
     'colors' => [
-        'zinc' => 'bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400',
-        'gray' => 'bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400',
-        'blue' => 'bg-blue-100 text-blue-600 dark:bg-blue-900/40 dark:text-blue-300',
-        'red' => 'bg-red-100 text-red-600 dark:bg-red-900/40 dark:text-red-300',
-        'green' => 'bg-green-100 text-green-600 dark:bg-green-900/40 dark:text-green-300',
-        'yellow' => 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/40 dark:text-yellow-300',
-        'amber' => 'bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300',
-        'orange' => 'bg-orange-100 text-orange-700 dark:bg-orange-900/40 dark:text-orange-300',
-        'purple' => 'bg-purple-100 text-purple-600 dark:bg-purple-900/40 dark:text-purple-300',
-        'pink' => 'bg-pink-100 text-pink-600 dark:bg-pink-900/40 dark:text-pink-300',
-        'indigo' => 'bg-indigo-100 text-indigo-600 dark:bg-indigo-900/40 dark:text-indigo-300',
-        'teal' => 'bg-teal-100 text-teal-600 dark:bg-teal-900/40 dark:text-teal-300',
+        //
     ],
     'modal' => ['breakpoint_desktop' => 'md'],
     'broadcast_events' => [
