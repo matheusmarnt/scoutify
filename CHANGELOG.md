@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.6.2](https://github.com/matheusmarnt/scoutify/compare/v1.6.1...v1.6.2) (2026-04-28)
+
+
+### Bug Fixes
+
+* **modal:** remove nested Alpine x-data from dialog to fix keyboard navigation ([#52](https://github.com/matheusmarnt/scoutify/issues/52)) ([924f285](https://github.com/matheusmarnt/scoutify/commit/924f2852f5a98a88c2f6bd958c0bc27ddc5c85f4))
+
 ## [1.6.1](https://github.com/matheusmarnt/scoutify/compare/v1.6.0...v1.6.1) (2026-04-28)
 
 
