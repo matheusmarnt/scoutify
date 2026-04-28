@@ -6,6 +6,8 @@ use Illuminate\Console\Command;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Support\Facades\Http;
 use Matheusmarnt\Scoutify\Contracts\GloballySearchable;
+use Matheusmarnt\Scoutify\Support\GlobalSearchRegistry;
+use Matheusmarnt\Scoutify\Support\LivewireVersion;
 
 class DoctorCommand extends Command
 {
@@ -39,6 +41,92 @@ class DoctorCommand extends Command
             'typesense' => $this->checkTypesense(),
             default => $this->checkGeneric($driver),
         };
+    }
+
+    private function checkTypes(): bool
+    {
+        $registryTypes = app()->bound(GlobalSearchRegistry::class)
+            ? app(GlobalSearchRegistry::class)->all()
+            : [];
+
+        $configTypes = config('scoutify.types', []);
+        $types = array_merge($registryTypes, $configTypes);
+
+        $ok = true;
+
+        foreach ($types as $modelClass => $meta) {
+            if (! class_exists($modelClass)) {
+                $this->warn("  ⚠ Type class [{$modelClass}] not found.");
+                $ok = false;
+
+                continue;
+            }
+
+            if (! is_a($modelClass, GloballySearchable::class, true)) {
+                $this->warn("  ⚠ [{$modelClass}] does not implement GloballySearchable.");
+                $ok = false;
+            }
+        }
+
+        if ($ok && ! empty($types)) {
+            $this->line('  <info>✓</info> All configured types exist and implement GloballySearchable.');
+        } elseif (empty($types)) {
+            $this->warn('  No types configured in scoutify.types. Add models to enable global search. Run php artisan scoutify:rebuild if you just added a Searchable model.');
+        }
+
+        return $ok;
+    }
+
+    protected function livewireVersion(): int
+    {
+        return LivewireVersion::major();
+    }
+
+    private function checkLivewireScripts(): bool
+    {
+        $major = $this->livewireVersion();
+
+        if ($major === 0) {
+            $this->warn('  Livewire not detected. Skipping @livewireScripts check.');
+
+            return false;
+        }
+
+        $dir = $major >= 4
+            ? resource_path('views/layouts')
+            : resource_path('views/components/layouts');
+
+        $layouts = glob("{$dir}/*.blade.php") ?: [];
+
+        foreach ($layouts as $layout) {
+            $content = (string) file_get_contents($layout);
+            if (str_contains($content, '@livewireScripts') || str_contains($content, "@livewire('scripts')")) {
+                $this->line("  <info>✓</info> @livewireScripts found in layout (Livewire {$major}).");
+
+                return true;
+            }
+        }
+
+        if (empty($layouts)) {
+            $this->warn("  No layout files found in {$dir} (Livewire {$major}). Ensure @livewireScripts is in your app layout.");
+        } else {
+            $this->warn("  @livewireScripts not found in {$dir} (Livewire {$major}). Add it before </body>.");
+        }
+
+        return true;
+    }
+
+    private function checkQueueConfig(): bool
+    {
+        $queueEnabled = config('scout.queue', false);
+
+        if (app()->environment('production') && ! $queueEnabled) {
+            $this->warn('  SCOUT_QUEUE=false in production. Indexing will happen synchronously on request.');
+
+            return false;
+        }
+
+        return true;
     }
 
     private function checkMeilisearch(): int

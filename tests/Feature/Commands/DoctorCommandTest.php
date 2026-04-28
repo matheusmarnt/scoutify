@@ -2,6 +2,7 @@
 
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Support\Facades\Http;
+use Matheusmarnt\Scoutify\Support\LivewireVersion;
 
 beforeEach(function () {
     config(['scout.driver' => 'meilisearch', 'scout.meilisearch.host' => 'http://localhost:7700']);
@@ -159,4 +160,73 @@ it('exits 1 when typesense returns a non-2xx status', function () {
     Http::fake(['http://localhost:8108/health' => Http::response([], 503)]);
 
     $this->artisan('scoutify:doctor')->assertFailed();
+});
+
+it('checkLivewireScripts passes when @livewireScripts found in version-appropriate layouts dir', function () {
+    Http::fake(['*' => Http::response(['status' => 'available'], 200)]);
+
+    $major = LivewireVersion::major();
+    $dir = $major >= 4
+        ? resource_path('views/layouts')
+        : resource_path('views/components/layouts');
+
+    @mkdir($dir, 0755, true);
+    $file = $dir.'/app.blade.php';
+    file_put_contents($file, '<html><body>@livewireScripts</body></html>');
+
+    $this->artisan('scoutify:doctor')
+        ->expectsOutputToContain('@livewireScripts found');
+
+    unlink($file);
+});
+
+it('checkLivewireScripts warns when no layout files found in version-appropriate dir', function () {
+    Http::fake(['*' => Http::response(['status' => 'available'], 200)]);
+
+    $major = LivewireVersion::major();
+    $dir = $major >= 4
+        ? resource_path('views/layouts')
+        : resource_path('views/components/layouts');
+
+    // Remove any blade files so the glob returns empty
+    foreach (glob("{$dir}/*.blade.php") ?: [] as $f) {
+        unlink($f);
+    }
+
+    $this->artisan('scoutify:doctor')
+        ->expectsOutputToContain('No layout files found');
+});
+
+it('checkLivewireScripts warning includes detected Livewire major version', function () {
+    Http::fake(['*' => Http::response(['status' => 'available'], 200)]);
+
+    $major = LivewireVersion::major();
+    $dir = $major >= 4
+        ? resource_path('views/layouts')
+        : resource_path('views/components/layouts');
+
+    foreach (glob("{$dir}/*.blade.php") ?: [] as $f) {
+        unlink($f);
+    }
+
+    $this->artisan('scoutify:doctor')
+        ->expectsOutputToContain("Livewire {$major}");
+});
+
+it('checkLivewireScripts warns when layout has no @livewireScripts tag', function () {
+    Http::fake(['*' => Http::response(['status' => 'available'], 200)]);
+
+    $major = LivewireVersion::major();
+    $dir = $major >= 4
+        ? resource_path('views/layouts')
+        : resource_path('views/components/layouts');
+
+    @mkdir($dir, 0755, true);
+    $file = $dir.'/app.blade.php';
+    file_put_contents($file, '<html><body>No scripts here</body></html>');
+
+    $this->artisan('scoutify:doctor')
+        ->expectsOutputToContain('@livewireScripts not found');
+
+    unlink($file);
 });
