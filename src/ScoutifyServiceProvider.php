@@ -25,6 +25,7 @@ class ScoutifyServiceProvider extends PackageServiceProvider
             ->hasViews('scoutify')
             ->hasTranslations()
             ->hasCommands([
+                DoctorCommand::class,
                 InstallCommand::class,
                 DoctorCommand::class,
                 SearchableCommand::class,
