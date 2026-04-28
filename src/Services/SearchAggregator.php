@@ -82,7 +82,9 @@ final class SearchAggregator
                 continue;
             }
 
-            $label = $meta['label'] ?? class_basename($modelClass);
+            $label = $meta['label'] ?? (is_a($modelClass, GloballySearchable::class, true)
+                ? $modelClass::globalSearchLabel()
+                : class_basename($modelClass));
             $icon = $meta['icon'] ?? (is_a($modelClass, GloballySearchable::class, true)
                 ? $modelClass::globalSearchIcon()
                 : 'heroicon-o-magnifying-glass');

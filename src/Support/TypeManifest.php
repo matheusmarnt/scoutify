@@ -44,7 +44,6 @@ final class TypeManifest
                     }
                     $manifest[$class] = [
                         'key' => $class::globalSearchGroup(),
-                        'label' => $class::globalSearchLabel(),
                         'icon' => $class::globalSearchIcon(),
                         'color' => $class::globalSearchColor(),
                     ];
