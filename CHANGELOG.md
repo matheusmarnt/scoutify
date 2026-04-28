@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.6.0](https://github.com/matheusmarnt/scoutify/compare/v1.5.3...v1.6.0) (2026-04-28)
+
+
+### Features
+
+* globalSearchBuilder hook + Meilisearch prefix search warning in DoctorCommand ([#48](https://github.com/matheusmarnt/scoutify/issues/48)) ([fefbffb](https://github.com/matheusmarnt/scoutify/commit/fefbffb293026e40145ee640256bc8ad93d2a8a1))
+
 ## [1.5.3](https://github.com/matheusmarnt/scoutify/compare/v1.5.2...v1.5.3) (2026-04-28)
 
 
