@@ -250,3 +250,50 @@ it('checkLivewireScripts finds @livewireScripts in a nested subdirectory', funct
     unlink($file);
     @rmdir($subdir);
 });
+
+it('exits 1 when a configured type class does not exist', function () {
+    config(['scoutify.types' => ['App\Models\GhostModel' => ['icon' => 'x', 'color' => 'zinc']]]);
+
+    $this->artisan('scoutify:doctor')
+        ->assertFailed()
+        ->expectsOutputToContain('not found');
+});
+
+it('exits 1 when a configured type does not implement GloballySearchable', function () {
+    config([
+        'scoutify.types' => [
+            \Illuminate\Database\Eloquent\Model::class => ['icon' => 'x', 'color' => 'zinc'],
+        ],
+    ]);
+
+    Http::fake(['http://localhost:7700/health' => Http::response(['status' => 'available'], 200)]);
+
+    $this->artisan('scoutify:doctor')
+        ->assertFailed()
+        ->expectsOutputToContain('does not implement GloballySearchable');
+});
+
+it('prints success message when all configured types are valid', function () {
+    config([
+        'scout.driver' => 'algolia',
+        'scout.algolia.id' => 'app-id',
+        'scout.algolia.secret' => 'secret',
+        'scoutify.types' => [
+            \Matheusmarnt\Scoutify\Tests\Fixtures\Models\Article::class => ['icon' => 'heroicon-o-document', 'color' => 'blue'],
+        ],
+    ]);
+
+    $this->artisan('scoutify:doctor')
+        ->expectsOutputToContain('All configured types exist and implement GloballySearchable');
+});
+
+it('warns about synchronous indexing when SCOUT_QUEUE is false in production', function () {
+    $this->app['env'] = 'production';
+
+    Http::fake(['http://localhost:7700/health' => Http::response(['status' => 'available'], 200)]);
+
+    $this->artisan('scoutify:doctor')
+        ->expectsOutputToContain('SCOUT_QUEUE=false in production');
+
+    $this->app['env'] = 'testing';
+});
