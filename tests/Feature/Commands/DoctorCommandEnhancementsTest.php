@@ -1,5 +1,6 @@
 <?php
 
+use Matheusmarnt\Scoutify\Support\LivewireVersion;
 use Matheusmarnt\Scoutify\Tests\Fixtures\Models\Article;
 
 beforeEach(function () {
@@ -14,7 +15,7 @@ it('reports invalid class in scoutify types', function () {
     ]);
 
     $this->artisan('scoutify:doctor')
-        ->expectsOutputToContain('does not exist')
+        ->expectsOutputToContain('not found')
         ->assertExitCode(1);
 });
 
@@ -71,7 +72,10 @@ it('confirms queue enabled when active', function () {
 });
 
 it('passes livewire scripts check when @livewireScripts present in layout', function () {
-    $layoutDir = resource_path('views/layouts');
+    $major = LivewireVersion::major();
+    $layoutDir = $major >= 4
+        ? resource_path('views/layouts')
+        : resource_path('views/components/layouts');
     $layoutFile = $layoutDir.'/app.blade.php';
     @mkdir($layoutDir, 0755, true);
     file_put_contents($layoutFile, '<html><body>@livewireScripts</body></html>');

@@ -136,6 +136,10 @@ class DoctorCommand extends Command
             return false;
         }
 
+        if ($queueEnabled) {
+            $this->line('  <info>✓</info> Scout queue enabled.');
+        }
+
         return true;
     }
 
