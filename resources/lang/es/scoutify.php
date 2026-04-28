@@ -20,4 +20,9 @@ return [
     'hint_close' => 'cerrar',
     'results_count' => '{0} Sin resultados|[1] :count resultado|[2,*] :count resultados',
     'results_listbox_label' => 'Resultados de la búsqueda',
+    'type_filter' => 'Tipo:',
+    'types' => [
+        // 'users_plural' => 'Usuarios',
+        // 'articles_plural' => 'Artículos',
+    ],
 ];

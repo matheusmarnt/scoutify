@@ -15,6 +15,17 @@ return [
         'toggle_active' => 'bg-indigo-600 dark:bg-indigo-500',
         'toggle_inactive' => 'bg-zinc-200 dark:bg-zinc-700',
     ],
+    'discovery' => [
+        'paths' => [
+            // app_path('Models'),
+        ],
+    ],
+    // Extension point for custom color tokens not in Matheusmarnt\Scoutify\Enums\Color.
+    // Built-in TailwindCSS v4 colors are handled by the enum automatically.
+    // Example: 'coral' => 'bg-coral-100 text-coral-600 dark:bg-coral-900/40 dark:text-coral-300'
+    'colors' => [
+        //
+    ],
     'modal' => ['breakpoint_desktop' => 'md'],
     'broadcast_events' => [
         'open' => 'scoutify:open',

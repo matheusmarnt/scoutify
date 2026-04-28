@@ -1,7 +1,10 @@
 <?php
 
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Support\Facades\Http;
+use Matheusmarnt\Scoutify\Support\LivewireVersion;
+use Matheusmarnt\Scoutify\Tests\Fixtures\Models\Article;
 
 beforeEach(function () {
     config(['scout.driver' => 'meilisearch', 'scout.meilisearch.host' => 'http://localhost:7700']);
@@ -159,4 +162,140 @@ it('exits 1 when typesense returns a non-2xx status', function () {
     Http::fake(['http://localhost:8108/health' => Http::response([], 503)]);
 
     $this->artisan('scoutify:doctor')->assertFailed();
+});
+
+it('checkLivewireScripts passes when @livewireScripts found in version-appropriate layouts dir', function () {
+    Http::fake(['*' => Http::response(['status' => 'available'], 200)]);
+
+    $major = LivewireVersion::major();
+    $dir = $major >= 4
+        ? resource_path('views/layouts')
+        : resource_path('views/components/layouts');
+
+    @mkdir($dir, 0755, true);
+    $file = $dir.'/app.blade.php';
+    file_put_contents($file, '<html><body>@livewireScripts</body></html>');
+
+    $this->artisan('scoutify:doctor')
+        ->expectsOutputToContain('@livewireScripts found');
+
+    unlink($file);
+});
+
+it('checkLivewireScripts warns when no layout files found in version-appropriate dir', function () {
+    Http::fake(['*' => Http::response(['status' => 'available'], 200)]);
+
+    $major = LivewireVersion::major();
+    $dir = $major >= 4
+        ? resource_path('views/layouts')
+        : resource_path('views/components/layouts');
+
+    // Remove any blade files so the glob returns empty
+    foreach (glob("{$dir}/*.blade.php") ?: [] as $f) {
+        unlink($f);
+    }
+
+    $this->artisan('scoutify:doctor')
+        ->expectsOutputToContain('No layout files found');
+});
+
+it('checkLivewireScripts warning includes detected Livewire major version', function () {
+    Http::fake(['*' => Http::response(['status' => 'available'], 200)]);
+
+    $major = LivewireVersion::major();
+    $dir = $major >= 4
+        ? resource_path('views/layouts')
+        : resource_path('views/components/layouts');
+
+    foreach (glob("{$dir}/*.blade.php") ?: [] as $f) {
+        unlink($f);
+    }
+
+    $this->artisan('scoutify:doctor')
+        ->expectsOutputToContain("Livewire {$major}");
+});
+
+it('checkLivewireScripts warns when layout has no @livewireScripts tag', function () {
+    Http::fake(['*' => Http::response(['status' => 'available'], 200)]);
+
+    $major = LivewireVersion::major();
+    $dir = $major >= 4
+        ? resource_path('views/layouts')
+        : resource_path('views/components/layouts');
+
+    @mkdir($dir, 0755, true);
+    $file = $dir.'/app.blade.php';
+    file_put_contents($file, '<html><body>No scripts here</body></html>');
+
+    $this->artisan('scoutify:doctor')
+        ->expectsOutputToContain('@livewireScripts not found');
+
+    unlink($file);
+});
+
+it('checkLivewireScripts finds @livewireScripts in a nested subdirectory', function () {
+    Http::fake(['*' => Http::response(['status' => 'available'], 200)]);
+
+    $major = LivewireVersion::major();
+    $base = $major >= 4
+        ? resource_path('views/layouts')
+        : resource_path('views/components/layouts');
+    $subdir = $base.'/app';
+
+    @mkdir($subdir, 0755, true);
+    $file = $subdir.'/layout.blade.php';
+    file_put_contents($file, '<html><body>@livewireScripts</body></html>');
+
+    $this->artisan('scoutify:doctor')
+        ->expectsOutputToContain('@livewireScripts found');
+
+    unlink($file);
+    @rmdir($subdir);
+});
+
+it('exits 1 when a configured type class does not exist', function () {
+    config(['scoutify.types' => ['App\Models\GhostModel' => ['icon' => 'x', 'color' => 'zinc']]]);
+
+    $this->artisan('scoutify:doctor')
+        ->assertFailed()
+        ->expectsOutputToContain('not found');
+});
+
+it('exits 1 when a configured type does not implement GloballySearchable', function () {
+    config([
+        'scoutify.types' => [
+            Model::class => ['icon' => 'x', 'color' => 'zinc'],
+        ],
+    ]);
+
+    Http::fake(['http://localhost:7700/health' => Http::response(['status' => 'available'], 200)]);
+
+    $this->artisan('scoutify:doctor')
+        ->assertFailed()
+        ->expectsOutputToContain('does not implement GloballySearchable');
+});
+
+it('prints success message when all configured types are valid', function () {
+    config([
+        'scout.driver' => 'algolia',
+        'scout.algolia.id' => 'app-id',
+        'scout.algolia.secret' => 'secret',
+        'scoutify.types' => [
+            Article::class => ['icon' => 'heroicon-o-document', 'color' => 'blue'],
+        ],
+    ]);
+
+    $this->artisan('scoutify:doctor')
+        ->expectsOutputToContain('All configured types exist and implement GloballySearchable');
+});
+
+it('warns about synchronous indexing when SCOUT_QUEUE is false in production', function () {
+    $this->app['env'] = 'production';
+
+    Http::fake(['http://localhost:7700/health' => Http::response(['status' => 'available'], 200)]);
+
+    $this->artisan('scoutify:doctor')
+        ->expectsOutputToContain('SCOUT_QUEUE=false in production');
+
+    $this->app['env'] = 'testing';
 });

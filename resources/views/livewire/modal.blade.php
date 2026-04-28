@@ -3,6 +3,13 @@
     @keydown.window.prevent.ctrl.k="$dispatch('scoutify:open')"
     @keydown.window.prevent.cmd.k="$dispatch('scoutify:open')"
     @keydown.window="if (event.key === '/' && !['INPUT','TEXTAREA','SELECT'].includes(document.activeElement?.tagName) && !document.activeElement?.isContentEditable) { event.preventDefault(); $dispatch('scoutify:open') }"
+    @keydown.arrow-down.window.prevent="if (isOpen && isFocusInside()) nav(1)"
+    @keydown.arrow-up.window.prevent="if (isOpen && isFocusInside()) nav(-1)"
+    @keydown.home.window.prevent="if (isOpen && isFocusInside()) navHome()"
+    @keydown.end.window.prevent="if (isOpen && isFocusInside()) navEnd()"
+    @keydown.page-down.window.prevent="if (isOpen && isFocusInside()) navPageDown()"
+    @keydown.page-up.window.prevent="if (isOpen && isFocusInside()) navPageUp()"
+    @keydown.enter.window.prevent="if (isOpen && isFocusInside()) allResults[activeIdx]?.click()"
 >
     <x-scoutify::gs.shell wire="isOpen" id="scoutify-search">
         {{-- Header: search input --}}
@@ -17,8 +24,9 @@
         </div>
 
         {{-- Filters row --}}
-        @if (count($this->availableTypes) > 1 || count($this->results) > 0)
+        @if (count($this->availableTypes) > 1 || filled($this->query))
             <x-scoutify::gs.filter-row
+                wire:key="scoutify-filter-row"
                 :types="$this->availableTypes"
                 :active-keys="$activeTypes"
                 toggle-action="toggleType"
@@ -63,6 +71,7 @@
                                 :icon="$groupIcon"
                                 :label="$groupLabel"
                                 :total="$groupTotal"
+                                :color="$firstResult['groupColor'] ?? 'zinc'"
                             />
 
                             @foreach ($groupResults as $result)
@@ -71,6 +80,7 @@
                                     :id="'scoutify-result-'.$idx"
                                     :url="$result['url']"
                                     :icon="$result['icon']"
+                                    :group-color="$result['groupColor'] ?? 'zinc'"
                                     :title-html="$result['titleHtml']"
                                     :subtitle-html="$result['subtitleHtml']"
                                     :index="$idx"
@@ -92,10 +102,47 @@
 <script>
     Alpine.data('scoutifyModal', () => ({
         triggerEl: null,
+        activeIdx: 0,
+
+        get allResults() {
+            return [...document.querySelectorAll('#scoutify-listbox [data-search-result]')];
+        },
+
+        nav(delta) {
+            const items = this.allResults;
+            if (! items.length) return;
+            this.activeIdx = ((this.activeIdx + delta) % items.length + items.length) % items.length;
+            items[this.activeIdx]?.scrollIntoView({ block: 'nearest' });
+        },
+
+        navHome() {
+            const i = this.allResults;
+            if (i.length) { this.activeIdx = 0; i[0]?.scrollIntoView({ block: 'nearest' }); }
+        },
+
+        navEnd() {
+            const i = this.allResults;
+            if (i.length) { this.activeIdx = i.length - 1; i[this.activeIdx]?.scrollIntoView({ block: 'nearest' }); }
+        },
+
+        navPageUp() {
+            const i = this.allResults;
+            if (i.length) { this.activeIdx = Math.max(this.activeIdx - 5, 0); i[this.activeIdx]?.scrollIntoView({ block: 'nearest' }); }
+        },
+
+        navPageDown() {
+            const i = this.allResults;
+            if (i.length) { this.activeIdx = Math.min(this.activeIdx + 5, i.length - 1); i[this.activeIdx]?.scrollIntoView({ block: 'nearest' }); }
+        },
+
+        isFocusInside() {
+            return !! document.activeElement?.closest('[data-scoutify-dialog]');
+        },
 
         init() {
             window.addEventListener('scoutify:opened', () => {
                 this.triggerEl = document.activeElement;
+                this.activeIdx = 0;
                 this.$nextTick(() => document.querySelector('[data-focus="gs-input"]')?.focus());
             });
             window.addEventListener('scoutify:closed', () => {
