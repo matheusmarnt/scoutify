@@ -3,7 +3,7 @@
 namespace Matheusmarnt\Scoutify\Console;
 
 use Illuminate\Console\Command;
-use Symfony\Component\Process\Process;
+use Illuminate\Support\Facades\Process;
 
 use function Laravel\Prompts\info;
 use function Laravel\Prompts\select;
@@ -272,8 +272,7 @@ class InstallCommand extends Command
 
     private function runComposerRequire(string ...$packages): void
     {
-        $process = new Process(['composer', 'require', ...$packages, '--no-interaction', '--quiet']);
-        $process->run();
+        Process::run(['composer', 'require', ...$packages, '--no-interaction', '--quiet']);
     }
 
     private function setEnvValue(string $key, string $value): void

@@ -2,8 +2,10 @@
 
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Process;
 
 beforeEach(function () {
+    Process::fake();
     $this->tmpDir = sys_get_temp_dir().'/scoutify-install-'.uniqid();
     mkdir($this->tmpDir, 0755, true);
     mkdir($this->tmpDir.'/config', 0755, true);
