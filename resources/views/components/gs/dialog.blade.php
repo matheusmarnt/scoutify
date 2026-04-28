@@ -70,6 +70,7 @@
         x-transition:leave="motion-safe:transition motion-safe:duration-100 motion-safe:ease-in"
         x-transition:leave-start="opacity-100 translate-y-0 md:scale-100"
         x-transition:leave-end="opacity-0 translate-y-2 md:translate-y-0 md:scale-95"
+        data-scoutify-dialog
         class="{{ $panelClass }}"
     >
         {{ $slot }}
