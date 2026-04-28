@@ -100,17 +100,18 @@ it('returns ResultDto for non-GloballySearchable model', function () {
         ->and($dto->url)->toBe(url('/'));
 });
 
-it('uses globalSearchGroup as label when meta has no label and model is auto-registered', function () {
+it('uses globalSearchLabel dynamically when meta has no label and model is auto-registered', function () {
     Article::create(['name' => 'Fallback Label Test']);
 
     $aggregator = new SearchAggregator([Article::class => []]);
     $groups = $aggregator->search('Fallback');
     $group = $groups->first();
 
-    // Article::globalSearchGroup() returns 'articles', which bootSearchable registers.
-    // When config meta has no label, the registry label ('articles') is used.
+    // When no label is stored in meta, SearchAggregator calls globalSearchLabel() at
+    // request time. Article has no translation key registered, so it falls back to
+    // Str::plural(class_basename(Article::class)) = 'Articles'.
     expect($groups)->not->toBeEmpty()
-        ->and($group->label)->toBe('articles');
+        ->and($group->label)->toBe('Articles');
 });
 
 it('uses GloballySearchable icon and color when meta omits them', function () {

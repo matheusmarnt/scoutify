@@ -13,25 +13,22 @@ afterEach(function () {
 it('availableTypes returns locale-aware label when locale is pt_BR and translation is registered', function () {
     config()->set('scoutify.types', []);
 
-    App::setLocale('pt_BR');
+    // 1. Register the model at en locale (default) — no label stored, resolved dynamically later.
+    app(GlobalSearchRegistry::class)->register(Article::class, [
+        'key'   => Article::globalSearchGroup(),
+        'icon'  => Article::globalSearchIcon(),
+        'color' => Article::globalSearchColor(),
+    ]);
 
+    // 2. Change locale to pt_BR and register the translation.
+    App::setLocale('pt_BR');
     app('translator')->addLines(
         ['scoutify.types.article_plural' => 'Artigos PT'],
         'pt_BR',
         'scoutify'
     );
 
-    // Register the model using the dynamically-resolved label at the active locale.
-    // globalSearchLabel() consults Lang::has() + __() at request time, so with pt_BR
-    // active and the translation key loaded, it returns the Portuguese label.
-    $registry = app(GlobalSearchRegistry::class);
-    $registry->register(Article::class, [
-        'key'   => Article::globalSearchGroup(),
-        'label' => Article::globalSearchLabel(),
-        'icon'  => Article::globalSearchIcon(),
-        'color' => Article::globalSearchColor(),
-    ]);
-
+    // 3. Call availableTypes() — label must be resolved dynamically at request time.
     $component = Livewire::test(Modal::class);
     $types = $component->instance()->availableTypes();
 
@@ -43,20 +40,21 @@ it('availableTypes returns locale-aware label when locale is pt_BR and translati
 it('availableTypes returns English label when locale is en and translation is registered for en', function () {
     config()->set('scoutify.types', []);
 
+    // 1. Register the model without a label (dynamic resolution).
+    app(GlobalSearchRegistry::class)->register(Article::class, [
+        'key'   => Article::globalSearchGroup(),
+        'icon'  => Article::globalSearchIcon(),
+        'color' => Article::globalSearchColor(),
+    ]);
+
+    // 2. Register the en translation (locale stays en).
     app('translator')->addLines(
         ['scoutify.types.article_plural' => 'Articles EN'],
         'en',
         'scoutify'
     );
 
-    $registry = app(GlobalSearchRegistry::class);
-    $registry->register(Article::class, [
-        'key'   => Article::globalSearchGroup(),
-        'label' => Article::globalSearchLabel(),
-        'icon'  => Article::globalSearchIcon(),
-        'color' => Article::globalSearchColor(),
-    ]);
-
+    // 3. Call availableTypes() — label resolved at request time in en locale.
     $component = Livewire::test(Modal::class);
     $types = $component->instance()->availableTypes();
 

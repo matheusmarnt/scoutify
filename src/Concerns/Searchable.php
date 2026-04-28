@@ -45,9 +45,8 @@ trait Searchable
             app(GlobalSearchRegistry::class)->register(
                 static::class,
                 [
-                    'key' => static::globalSearchGroup(),
-                    'label' => static::globalSearchGroup(),
-                    'icon' => static::globalSearchIcon(),
+                    'key'   => static::globalSearchGroup(),
+                    'icon'  => static::globalSearchIcon(),
                     'color' => static::globalSearchColor(),
                 ]
             );

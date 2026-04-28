@@ -13,31 +13,24 @@ afterEach(function () {
 it('mounted Modal availableTypes property contains Portuguese label when APP_LOCALE is pt_BR', function () {
     config()->set('scoutify.types', []);
 
-    App::setLocale('pt_BR');
+    // 1. Register at en locale — no label baked in, resolved dynamically at read time.
+    app(GlobalSearchRegistry::class)->register(Article::class, [
+        'key'   => Article::globalSearchGroup(),
+        'icon'  => Article::globalSearchIcon(),
+        'color' => Article::globalSearchColor(),
+    ]);
 
-    // Register the pt_BR translation key for the Article model type chip.
-    // Key pattern: scoutify.types.<snake_class>_plural → article_plural
+    // 2. Change locale to pt_BR and register the translation.
+    App::setLocale('pt_BR');
     app('translator')->addLines(
         ['scoutify.types.article_plural' => 'Artigos'],
         'pt_BR',
         'scoutify'
     );
 
-    // Register the Article model in the registry.
-    // globalSearchLabel() is called HERE at request time with pt_BR locale active,
-    // which is the behaviour guaranteed by the fix (label not cached at build time).
-    $registry = app(GlobalSearchRegistry::class);
-    $registry->register(Article::class, [
-        'key'   => Article::globalSearchGroup(),
-        'label' => Article::globalSearchLabel(),
-        'icon'  => Article::globalSearchIcon(),
-        'color' => Article::globalSearchColor(),
-    ]);
-
+    // 3. availableTypes() must call globalSearchLabel() dynamically and return 'Artigos'.
     $component = Livewire::test(Modal::class);
-
     $availableTypes = $component->instance()->availableTypes();
-
     $labels = array_column($availableTypes, 'label');
 
     expect($labels)->toContain('Artigos');
@@ -46,29 +39,26 @@ it('mounted Modal availableTypes property contains Portuguese label when APP_LOC
 it('mounted Modal availableTypes label is NOT English fallback when pt_BR translation is active', function () {
     config()->set('scoutify.types', []);
 
-    App::setLocale('pt_BR');
+    // 1. Register at en locale — no label baked in.
+    app(GlobalSearchRegistry::class)->register(Article::class, [
+        'key'   => Article::globalSearchGroup(),
+        'icon'  => Article::globalSearchIcon(),
+        'color' => Article::globalSearchColor(),
+    ]);
 
+    // 2. Change locale to pt_BR and register the translation.
+    App::setLocale('pt_BR');
     app('translator')->addLines(
         ['scoutify.types.article_plural' => 'Artigos'],
         'pt_BR',
         'scoutify'
     );
 
-    $registry = app(GlobalSearchRegistry::class);
-    $registry->register(Article::class, [
-        'key'   => Article::globalSearchGroup(),
-        'label' => Article::globalSearchLabel(),
-        'icon'  => Article::globalSearchIcon(),
-        'color' => Article::globalSearchColor(),
-    ]);
-
+    // 3. With dynamic resolution, label must be 'Artigos', not the English fallback 'Articles'.
     $component = Livewire::test(Modal::class);
-
     $availableTypes = $component->instance()->availableTypes();
     $labels = array_column($availableTypes, 'label');
 
-    // With the fix in place, label is resolved at request time via globalSearchLabel(),
-    // so it must be 'Artigos', not the English fallback 'Articles'.
     expect($labels)->not->toContain('Articles')
         ->and($labels)->toContain('Artigos');
 });
