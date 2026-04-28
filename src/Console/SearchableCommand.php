@@ -85,6 +85,12 @@ class SearchableCommand extends Command
             }
         }
 
+        if (! $dryRun) {
+            $this->newLine();
+            $this->line('  Rebuilding manifest...');
+            $this->call('scoutify:rebuild');
+        }
+
         return self::SUCCESS;
     }
 

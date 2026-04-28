@@ -21,7 +21,7 @@ final class TypeManifest
 
     public static function build(): array
     {
-        $paths = config('scoutify.discovery.paths', [app_path('Models')]);
+        $paths = config('scoutify.discovery.paths') ?: [app_path('Models')];
         $manifest = [];
 
         foreach ($paths as $dir) {

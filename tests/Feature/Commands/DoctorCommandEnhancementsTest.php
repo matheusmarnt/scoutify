@@ -45,7 +45,7 @@ it('warns when no types configured', function () {
     ]);
 
     $this->artisan('scoutify:doctor')
-        ->expectsOutputToContain('No types configured');
+        ->expectsOutputToContain('No types discovered');
 });
 
 it('warns when @livewireScripts not found', function () {
