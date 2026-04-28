@@ -148,6 +148,7 @@ class DoctorCommand extends Command
         $host = config('scout.meilisearch.host', 'http://localhost:7700');
 
         $this->line("  Meilisearch host: <info>{$host}</info>");
+        $this->warn('  ⚠  Meilisearch uses word-boundary prefix search. Substrings that are not word prefixes (e.g. "ano" in "Mariano") return no results. Override globalSearchBuilder() on your model for custom matching, or switch to the database driver for LIKE-based substring search.');
 
         try {
             $response = Http::timeout(5)->get("{$host}/health");

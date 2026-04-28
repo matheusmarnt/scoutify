@@ -23,4 +23,6 @@ interface GloballySearchable
     public static function globalSearchIcon(): string;
 
     public static function globalSearchColor(): string;
+
+    public function globalSearchBuilder(\Laravel\Scout\Builder $builder, string $query): \Laravel\Scout\Builder;
 }

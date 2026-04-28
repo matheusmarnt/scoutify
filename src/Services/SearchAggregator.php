@@ -63,6 +63,11 @@ final class SearchAggregator
                 /** @var Builder $builder */
                 $builder = $modelClass::search($query)->take($limit);
 
+                $instance = new $modelClass;
+                if (method_exists($instance, 'globalSearchBuilder')) {
+                    $builder = $instance->globalSearchBuilder($builder, $query);
+                }
+
                 if ($includeTrashed && in_array(SoftDeletes::class, class_uses_recursive($modelClass))) {
                     $builder->withTrashed();
                 }
