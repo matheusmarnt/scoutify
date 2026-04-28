@@ -63,6 +63,7 @@
                                 :icon="$groupIcon"
                                 :label="$groupLabel"
                                 :total="$groupTotal"
+                                :color="$firstResult['groupColor'] ?? 'zinc'"
                             />
 
                             @foreach ($groupResults as $result)
@@ -71,6 +72,7 @@
                                     :id="'scoutify-result-'.$idx"
                                     :url="$result['url']"
                                     :icon="$result['icon']"
+                                    :group-color="$result['groupColor'] ?? 'zinc'"
                                     :title-html="$result['titleHtml']"
                                     :subtitle-html="$result['subtitleHtml']"
                                     :index="$idx"

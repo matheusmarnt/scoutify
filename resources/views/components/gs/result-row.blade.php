@@ -2,13 +2,17 @@
     'id' => null,
     'url',
     'icon',
-    'tileClasses' => 'bg-zinc-100 text-zinc-600',
+    'groupColor' => 'zinc',
     'titleHtml',
     'subtitleHtml' => null,
     'index' => 0,
     'closeOnClick' => true,
     'rememberQuery' => null,
 ])
+
+@php
+    $tileClasses = config("scoutify.colors.$groupColor", config('scoutify.colors.zinc', 'bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400'));
+@endphp
 
 <a
     @if ($id) id="{{ $id }}" @endif
