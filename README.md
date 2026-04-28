@@ -21,8 +21,10 @@ Drops a production-ready ⌘K search experience into any Laravel application. Re
 ## Features
 
 - **Livewire modal** — keyboard-triggered (`⌘K` / `Ctrl+K`) global search dialog
-- **Grouped results** — results organised by model type with section headers
+- **Zero-config discovery** — models under `app/Models/` using `Searchable` are auto-detected at boot
+- **Grouped results** — results organised by model type with section headers and color tokens
 - **Multiple drivers** — Meilisearch, Algolia, Typesense, or Database
+- **Query hook** — per-model `globalSearchBuilder()` for custom filters, scopes, or infix matching
 - **Recent searches** — configurable history, persisted to session
 - **i18n** — ships with `pt_BR`, `en`, and `es` translations
 - **Dark mode** — full dark mode support out of the box
@@ -56,40 +58,22 @@ The command discovers Eloquent models under `app/Models/`, prompts you to pick w
 2. Add `implements GloballySearchable` to the class declaration
 3. Insert `use Searchable;` as the first statement in the class body
 
-The `Searchable` trait already provides sensible defaults for every interface method (`globalSearchTitle`, `globalSearchUrl`, etc.), so your model is searchable instantly. Override any method later for custom behavior:
+The command then rebuilds the type manifest so models appear in the UI immediately.
+
+The `Searchable` trait provides sensible defaults for every interface method. Override as needed:
 
 ```php
-public function globalSearchTitle(): string
-{
-    return $this->title;
-}
+public function globalSearchTitle(): string      { return $this->title; }
+public function globalSearchSubtitle(): ?string  { return $this->author; }
+public function globalSearchUrl(): string        { return route('articles.show', $this); }
 
-public function globalSearchUrl(): string
-{
-    return route('articles.show', $this);
-}
-
-public static function globalSearchGroup(): string
-{
-    return 'Articles';
-}
-
-public static function globalSearchIcon(): string
-{
-    return 'heroicon-o-document-text';
-}
-
-public static function globalSearchColor(): string
-{
-    return 'blue';
-}
+public static function globalSearchGroup(): string  { return 'Articles'; }
+public static function globalSearchLabel(): string  { return 'Articles'; }  // UI chip label
+public static function globalSearchIcon(): string   { return 'heroicon-o-document-text'; }
+public static function globalSearchColor(): string  { return 'blue'; }
 ```
 
-Re-running the command is safe — it tops up only what's missing on partially-registered models.
-
-> **Note:** The registration command rewrites the model file using a PHP pretty-printer, which normalises whitespace and formatting across the entire file. Commit your model file (or ensure it's clean) before running the command if you want a minimal diff.
-
-Use `--dry-run` to preview the planned edits without touching files:
+Use `--dry-run` to preview edits without touching files:
 
 ```bash
 php artisan scoutify:searchable --dry-run
@@ -107,6 +91,21 @@ Add to your layout:
 <x-scoutify::gs.trigger />
 <livewire:scoutify::modal />
 ```
+
+## Customizing the Scout Query
+
+Override `globalSearchBuilder()` on any model to apply custom filters, scopes, or driver-specific options:
+
+```php
+use Laravel\Scout\Builder;
+
+public function globalSearchBuilder(Builder $builder, string $query): Builder
+{
+    return $builder->where('published', true);
+}
+```
+
+> **Meilisearch note:** Meilisearch uses word-boundary prefix search. Substrings that are not word-prefixes (e.g. `"ano"` inside `"Mariano"`) return no results. If you need substring (infix) matching, override `globalSearchBuilder()` to configure Meilisearch's `attributesToSearchOn` or switch to the `database` driver which uses `LIKE`-based search.
 
 ## Opening the Modal Programmatically
 
@@ -135,7 +134,8 @@ window.dispatchEvent(new CustomEvent('scoutify:open'))
 |---|---|
 | `scoutify:install` | Install driver packages, publish config, configure backend |
 | `scoutify:doctor` | Verify driver config and backend connectivity |
-| `scoutify:searchable` | Register models as globally searchable |
+| `scoutify:searchable` | Register models as globally searchable and rebuild manifest |
+| `scoutify:rebuild` | Rebuild the type manifest from `app/Models/` |
 | `scoutify:import` | Import registered models into Scout index |
 | `scoutify:flush` | Flush registered models from Scout index |
 | `scoutify:sync` | Flush then re-import |

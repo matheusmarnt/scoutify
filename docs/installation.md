@@ -40,6 +40,8 @@ The installer prompts for a Scout driver (`meilisearch`, `algolia`, or `typesens
 
 The installer detects Sail, runs `sail:add meilisearch`, and sets `MEILISEARCH_HOST=http://meilisearch:7700` in `.env`.
 
+> **Meilisearch search behaviour:** Meilisearch uses word-boundary prefix search. Substrings that are not word-prefixes (e.g. `"ano"` inside `"Mariano"`) return no results. Override `globalSearchBuilder()` on your model for custom matching, or switch to the `database` driver for `LIKE`-based substring search. See [Query customization](#query-customization) below.
+
 ### Meilisearch (host)
 
 ```bash
@@ -93,6 +95,8 @@ Discovers Eloquent models under `app/Models/`, prompts which to register, and au
 3. Insert `use Searchable;` as the first statement in the class body
 4. Inject a concrete `globalSearchUrl()` method (auto-resolved via cascade)
 
+After editing, the command **automatically rebuilds the type manifest** so registered models appear in the UI without any additional steps.
+
 **Example — User model with a Filament resource:**
 
 ```php
@@ -115,11 +119,12 @@ class User extends Model implements GloballySearchable
 **Override trait defaults on the model:**
 
 ```php
-public function globalSearchTitle(): string     { return $this->full_name; }
-public function globalSearchSubtitle(): ?string { return $this->email; }
-public static function globalSearchGroup(): string { return 'Team Members'; }
-public static function globalSearchIcon(): string  { return 'heroicon-o-user'; }
-public static function globalSearchColor(): string { return 'blue'; }
+public function globalSearchTitle(): string      { return $this->full_name; }
+public function globalSearchSubtitle(): ?string  { return $this->email; }
+public static function globalSearchGroup(): string  { return 'Team Members'; }
+public static function globalSearchLabel(): string  { return 'Team Members'; }  // UI chip label
+public static function globalSearchIcon(): string   { return 'heroicon-o-user'; }
+public static function globalSearchColor(): string  { return 'blue'; }
 ```
 
 **URL resolution cascade** (used both at registration time and at runtime):
@@ -133,10 +138,20 @@ public static function globalSearchColor(): string { return 'blue'; }
 
 Flags: `--dry-run` (preview without writing), `--no-stubs` (skip injecting `globalSearchUrl`), `--all` (register all discovered models).
 
+> **Note:** The registration command rewrites the model file using a PHP pretty-printer, which normalises whitespace and formatting across the entire file. Commit your model file (or ensure it's clean) before running the command if you want a minimal diff.
+
 ## 4. Import data
 
 ```bash
 php artisan scoutify:import
+```
+
+Imports all discovered and configured models into the Scout index. No manual configuration needed — the command reads from both the auto-discovered type manifest and `config/scoutify.types`.
+
+Import a specific model:
+
+```bash
+php artisan scoutify:import "App\Models\User"
 ```
 
 ## 5. Add to your layout
@@ -175,6 +190,34 @@ Result rows use `wire:navigate`. Your layout must include `@livewireScripts`:
 
 Without it, clicks fall back to full-page reloads.
 
+## Query Customization
+
+Override `globalSearchBuilder()` on any model to apply custom filters, scopes, or driver-specific options:
+
+```php
+use Laravel\Scout\Builder;
+
+public function globalSearchBuilder(Builder $builder, string $query): Builder
+{
+    return $builder->where('published', true)->where('tenant_id', auth()->user()->tenant_id);
+}
+```
+
+**Meilisearch infix matching** — Meilisearch only matches word prefixes by default. To support substring search (e.g. `"ano"` matching `"Mariano"`), configure `attributesToSearchOn` via the Meilisearch SDK and override the builder:
+
+```php
+use Laravel\Scout\Builder;
+
+public function globalSearchBuilder(Builder $builder, string $query): Builder
+{
+    // Requires the Meilisearch index to have 'attributesToSearchOn' configured
+    // for the relevant fields. See Meilisearch docs on infix search settings.
+    return $builder;
+}
+```
+
+Alternatively, switch to the `database` driver for `LIKE`-based substring search (no external service required).
+
 ## Customization
 
 ### CSS class overrides
@@ -204,11 +247,20 @@ php artisan vendor:publish --tag=scoutify-views
 php artisan vendor:publish --tag=scoutify-translations
 ```
 
+## Rebuilding the Type Manifest
+
+Scoutify caches discovered model types at `bootstrap/cache/scoutify-types.php`. `scoutify:searchable` rebuilds it automatically. Rebuild manually if you add or remove the `Searchable` trait without using the command:
+
+```bash
+php artisan scoutify:rebuild
+```
+
 ## Updating
 
 ```bash
 composer update matheusmarnt/scoutify
 php artisan vendor:publish --tag=scoutify-config --force
+php artisan scoutify:rebuild
 php artisan scoutify:doctor
 ```
 
@@ -224,4 +276,4 @@ php artisan scoutify:sync
 php artisan scoutify:doctor
 ```
 
-Checks driver configuration and backend connectivity. Exit code `0` = healthy, `1` = issue found (usable in CI health checks).
+Checks driver configuration and backend connectivity. Warns if no types are registered (config + registry both empty), if `@livewireScripts` is missing from layouts, and if Meilisearch's word-boundary search may cause unexpected empty results. Exit code `0` = healthy, `1` = issue found (usable in CI health checks).
