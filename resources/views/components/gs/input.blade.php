@@ -17,7 +17,7 @@
     @endif
 
     <input
-        x-model.debounce.250ms="value"
+        x-model="value"
         {{ $attributes->merge([
             'class' => $inputClass . ' '
                 . ($hasIcon ? 'pl-9 ' : 'pl-3 ')

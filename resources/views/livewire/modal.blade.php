@@ -17,8 +17,9 @@
         </div>
 
         {{-- Filters row --}}
-        @if (count($this->availableTypes) > 1 || count($this->results) > 0)
+        @if (count($this->availableTypes) > 1 || filled($this->query))
             <x-scoutify::gs.filter-row
+                wire:key="scoutify-filter-row"
                 :types="$this->availableTypes"
                 :active-keys="$activeTypes"
                 toggle-action="toggleType"
