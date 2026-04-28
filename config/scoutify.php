@@ -15,6 +15,11 @@ return [
         'toggle_active' => 'bg-indigo-600 dark:bg-indigo-500',
         'toggle_inactive' => 'bg-zinc-200 dark:bg-zinc-700',
     ],
+    'discovery' => [
+        'paths' => [
+            // app_path('Models'),
+        ],
+    ],
     'modal' => ['breakpoint_desktop' => 'md'],
     'broadcast_events' => [
         'open' => 'scoutify:open',

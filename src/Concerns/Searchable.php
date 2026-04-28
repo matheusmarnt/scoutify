@@ -2,6 +2,7 @@
 
 namespace Matheusmarnt\Scoutify\Concerns;
 
+use Illuminate\Support\Facades\Lang;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Str;
 use Laravel\Folio\Folio;
@@ -117,6 +118,15 @@ trait Searchable
     public static function globalSearchColor(): string
     {
         return 'gray';
+    }
+
+    public static function globalSearchLabel(): string
+    {
+        $key = 'scoutify::scoutify.types.'.Str::snake(class_basename(static::class)).'_plural';
+
+        return Lang::has($key)
+            ? __($key)
+            : Str::plural(class_basename(static::class));
     }
 
     private function resolveFilamentResourceUrl(): ?string

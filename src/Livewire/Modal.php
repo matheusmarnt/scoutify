@@ -7,6 +7,7 @@ use Livewire\Attributes\Computed;
 use Livewire\Attributes\On;
 use Livewire\Component;
 use Matheusmarnt\Scoutify\Services\SearchAggregator;
+use Matheusmarnt\Scoutify\Support\GlobalSearchRegistry;
 use Matheusmarnt\Scoutify\Support\Highlighter;
 
 class Modal extends Component
@@ -142,11 +143,23 @@ class Modal extends Component
     #[Computed]
     public function availableTypes(): array
     {
-        return array_map(
-            fn ($key, $meta) => array_merge(['key' => $key], $meta),
-            array_keys(config('scoutify.types', [])),
-            array_values(config('scoutify.types', [])),
-        );
+        $registryTypes = app()->bound(GlobalSearchRegistry::class)
+            ? app(GlobalSearchRegistry::class)->all()
+            : [];
+
+        $configTypes = config('scoutify.types', []);
+
+        // Merge: registry base, config overrides per-key metadata
+        $merged = $registryTypes;
+        foreach ($configTypes as $class => $meta) {
+            $merged[$class] = array_merge($merged[$class] ?? [], $meta);
+        }
+
+        return array_values(array_map(
+            fn ($class, $meta) => array_merge(['key' => $meta['key'] ?? $class], $meta),
+            array_keys($merged),
+            array_values($merged),
+        ));
     }
 
     public function render(): View
