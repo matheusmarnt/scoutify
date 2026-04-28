@@ -1,8 +1,10 @@
 <?php
 
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Support\Facades\Http;
 use Matheusmarnt\Scoutify\Support\LivewireVersion;
+use Matheusmarnt\Scoutify\Tests\Fixtures\Models\Article;
 
 beforeEach(function () {
     config(['scout.driver' => 'meilisearch', 'scout.meilisearch.host' => 'http://localhost:7700']);
@@ -262,7 +264,7 @@ it('exits 1 when a configured type class does not exist', function () {
 it('exits 1 when a configured type does not implement GloballySearchable', function () {
     config([
         'scoutify.types' => [
-            \Illuminate\Database\Eloquent\Model::class => ['icon' => 'x', 'color' => 'zinc'],
+            Model::class => ['icon' => 'x', 'color' => 'zinc'],
         ],
     ]);
 
@@ -279,7 +281,7 @@ it('prints success message when all configured types are valid', function () {
         'scout.algolia.id' => 'app-id',
         'scout.algolia.secret' => 'secret',
         'scoutify.types' => [
-            \Matheusmarnt\Scoutify\Tests\Fixtures\Models\Article::class => ['icon' => 'heroicon-o-document', 'color' => 'blue'],
+            Article::class => ['icon' => 'heroicon-o-document', 'color' => 'blue'],
         ],
     ]);
 
