@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.5.1](https://github.com/matheusmarnt/scoutify/compare/v1.5.0...v1.5.1) (2026-04-28)
+
+
+### Bug Fixes
+
+* type chip labels respect APP_LOCALE (dynamic label resolution) ([#42](https://github.com/matheusmarnt/scoutify/issues/42)) ([0a9b0c0](https://github.com/matheusmarnt/scoutify/commit/0a9b0c0e214822573d95218e1d39d397a1e431d2))
+
 ## [1.5.0](https://github.com/matheusmarnt/scoutify/compare/v1.4.0...v1.5.0) (2026-04-28)
 
 
