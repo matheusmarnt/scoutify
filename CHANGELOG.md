@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.5.3](https://github.com/matheusmarnt/scoutify/compare/v1.5.2...v1.5.3) (2026-04-28)
+
+
+### Bug Fixes
+
+* expose isOpen getter in scoutifyModal to fix keyboard nav ReferenceError ([#46](https://github.com/matheusmarnt/scoutify/issues/46)) ([4722655](https://github.com/matheusmarnt/scoutify/commit/472265560e626b8bb01d5b1230fdd75af5a42d6c))
+
 ## [1.5.2](https://github.com/matheusmarnt/scoutify/compare/v1.5.1...v1.5.2) (2026-04-28)
 
 
