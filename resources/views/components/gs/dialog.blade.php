@@ -9,26 +9,20 @@
     $panelClass = config('scoutify.classes.dialog_panel', '');
 @endphp
 
+{{--
+    NOTE: No x-data here intentionally.
+    This component renders inside scoutifyModal()'s Alpine scope so that
+    result-rows can access $root.activeIdx via the correct (outer) scope.
+    A nested x-data would make $root point here instead of scoutifyModal,
+    breaking keyboard navigation highlighting entirely.
+    Body overflow and scoutify:opened/closed are managed in modal.blade.php.
+--}}
 <div
-    x-data="{
-        open: @entangle($wire),
-        init() {
-            this.$watch('open', value => {
-                if (value) {
-                    document.body.classList.add('overflow-hidden');
-                    this.$nextTick(() => window.dispatchEvent(new CustomEvent('scoutify:opened')));
-                } else {
-                    document.body.classList.remove('overflow-hidden');
-                    window.dispatchEvent(new CustomEvent('scoutify:closed'));
-                }
-            });
-        },
-    }"
     x-cloak
-    x-show="open"
-    @keydown.escape.window="open = false"
+    x-show="isOpen"
+    @keydown.escape.window="if (isOpen) $wire.close()"
     @keydown.window="
-        if (open && event.altKey && /^[1-9]$/.test(event.key)) {
+        if (isOpen && event.altKey && /^[1-9]$/.test(event.key)) {
             event.preventDefault();
             const idx = parseInt(event.key) - 1;
             document.querySelectorAll('[data-search-result]')[idx]?.click();
@@ -42,14 +36,14 @@
 >
     {{-- Scrim --}}
     <div
-        x-show="open"
+        x-show="isOpen"
         x-transition:enter="motion-safe:transition motion-safe:duration-150"
         x-transition:enter-start="opacity-0"
         x-transition:enter-end="opacity-100"
         x-transition:leave="motion-safe:transition motion-safe:duration-100"
         x-transition:leave-start="opacity-100"
         x-transition:leave-end="opacity-0"
-        @click="open = false"
+        @click="$wire.close()"
         class="{{ $scrimClass }}"
         aria-hidden="true"
     ></div>
@@ -60,10 +54,10 @@
         x-trap.noscroll.inert="open" is therefore OMITTED here.
         Focus management relies on the existing listener in modal.blade.php
         which listens for `scoutify:opened` and focuses [data-focus="gs-input"].
-        Click-outside is handled by the scrim's @click="open = false".
+        Click-outside is handled by the scrim's @click.
     --}}
     <div
-        x-show="open"
+        x-show="isOpen"
         x-transition:enter="motion-safe:transition motion-safe:duration-150 motion-safe:ease-out"
         x-transition:enter-start="opacity-0 translate-y-2 md:translate-y-0 md:scale-95"
         x-transition:enter-end="opacity-100 translate-y-0 md:scale-100"

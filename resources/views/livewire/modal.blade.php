@@ -140,7 +140,13 @@
         },
 
         isFocusInside() {
-            return !! document.activeElement?.closest('[data-scoutify-dialog]');
+            const active = document.activeElement;
+            // If focus is on body/html (e.g. temporarily lost during Livewire morph),
+            // allow nav as long as the modal is open — don't silently block keys.
+            if (!active || active === document.body || active === document.documentElement) {
+                return this.isOpen;
+            }
+            return !! active.closest('[data-scoutify-dialog]');
         },
 
         init() {
@@ -148,11 +154,13 @@
                 this.$wire.call('open');
             });
             window.addEventListener('scoutify:opened', () => {
+                document.body.classList.add('overflow-hidden');
                 this.triggerEl = document.activeElement;
                 this.activeIdx = 0;
                 this.$nextTick(() => document.querySelector('[data-focus="gs-input"]')?.focus());
             });
             window.addEventListener('scoutify:closed', () => {
+                document.body.classList.remove('overflow-hidden');
                 this.$nextTick(() => this.triggerEl?.focus());
             });
 
