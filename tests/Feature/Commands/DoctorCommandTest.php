@@ -230,3 +230,23 @@ it('checkLivewireScripts warns when layout has no @livewireScripts tag', functio
 
     unlink($file);
 });
+
+it('checkLivewireScripts finds @livewireScripts in a nested subdirectory', function () {
+    Http::fake(['*' => Http::response(['status' => 'available'], 200)]);
+
+    $major = LivewireVersion::major();
+    $base = $major >= 4
+        ? resource_path('views/layouts')
+        : resource_path('views/components/layouts');
+    $subdir = $base.'/app';
+
+    @mkdir($subdir, 0755, true);
+    $file = $subdir.'/layout.blade.php';
+    file_put_contents($file, '<html><body>@livewireScripts</body></html>');
+
+    $this->artisan('scoutify:doctor')
+        ->expectsOutputToContain('@livewireScripts found');
+
+    unlink($file);
+    @rmdir($subdir);
+});

@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Http;
 use Matheusmarnt\Scoutify\Contracts\GloballySearchable;
 use Matheusmarnt\Scoutify\Support\GlobalSearchRegistry;
 use Matheusmarnt\Scoutify\Support\LivewireVersion;
+use Symfony\Component\Finder\Finder;
 
 class DoctorCommand extends Command
 {
@@ -96,10 +97,19 @@ class DoctorCommand extends Command
             ? resource_path('views/layouts')
             : resource_path('views/components/layouts');
 
-        $layouts = glob("{$dir}/*.blade.php") ?: [];
+        if (! is_dir($dir)) {
+            $this->warn("  No layout files found in {$dir} (Livewire {$major}). Ensure @livewireScripts is in your app layout.");
+
+            return true;
+        }
+
+        $layouts = iterator_to_array(
+            (new Finder)->in($dir)->files()->name('*.blade.php'),
+            false,
+        );
 
         foreach ($layouts as $layout) {
-            $content = (string) file_get_contents($layout);
+            $content = (string) file_get_contents($layout->getRealPath());
             if (str_contains($content, '@livewireScripts') || str_contains($content, "@livewire('scripts')")) {
                 $this->line("  <info>✓</info> @livewireScripts found in layout (Livewire {$major}).");
 
