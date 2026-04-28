@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Support\Facades\App;
 use Matheusmarnt\Scoutify\Tests\Fixtures\Models\Article;
 
 it('returns translation from lang file when key exists for active locale', function () {
@@ -15,7 +16,7 @@ it('returns translation from lang file when key exists for active locale', funct
 });
 
 it('returns pt_BR translation when locale is set to pt_BR and key exists', function () {
-    \Illuminate\Support\Facades\App::setLocale('pt_BR');
+    App::setLocale('pt_BR');
 
     app('translator')->addLines(
         ['scoutify.types.article_plural' => 'Artigos'],
@@ -27,5 +28,5 @@ it('returns pt_BR translation when locale is set to pt_BR and key exists', funct
 
     expect($label)->toBe('Artigos');
 
-    \Illuminate\Support\Facades\App::setLocale('en');
+    App::setLocale('en');
 });

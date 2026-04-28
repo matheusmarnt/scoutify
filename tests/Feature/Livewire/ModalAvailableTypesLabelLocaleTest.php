@@ -15,8 +15,8 @@ it('availableTypes returns locale-aware label when locale is pt_BR and translati
 
     // 1. Register the model at en locale (default) — no label stored, resolved dynamically later.
     app(GlobalSearchRegistry::class)->register(Article::class, [
-        'key'   => Article::globalSearchGroup(),
-        'icon'  => Article::globalSearchIcon(),
+        'key' => Article::globalSearchGroup(),
+        'icon' => Article::globalSearchIcon(),
         'color' => Article::globalSearchColor(),
     ]);
 
@@ -42,8 +42,8 @@ it('availableTypes returns English label when locale is en and translation is re
 
     // 1. Register the model without a label (dynamic resolution).
     app(GlobalSearchRegistry::class)->register(Article::class, [
-        'key'   => Article::globalSearchGroup(),
-        'icon'  => Article::globalSearchIcon(),
+        'key' => Article::globalSearchGroup(),
+        'icon' => Article::globalSearchIcon(),
         'color' => Article::globalSearchColor(),
     ]);
 

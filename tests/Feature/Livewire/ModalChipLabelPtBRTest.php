@@ -15,8 +15,8 @@ it('mounted Modal availableTypes property contains Portuguese label when APP_LOC
 
     // 1. Register at en locale — no label baked in, resolved dynamically at read time.
     app(GlobalSearchRegistry::class)->register(Article::class, [
-        'key'   => Article::globalSearchGroup(),
-        'icon'  => Article::globalSearchIcon(),
+        'key' => Article::globalSearchGroup(),
+        'icon' => Article::globalSearchIcon(),
         'color' => Article::globalSearchColor(),
     ]);
 
@@ -41,8 +41,8 @@ it('mounted Modal availableTypes label is NOT English fallback when pt_BR transl
 
     // 1. Register at en locale — no label baked in.
     app(GlobalSearchRegistry::class)->register(Article::class, [
-        'key'   => Article::globalSearchGroup(),
-        'icon'  => Article::globalSearchIcon(),
+        'key' => Article::globalSearchGroup(),
+        'icon' => Article::globalSearchIcon(),
         'color' => Article::globalSearchColor(),
     ]);
 
