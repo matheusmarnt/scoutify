@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.5.2](https://github.com/matheusmarnt/scoutify/compare/v1.5.1...v1.5.2) (2026-04-28)
+
+
+### Bug Fixes
+
+* window listener in scoutifyModal init opens modal from custom triggers ([#44](https://github.com/matheusmarnt/scoutify/issues/44)) ([c9d0902](https://github.com/matheusmarnt/scoutify/commit/c9d0902ea52be1ea38c55f0129e50f890bbdfb4f))
+
 ## [1.5.1](https://github.com/matheusmarnt/scoutify/compare/v1.5.0...v1.5.1) (2026-04-28)
 
 
