@@ -72,7 +72,7 @@ class DoctorCommand extends Command
         if ($ok && ! empty($types)) {
             $this->line('  <info>✓</info> All configured types exist and implement GloballySearchable.');
         } elseif (empty($types)) {
-            $this->warn('  No types configured in scoutify.types. Add models to enable global search. Run php artisan scoutify:rebuild if you just added a Searchable model.');
+            $this->warn('  No types discovered (config + registry both empty). Mark models with Searchable trait, then run scoutify:rebuild.');
         }
 
         return $ok;

@@ -47,8 +47,8 @@ class ScoutifyServiceProvider extends PackageServiceProvider
             $registry->register($class, $meta);
         }
 
-        // If manifest is absent, build it (one-time, non-blocking)
-        if (! is_file(TypeManifest::path())) {
+        // If manifest is absent or empty, build it (one-time, non-blocking)
+        if (! is_file(TypeManifest::path()) || empty(TypeManifest::load())) {
             try {
                 TypeManifest::write(TypeManifest::build());
                 // Re-populate now that manifest is fresh

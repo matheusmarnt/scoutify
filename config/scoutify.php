@@ -17,7 +17,7 @@ return [
     ],
     'discovery' => [
         'paths' => [
-            // app_path('Models'),
+            app_path('Models'),
         ],
     ],
     // Extension point for custom color tokens not in Matheusmarnt\Scoutify\Enums\Color.
