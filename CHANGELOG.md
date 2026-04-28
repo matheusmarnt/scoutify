@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.5.0](https://github.com/matheusmarnt/scoutify/compare/v1.4.0...v1.5.0) (2026-04-28)
+
+
+### Features
+
+* zero-config auto-discovery, color tokens, keyboard nav, filter row stability ([#40](https://github.com/matheusmarnt/scoutify/issues/40)) ([83cb937](https://github.com/matheusmarnt/scoutify/commit/83cb9374892b4a46ff49fd9395f12e420a550b35))
+
 ## [1.4.0](https://github.com/matheusmarnt/scoutify/compare/v1.3.4...v1.4.0) (2026-04-27)
 
 
