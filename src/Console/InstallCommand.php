@@ -44,6 +44,7 @@ class InstallCommand extends Command
         );
 
         $this->call('vendor:publish', ['--tag' => 'scoutify-config']);
+        $this->call('vendor:publish', ['--provider' => 'Laravel\\Scout\\ScoutServiceProvider']);
 
         $this->injectTailwindImport();
 
@@ -93,7 +94,7 @@ class InstallCommand extends Command
             $hasService = $this->composeFilesContain('meilisearch:');
 
             if (! $hasService && $this->getApplication()?->has('sail:add')) {
-                $this->info('Sail detected. Adding meilisearch service to docker-compose.yml...');
+                $this->info('Sail detected. Adding meilisearch service to compose.yaml...');
                 $this->call('sail:add', ['services' => 'meilisearch']);
             }
 
@@ -111,7 +112,7 @@ class InstallCommand extends Command
             $hasService = $this->composeFilesContain('typesense:');
 
             if (! $hasService && $this->getApplication()?->has('sail:add')) {
-                $this->info('Sail detected. Adding typesense service to docker-compose.yml...');
+                $this->info('Sail detected. Adding typesense service to compose.yaml...');
                 $this->call('sail:add', ['services' => 'typesense']);
             }
 
@@ -134,28 +135,30 @@ class InstallCommand extends Command
     private function configureForDocker(string $driver): void
     {
         if ($driver === 'meilisearch') {
-            $stubDest = base_path('docker-compose.scoutify.yml');
+            $stubDest = base_path('compose.scoutify.yaml');
+            $composeFile = $this->detectComposeFile() ?? 'compose.yaml';
 
             if (! file_exists($stubDest)) {
-                copy(__DIR__.'/../../stubs/docker-compose.scoutify.yml', $stubDest);
-                $this->info('Created docker-compose.scoutify.yml at project root.');
+                copy(__DIR__.'/../../stubs/compose.scoutify.yaml', $stubDest);
+                $this->info('Created compose.scoutify.yaml at project root.');
             }
 
             $this->updateEnvValue('MEILISEARCH_HOST', 'http://meilisearch:7700', 'http://localhost:7700');
 
             $this->newLine();
-            $this->line('  <comment>Next:</comment> docker compose -f docker-compose.yml -f docker-compose.scoutify.yml up -d');
-            $this->line('  <comment>Note:</comment> Add `meilisearch` to your app service\'s depends_on in docker-compose.yml.');
+            $this->line("  <comment>Next:</comment> docker compose -f {$composeFile} -f compose.scoutify.yaml up -d");
+            $this->line("  <comment>Note:</comment> Add \`meilisearch\` to your app service's depends_on in {$composeFile}.");
 
             return;
         }
 
         if ($driver === 'typesense') {
-            $stubDest = base_path('docker-compose.scoutify.yml');
+            $stubDest = base_path('compose.scoutify.yaml');
+            $composeFile = $this->detectComposeFile() ?? 'compose.yaml';
 
             if (! file_exists($stubDest)) {
-                copy(__DIR__.'/../../stubs/docker-compose.typesense.yml', $stubDest);
-                $this->info('Created docker-compose.scoutify.yml at project root.');
+                copy(__DIR__.'/../../stubs/compose.scoutify.typesense.yaml', $stubDest);
+                $this->info('Created compose.scoutify.yaml at project root.');
             }
 
             $this->updateEnvValue('TYPESENSE_HOST', 'typesense', 'localhost');
@@ -164,8 +167,8 @@ class InstallCommand extends Command
             $this->setEnvValue('TYPESENSE_API_KEY', 'xyz');
 
             $this->newLine();
-            $this->line('  <comment>Next:</comment> docker compose -f docker-compose.yml -f docker-compose.scoutify.yml up -d');
-            $this->line('  <comment>Note:</comment> Add `typesense` to your app service\'s depends_on in docker-compose.yml.');
+            $this->line("  <comment>Next:</comment> docker compose -f {$composeFile} -f compose.scoutify.yaml up -d");
+            $this->line("  <comment>Note:</comment> Add \`typesense\` to your app service's depends_on in {$composeFile}.");
 
             return;
         }
@@ -173,6 +176,17 @@ class InstallCommand extends Command
         if ($driver === 'algolia') {
             $this->configureAlgoliaCredentials();
         }
+    }
+
+    private function detectComposeFile(): ?string
+    {
+        foreach (['compose.yaml', 'compose.yml', 'docker-compose.yaml', 'docker-compose.yml'] as $file) {
+            if (file_exists(base_path($file))) {
+                return $file;
+            }
+        }
+
+        return null;
     }
 
     private function configureForHost(string $driver): void
