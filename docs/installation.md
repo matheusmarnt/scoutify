@@ -6,7 +6,7 @@
 - Laravel `^11.0 || ^12.0`
 - Livewire `^3.0 || ^4.0`
 - Tailwind CSS `^4.0`
-- Laravel Scout `^10.0`
+- Laravel Scout `^11.1`
 
 ## 1. Install the package
 
