@@ -24,6 +24,8 @@ Drops a production-ready ⌘K search experience into any Laravel application. Re
 - **Zero-config discovery** — models under `app/Models/` using `Searchable` are auto-detected at boot
 - **Grouped results** — results organised by model type with section headers and color tokens
 - **Multiple drivers** — Meilisearch, Algolia, Typesense, or Database
+- **Accent-insensitive highlight** — diacritic-free queries (`padrao`) match and highlight accented text (`Padrão`) via NFD normalization
+- **Auto-discovered subtitles** — models with `description`, `subtitle`, `excerpt`, `summary`, `bio`, or `body` attributes surface them as result subtitles automatically, showing match context for fuzzy results
 - **Query hook** — per-model `globalSearchBuilder()` for custom filters, scopes, or infix matching
 - **Recent searches** — configurable history, persisted to session
 - **i18n** — ships with `pt_BR`, `en`, and `es` translations
@@ -72,6 +74,8 @@ public static function globalSearchLabel(): string  { return 'Articles'; }  // U
 public static function globalSearchIcon(): string   { return 'heroicon-o-document-text'; }
 public static function globalSearchColor(): string  { return 'blue'; }
 ```
+
+> **`globalSearchSubtitle()` auto-discovery:** if your model has a `description`, `subtitle`, `excerpt`, `summary`, `bio`, or `body` attribute, the trait returns it automatically (truncated to 150 chars). Override only when you need custom logic or a different field.
 
 Use `--dry-run` to preview edits without touching files:
 
