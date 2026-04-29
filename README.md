@@ -92,8 +92,11 @@ php artisan scoutify:import
 Add to your layout:
 
 ```blade
-{{-- Trigger: place anywhere visible (nav, header, sidebar) --}}
-<x-scoutify::gs.trigger />
+{{-- Desktop trigger: pill with label + ⌘K badge, visible on lg+ --}}
+<x-scoutify::gs.trigger class="hidden lg:inline-flex" />
+
+{{-- Mobile trigger: 44×44 px icon-only button, hidden on lg+ --}}
+<x-scoutify::gs.trigger-mobile />
 
 {{-- Modal: must be at root layout level, AFTER {{ $slot }} --}}
 {{ $slot }}

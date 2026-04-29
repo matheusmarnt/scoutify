@@ -181,8 +181,11 @@ php artisan scoutify:import "App\Models\User"
 ```blade
 {{-- resources/views/layouts/app.blade.php --}}
 
-{{-- Trigger: place anywhere visible — header, nav, sidebar, etc. --}}
-<x-scoutify::gs.trigger />
+{{-- Desktop trigger: pill with label + ⌘K badge, visible on lg+ --}}
+<x-scoutify::gs.trigger class="hidden lg:inline-flex" />
+
+{{-- Mobile trigger: 44×44 px icon-only button, hidden on lg+ --}}
+<x-scoutify::gs.trigger-mobile />
 
 {{-- ... rest of layout ... --}}
 
@@ -194,7 +197,9 @@ php artisan scoutify:import "App\Models\User"
 @livewireScripts
 ```
 
-The trigger renders a `⌘K` / `Ctrl+K` badge. The modal wires global keyboard shortcuts automatically.
+The desktop trigger renders a `⌘K` / `Ctrl+K` badge. The mobile trigger renders a 44×44 px magnifying-glass icon button meeting WCAG/HIG touch-target guidelines. The modal wires global keyboard shortcuts automatically.
+
+> **You can use either or both triggers.** If you only need one, omit the other. Each trigger independently dispatches `scoutify:open` and is fully accessible.
 
 > **⚠️ Modal placement is critical.** Place `<livewire:scoutify::modal />` at the **root of your layout**, outside any collapsible or conditionally-rendered container (sidebar, drawer, off-canvas nav). Livewire only initialises components that are in the DOM when the page loads — if the modal is inside a collapsed sidebar, it will not mount until the sidebar is opened, making the trigger appear broken.
 >
