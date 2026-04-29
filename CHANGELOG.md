@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.9.1](https://github.com/matheusmarnt/scoutify/compare/v1.9.0...v1.9.1) (2026-04-29)
+
+
+### Miscellaneous Chores
+
+* use English label in config example comment ([#69](https://github.com/matheusmarnt/scoutify/issues/69)) ([127826f](https://github.com/matheusmarnt/scoutify/commit/127826ffae710cb5a0097ba8b064d13afbbc0bb5))
+
 ## [1.9.0](https://github.com/matheusmarnt/scoutify/compare/v1.8.1...v1.9.0) (2026-04-29)
 
 
