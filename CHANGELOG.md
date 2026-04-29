@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.10.0](https://github.com/matheusmarnt/scoutify/compare/v1.9.2...v1.10.0) (2026-04-29)
+
+
+### Features
+
+* add mobile-only trigger component for global search modal ([e8ad4dc](https://github.com/matheusmarnt/scoutify/commit/e8ad4dcafe8f2560c03e799fe70421cf0a512fce))
+
 ## [1.9.2](https://github.com/matheusmarnt/scoutify/compare/v1.9.1...v1.9.2) (2026-04-29)
 
 
