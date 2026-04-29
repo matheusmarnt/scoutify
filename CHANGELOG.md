@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.7.0](https://github.com/matheusmarnt/scoutify/compare/v1.6.2...v1.7.0) (2026-04-29)
+
+
+### Features
+
+* **gs:** improve keyboard navigation and visual polish in global search ([#54](https://github.com/matheusmarnt/scoutify/issues/54)) ([7d05222](https://github.com/matheusmarnt/scoutify/commit/7d05222651f95853931866172ca218cd376acf5e))
+
 ## [1.6.2](https://github.com/matheusmarnt/scoutify/compare/v1.6.1...v1.6.2) (2026-04-28)
 
 
