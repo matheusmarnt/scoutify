@@ -20,7 +20,7 @@ composer require matheusmarnt/scoutify
 php artisan scoutify:install
 ```
 
-The installer prompts for a Scout driver (`meilisearch`, `algolia`, or `typesense`), installs the driver's Composer packages, publishes `config/scoutify.php`, sets `SCOUT_DRIVER` in `.env`, and runs `scoutify:doctor` automatically.
+The installer prompts for a Scout driver (`meilisearch`, `algolia`, or `typesense`), installs the driver's Composer packages, publishes `config/scoutify.php` and `config/scout.php`, sets `SCOUT_DRIVER` in `.env`, and runs `scoutify:doctor` automatically.
 
 > **Environment-specific invocations**
 >
@@ -42,6 +42,18 @@ The installer detects Sail, runs `sail:add meilisearch`, and sets `MEILISEARCH_H
 
 > **Meilisearch search behaviour:** Meilisearch uses word-boundary prefix search. Substrings that are not word-prefixes (e.g. `"ano"` inside `"Mariano"`) return no results. Override `globalSearchBuilder()` on your model for custom matching, or switch to the `database` driver for `LIKE`-based substring search. See [Query customization](#query-customization) below.
 
+### Meilisearch (Docker Compose — non-Sail)
+
+The installer detects an existing `compose.yaml` (or `docker-compose.yml`) and generates a `compose.scoutify.yaml` override file at the project root with the Meilisearch service definition:
+
+```bash
+docker compose exec app php artisan scoutify:install
+docker compose -f compose.yaml -f compose.scoutify.yaml up -d
+docker compose exec app php artisan scoutify:doctor
+```
+
+Add `meilisearch` to your `app` service's `depends_on` in `compose.yaml`. The generated `compose.scoutify.yaml` is safe to commit.
+
 ### Meilisearch (host)
 
 ```bash
@@ -58,6 +70,14 @@ php artisan scoutify:doctor
 ./vendor/bin/sail artisan scoutify:install
 ./vendor/bin/sail down && ./vendor/bin/sail up -d
 ./vendor/bin/sail artisan scoutify:doctor
+```
+
+### Typesense (Docker Compose — non-Sail)
+
+```bash
+docker compose exec app php artisan scoutify:install
+docker compose -f compose.yaml -f compose.scoutify.yaml up -d
+docker compose exec app php artisan scoutify:doctor
 ```
 
 ### Typesense (host)
