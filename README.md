@@ -92,9 +92,15 @@ php artisan scoutify:import
 Add to your layout:
 
 ```blade
+{{-- Trigger: place anywhere visible (nav, header, sidebar) --}}
 <x-scoutify::gs.trigger />
+
+{{-- Modal: must be at root layout level, AFTER {{ $slot }} --}}
+{{ $slot }}
 <livewire:scoutify::modal />
 ```
+
+> **Modal placement:** `<livewire:scoutify::modal />` must live at the root of your layout, **outside any collapsible or conditionally-rendered container** (sidebar, drawer, off-canvas nav, etc.). Livewire does not initialise components inside collapsed containers — placing the modal inside a collapsed sidebar means it will not mount until the sidebar is opened, causing the trigger to appear broken. The trigger component (`<x-scoutify::gs.trigger />`) can go anywhere.
 
 ## Customizing the Scout Query
 
