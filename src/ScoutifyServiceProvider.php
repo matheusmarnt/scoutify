@@ -11,6 +11,7 @@ use Matheusmarnt\Scoutify\Console\InstallCommand;
 use Matheusmarnt\Scoutify\Console\RebuildCommand;
 use Matheusmarnt\Scoutify\Console\SearchableCommand;
 use Matheusmarnt\Scoutify\Console\SyncCommand;
+use Matheusmarnt\Scoutify\Livewire\Modal;
 use Matheusmarnt\Scoutify\Support\GlobalSearchRegistry;
 use Matheusmarnt\Scoutify\Support\LivewireVersion;
 use Matheusmarnt\Scoutify\Support\TypeManifest;
@@ -62,6 +63,8 @@ class ScoutifyServiceProvider extends PackageServiceProvider
 
         if (LivewireVersion::isV4OrAbove() && class_exists(LivewireManager::class) && ($this->app->bound('livewire') || $this->app->bound(LivewireManager::class))) {
             Livewire::addNamespace('scoutify', classNamespace: 'Matheusmarnt\\Scoutify\\Livewire');
+        } elseif (class_exists(LivewireManager::class) && ($this->app->bound('livewire') || $this->app->bound(LivewireManager::class))) {
+            Livewire::component('scoutify::modal', Modal::class);
         }
     }
 }
