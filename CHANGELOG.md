@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.8.1](https://github.com/matheusmarnt/scoutify/compare/v1.8.0...v1.8.1) (2026-04-29)
+
+
+### Bug Fixes
+
+* normalize Highlighter output to NFC and update stale modal listener test ([#60](https://github.com/matheusmarnt/scoutify/issues/60)) ([4cc0615](https://github.com/matheusmarnt/scoutify/commit/4cc0615f4f85db8f12d8db91e92ffe38e42516f9))
+
 ## [1.8.0](https://github.com/matheusmarnt/scoutify/compare/v1.7.0...v1.8.0) (2026-04-29)
 
 
