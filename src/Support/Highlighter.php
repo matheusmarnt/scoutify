@@ -27,15 +27,18 @@ class Highlighter
         }
 
         // Each base char matches itself + any attached combining marks in the text
-        $parts   = array_map(fn (string $c) => preg_quote($c, '/') . '\p{Mn}*', mb_str_split($strippedQuery));
-        $pattern = '/(' . implode('', $parts) . ')/iu';
+        $parts = array_map(fn (string $c) => preg_quote($c, '/').'\p{Mn}*', mb_str_split($strippedQuery));
+        $pattern = '/('.implode('', $parts).')/iu';
 
         $marked = preg_replace_callback(
             $pattern,
-            fn (array $m) => '<mark class="scoutify-mark">' . $m[1] . '</mark>',
+            fn (array $m) => '<mark class="scoutify-mark">'.$m[1].'</mark>',
             $nfdValue,
         );
 
-        return new HtmlString($marked ?? $escaped);
+        // Normalize back to NFC — preg_replace ran on NFD-normalized string, output is still NFD
+        $result = \Normalizer::normalize($marked ?? $escaped, \Normalizer::NFC);
+
+        return new HtmlString($result !== false ? $result : ($marked ?? $escaped));
     }
 }
