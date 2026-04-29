@@ -73,7 +73,19 @@ trait Searchable
     {
         $attr = $this->globalSearchSubtitleAttribute();
 
-        return $attr ? (string) $this->{$attr} : null;
+        if (! $attr) {
+            return null;
+        }
+
+        $value = $this->{$attr};
+
+        if ($value === null || $value === '') {
+            return null;
+        }
+
+        $text = (string) $value;
+
+        return mb_strlen($text) > 150 ? mb_substr($text, 0, 147).'...' : $text;
     }
 
     public function globalSearchUrl(): string
@@ -103,6 +115,14 @@ trait Searchable
 
     protected function globalSearchSubtitleAttribute(): ?string
     {
+        // Auto-discover common description-like fields so match context
+        // is visible when the search engine matched on a non-title field.
+        foreach (['description', 'subtitle', 'excerpt', 'summary', 'bio', 'body'] as $field) {
+            if (array_key_exists($field, $this->attributes)) {
+                return $field;
+            }
+        }
+
         return null;
     }
 

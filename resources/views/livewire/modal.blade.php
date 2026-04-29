@@ -1,8 +1,8 @@
 <div
     x-data="scoutifyModal()"
-    @keydown.window.prevent.ctrl.k="$dispatch('scoutify:open')"
-    @keydown.window.prevent.cmd.k="$dispatch('scoutify:open')"
-    @keydown.window="if (event.key === '/' && !['INPUT','TEXTAREA','SELECT'].includes(document.activeElement?.tagName) && !document.activeElement?.isContentEditable) { event.preventDefault(); $dispatch('scoutify:open') }"
+    @keydown.window.prevent.ctrl.k="if (!isOpen) $wire.call('open')"
+    @keydown.window.prevent.cmd.k="if (!isOpen) $wire.call('open')"
+    @keydown.window="if (event.key === '/' && !['INPUT','TEXTAREA','SELECT'].includes(document.activeElement?.tagName) && !document.activeElement?.isContentEditable) { event.preventDefault(); if (!isOpen) $wire.call('open'); }"
     @keydown.arrow-down.window.prevent="if (isOpen && isFocusInside()) nav(1)"
     @keydown.arrow-up.window.prevent="if (isOpen && isFocusInside()) nav(-1)"
     @keydown.home.window.prevent="if (isOpen && isFocusInside()) navHome()"
@@ -10,6 +10,10 @@
     @keydown.page-down.window.prevent="if (isOpen && isFocusInside()) navPageDown()"
     @keydown.page-up.window.prevent="if (isOpen && isFocusInside()) navPageUp()"
     @keydown.enter.window.prevent="if (isOpen && isFocusInside()) allResults[activeIdx]?.click()"
+    @scoutify:open.window="if (!isOpen) $wire.call('open')"
+    @scoutify:opened.window="handleOpened()"
+    @scoutify:closed.window="handleClosed()"
+    @scoutify:remember.window="rememberTerm($event.detail?.term)"
 >
     <x-scoutify::gs.shell wire="isOpen" id="scoutify-search">
         {{-- Header: search input --}}
@@ -141,37 +145,31 @@
 
         isFocusInside() {
             const active = document.activeElement;
-            // If focus is on body/html (e.g. temporarily lost during Livewire morph),
-            // allow nav as long as the modal is open — don't silently block keys.
             if (!active || active === document.body || active === document.documentElement) {
                 return this.isOpen;
             }
             return !! active.closest('[data-scoutify-dialog]');
         },
 
-        init() {
-            window.addEventListener('scoutify:open', () => {
-                this.$wire.call('open');
-            });
-            window.addEventListener('scoutify:opened', () => {
-                document.body.classList.add('overflow-hidden');
-                this.triggerEl = document.activeElement;
-                this.activeIdx = 0;
-                this.$nextTick(() => document.querySelector('[data-focus="gs-input"]')?.focus());
-            });
-            window.addEventListener('scoutify:closed', () => {
-                document.body.classList.remove('overflow-hidden');
-                this.$nextTick(() => this.triggerEl?.focus());
-            });
+        handleOpened() {
+            document.body.classList.add('overflow-hidden');
+            this.triggerEl = document.activeElement;
+            this.activeIdx = 0;
+            this.$nextTick(() => document.querySelector('[data-focus="gs-input"]')?.focus());
+        },
 
-            window.addEventListener('scoutify:remember', (e) => {
-                const term = (e?.detail?.term ?? '').toString().trim();
-                if (! term) return;
-                const key = 'scoutify-recent';
-                const list = JSON.parse(localStorage.getItem(key) || '[]');
-                const next = [term, ...list.filter(t => t !== term)].slice(0, 8);
-                localStorage.setItem(key, JSON.stringify(next));
-            });
+        handleClosed() {
+            document.body.classList.remove('overflow-hidden');
+            this.$nextTick(() => this.triggerEl?.focus());
+        },
+
+        rememberTerm(term) {
+            const t = (term ?? '').toString().trim();
+            if (! t) return;
+            const key = 'scoutify-recent';
+            const list = JSON.parse(localStorage.getItem(key) || '[]');
+            const next = [t, ...list.filter(s => s !== t)].slice(0, 8);
+            localStorage.setItem(key, JSON.stringify(next));
         },
     }));
 </script>
