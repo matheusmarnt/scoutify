@@ -127,6 +127,8 @@ public static function globalSearchIcon(): string   { return 'heroicon-o-user'; 
 public static function globalSearchColor(): string  { return 'blue'; }
 ```
 
+> **`globalSearchSubtitle()` auto-discovery:** the trait automatically detects `description`, `subtitle`, `excerpt`, `summary`, `bio`, or `body` attributes and returns a 150-char snippet as the subtitle. This surfaces match context when the search engine matched on a non-title field (e.g. a team returned for query "ar" because its description contains "tarefas"). Override the method only when you need custom logic or a different attribute.
+
 **URL resolution cascade** (used both at registration time and at runtime):
 
 | Priority | Condition | Generated stub |
