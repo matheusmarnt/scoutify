@@ -160,11 +160,27 @@ php artisan scoutify:import "App\Models\User"
 
 ```blade
 {{-- resources/views/layouts/app.blade.php --}}
+
+{{-- Trigger: place anywhere visible — header, nav, sidebar, etc. --}}
 <x-scoutify::gs.trigger />
+
+{{-- ... rest of layout ... --}}
+
+{{ $slot }}
+
+{{-- Modal: must be at root level, AFTER $slot --}}
 <livewire:scoutify::modal />
+
+@livewireScripts
 ```
 
 The trigger renders a `⌘K` / `Ctrl+K` badge. The modal wires global keyboard shortcuts automatically.
+
+> **⚠️ Modal placement is critical.** Place `<livewire:scoutify::modal />` at the **root of your layout**, outside any collapsible or conditionally-rendered container (sidebar, drawer, off-canvas nav). Livewire only initialises components that are in the DOM when the page loads — if the modal is inside a collapsed sidebar, it will not mount until the sidebar is opened, making the trigger appear broken.
+>
+> Recommended: place it directly after `{{ $slot }}`, before `@livewireScripts`.
+>
+> The trigger (`<x-scoutify::gs.trigger />`) has no such restriction and can go anywhere.
 
 Dispatch from any element:
 
