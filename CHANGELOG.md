@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.8.2](https://github.com/matheusmarnt/scoutify/compare/v1.8.1...v1.8.2) (2026-04-29)
+
+
+### Miscellaneous Chores
+
+* add CLAUDE.md with project instructions for Claude Code ([#64](https://github.com/matheusmarnt/scoutify/issues/64)) ([ffde964](https://github.com/matheusmarnt/scoutify/commit/ffde96480bd583b4b54f5a2bf6e27f172ff92b8e))
+* untrack CLAUDE.md and add to .gitignore ([#66](https://github.com/matheusmarnt/scoutify/issues/66)) ([40a01d1](https://github.com/matheusmarnt/scoutify/commit/40a01d1058d335723828d0f68d20b201a7b3c26c))
+
 ## [1.8.1](https://github.com/matheusmarnt/scoutify/compare/v1.8.0...v1.8.1) (2026-04-29)
 
 
