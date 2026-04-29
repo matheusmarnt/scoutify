@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.9.2](https://github.com/matheusmarnt/scoutify/compare/v1.9.1...v1.9.2) (2026-04-29)
+
+
+### Bug Fixes
+
+* register Livewire v3 modal component via Livewire::component() ([#71](https://github.com/matheusmarnt/scoutify/issues/71)) ([a1933b2](https://github.com/matheusmarnt/scoutify/commit/a1933b221989776e006f2325391a1a492d452975))
+
 ## [1.9.1](https://github.com/matheusmarnt/scoutify/compare/v1.9.0...v1.9.1) (2026-04-29)
 
 
