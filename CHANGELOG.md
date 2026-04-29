@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.8.0](https://github.com/matheusmarnt/scoutify/compare/v1.7.0...v1.8.0) (2026-04-29)
+
+
+### Features
+
+* **search:** accent-insensitive highlight, auto subtitle, accordion chips, and modal trigger improvements ([#56](https://github.com/matheusmarnt/scoutify/issues/56)) ([e86a381](https://github.com/matheusmarnt/scoutify/commit/e86a381aa8c5d44e6d545bf52fb41a601b3df3f0))
+
 ## [1.7.0](https://github.com/matheusmarnt/scoutify/compare/v1.6.2...v1.7.0) (2026-04-29)
 
 
