@@ -26,5 +26,5 @@
 }
 
 .scoutify-mark {
-    @apply rounded-sm bg-scoutify-accent/15 px-0.5 text-scoutify-accent;
+    @apply rounded bg-amber-200/90 px-0.5 font-semibold text-amber-900 dark:bg-amber-400/25 dark:text-amber-200;
 }
