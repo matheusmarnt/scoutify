@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.11.0](https://github.com/matheusmarnt/scoutify/compare/v1.10.0...v1.11.0) (2026-04-30)
+
+
+### Features
+
+* sanitize html fields to plain text in global search results ([#74](https://github.com/matheusmarnt/scoutify/issues/74)) ([74d8908](https://github.com/matheusmarnt/scoutify/commit/74d89081a9581abbccf9bd4598adaefa3cc1e491))
+
 ## [1.10.0](https://github.com/matheusmarnt/scoutify/compare/v1.9.2...v1.10.0) (2026-04-29)
 
 
