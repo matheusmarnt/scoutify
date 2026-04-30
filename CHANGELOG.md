@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.11.2](https://github.com/matheusmarnt/scoutify/compare/v1.11.1...v1.11.2) (2026-04-30)
+
+
+### Bug Fixes
+
+* use Factory::all() with try/catch to detect third-party icon pack prefixes ([#79](https://github.com/matheusmarnt/scoutify/issues/79)) ([066d9a1](https://github.com/matheusmarnt/scoutify/commit/066d9a12bfb05edaf791d746fc591406cbfb1e25))
+
 ## [1.11.1](https://github.com/matheusmarnt/scoutify/compare/v1.11.0...v1.11.1) (2026-04-30)
 
 
