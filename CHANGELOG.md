@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.11.4](https://github.com/matheusmarnt/scoutify/compare/v1.11.3...v1.11.4) (2026-04-30)
+
+
+### Bug Fixes
+
+* detect third-party blade-icon prefixes in IconResolver to prevent mangling GlobalSearchGroup icons ([#83](https://github.com/matheusmarnt/scoutify/issues/83)) ([be703ce](https://github.com/matheusmarnt/scoutify/commit/be703ce0790daa9c92002b5758b4874f799b3d00))
+
 ## [1.11.3](https://github.com/matheusmarnt/scoutify/compare/v1.11.2...v1.11.3) (2026-04-30)
 
 
