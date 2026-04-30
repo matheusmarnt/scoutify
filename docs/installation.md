@@ -147,15 +147,19 @@ public static function globalSearchIcon(): string   { return 'heroicon-o-user'; 
 public static function globalSearchColor(): string  { return 'blue'; }
 ```
 
-> **Icon packs:** `globalSearchIcon()` accepts any icon name supported by [Blade Icons](https://github.com/blade-ui-kit/blade-icons). Short names (e.g. `user`) get the configured prefix (`heroicon-o-` by default, overridable via `icon_prefix` in `config/scoutify.php`). Fully-qualified names whose prefix matches an installed pack are auto-detected and passed through as-is. Install any pack and use its prefix directly:
+> **Icon packs:** `globalSearchIcon()` accepts any icon name supported by [Blade Icons](https://github.com/blade-ui-kit/blade-icons). Fully-qualified names are auto-detected by matching against **all packs registered via Composer service providers** — including packs that register themselves via `callAfterResolving`, not just those listed in `config/blade-icons.php`. Install any pack and use its prefix directly:
 >
 > ```bash
-> composer require andreiio/blade-remix-icon
+> composer require andreiio/blade-remix-icon          # prefix: ri
+> composer require ricard0liveira/blade-tabler-icons   # prefix: tabler
 > ```
 >
 > ```php
 > public static function globalSearchIcon(): string { return 'ri-customer-service-2-fill'; }
+> public static function globalSearchIcon(): string { return 'tabler-home'; }
 > ```
+>
+> Short names (e.g. `user`) get the configured prefix prepended (`heroicon-o-` by default, overridable via `icon_prefix` in `config/scoutify.php`).
 
 > **`globalSearchSubtitle()` auto-discovery:** the trait automatically detects `description`, `subtitle`, `excerpt`, `summary`, `bio`, or `body` attributes. The value is **sanitized to plain text** (HTML tags stripped, entities decoded, whitespace collapsed) then truncated to 150 chars. CMS fields with HTML markup (`<p>`, `<strong>`, `<a>`, etc.) display cleanly in the result row without escaped tags. Override the method only when you need custom logic or a different attribute.
 
@@ -317,7 +321,7 @@ composer require andreiio/blade-remix-icon
 'icon_prefix' => 'ri-',
 ```
 
-Fully-qualified names (e.g. `heroicon-o-user`, `ri-customer-service-2-fill`) are auto-detected by matching against all registered pack prefixes and passed through unchanged, regardless of `icon_prefix`.
+Fully-qualified names (e.g. `heroicon-o-user`, `ri-customer-service-2-fill`, `tabler-home`) are auto-detected by matching against **all packs registered via Composer service providers** and passed through unchanged, regardless of `icon_prefix`. This includes packs that register themselves via `callAfterResolving` (most third-party packs) — not only those declared in `config/blade-icons.php`.
 
 ### Publish views
 

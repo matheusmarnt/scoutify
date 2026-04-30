@@ -31,7 +31,7 @@ Drops a production-ready ⌘K search experience into any Laravel application. Re
 - **i18n** — ships with `pt_BR`, `en`, and `es` translations
 - **Dark mode** — full dark mode support out of the box
 - **WCAG AA** — accessible markup with focus management and keyboard navigation
-- **Any blade-icons pack** — `globalSearchIcon()` accepts fully-qualified names from any installed [Blade Icons](https://github.com/blade-ui-kit/blade-icons) pack (e.g. `ri-*`, `mdi-*`); short names fall back to the configured default prefix (`heroicon-o-`)
+- **Any blade-icons pack** — `globalSearchIcon()` accepts any icon name from any [Blade Icons](https://github.com/blade-ui-kit/blade-icons) pack installed via Composer (e.g. `ri-*`, `tabler-*`, `mdi-*`); fully-qualified names are auto-detected by matching against all registered pack prefixes and passed through as-is; short names fall back to the configured default prefix (`heroicon-o-`)
 - **Tailwind v4** — utility classes inlined, override via config
 
 ## Quick Start
@@ -76,16 +76,22 @@ public static function globalSearchIcon(): string   { return 'heroicon-o-documen
 public static function globalSearchColor(): string  { return 'blue'; }
 ```
 
-> **Icon packs:** `globalSearchIcon()` accepts any icon name supported by [Blade Icons](https://github.com/blade-ui-kit/blade-icons). Short names (e.g. `user`) get the configured prefix (`heroicon-o-` by default). Fully-qualified names whose prefix matches an installed pack are passed through as-is — install any pack (e.g. `composer require andreiio/blade-remix-icon`) and use its prefixed names directly:
+> **Icon packs:** `globalSearchIcon()` accepts any icon name supported by [Blade Icons](https://github.com/blade-ui-kit/blade-icons). Fully-qualified names are auto-detected by matching against **all packs registered via Composer service providers** — not just those declared in `config/blade-icons.php`. Install any pack and use its prefix directly:
+>
+> ```bash
+> composer require andreiio/blade-remix-icon        # ri-*
+> composer require ricard0liveira/blade-tabler-icons  # tabler-*
+> ```
 >
 > ```php
 > public static function globalSearchIcon(): string { return 'ri-customer-service-2-fill'; }
+> public static function globalSearchIcon(): string { return 'tabler-home'; }
 > ```
 >
-> Change the default prefix for all unqualified names via `config/scoutify.php`:
+> Short names (e.g. `user`) get the configured prefix prepended. Change the default in `config/scoutify.php`:
 >
 > ```php
-> 'icon_prefix' => 'heroicon-o-',
+> 'icon_prefix' => 'heroicon-o-',  // default; any installed pack prefix works here
 > ```
 
 > **`globalSearchSubtitle()` auto-discovery:** if your model has a `description`, `subtitle`, `excerpt`, `summary`, `bio`, or `body` attribute, the trait returns it automatically — HTML is sanitized to plain text (tags stripped, entities decoded, whitespace collapsed) then truncated to 150 chars. Override only when you need custom logic or a different field.
