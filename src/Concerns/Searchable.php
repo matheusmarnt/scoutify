@@ -11,6 +11,7 @@ use Laravel\Scout\ModelObserver;
 use Laravel\Scout\Searchable as ScoutSearchable;
 use Laravel\Scout\SearchableScope;
 use Matheusmarnt\Scoutify\Support\GlobalSearchRegistry;
+use Matheusmarnt\Scoutify\Support\Sanitizer;
 
 trait Searchable
 {
@@ -66,7 +67,9 @@ trait Searchable
 
     public function globalSearchTitle(): string
     {
-        return (string) ($this->{$this->globalSearchTitleAttribute()} ?? '');
+        $raw = (string) ($this->{$this->globalSearchTitleAttribute()} ?? '');
+
+        return Sanitizer::toPlainText($raw) ?? '';
     }
 
     public function globalSearchSubtitle(): ?string
@@ -83,9 +86,7 @@ trait Searchable
             return null;
         }
 
-        $text = (string) $value;
-
-        return mb_strlen($text) > 150 ? mb_substr($text, 0, 147).'...' : $text;
+        return Sanitizer::toPlainText((string) $value, 150) ?: null;
     }
 
     public function globalSearchUrl(): string
