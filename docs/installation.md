@@ -147,7 +147,18 @@ public static function globalSearchIcon(): string   { return 'heroicon-o-user'; 
 public static function globalSearchColor(): string  { return 'blue'; }
 ```
 
-> **`globalSearchSubtitle()` auto-discovery:** the trait automatically detects `description`, `subtitle`, `excerpt`, `summary`, `bio`, or `body` attributes and returns a 150-char snippet as the subtitle. This surfaces match context when the search engine matched on a non-title field (e.g. a team returned for query "ar" because its description contains "tarefas"). Override the method only when you need custom logic or a different attribute.
+> **`globalSearchSubtitle()` auto-discovery:** the trait automatically detects `description`, `subtitle`, `excerpt`, `summary`, `bio`, or `body` attributes. The value is **sanitized to plain text** (HTML tags stripped, entities decoded, whitespace collapsed) then truncated to 150 chars. CMS fields with HTML markup (`<p>`, `<strong>`, `<a>`, etc.) display cleanly in the result row without escaped tags. Override the method only when you need custom logic or a different attribute.
+
+> **Overriding with HTML content:** when you override `globalSearchTitle()` or `globalSearchSubtitle()`, default sanitization is bypassed. If the returned value may contain HTML, call `Sanitizer::toPlainText()` explicitly:
+>
+> ```php
+> use Matheusmarnt\Scoutify\Support\Sanitizer;
+>
+> public function globalSearchSubtitle(): ?string
+> {
+>     return Sanitizer::toPlainText($this->richTextBody, 150);
+> }
+> ```
 
 **URL resolution cascade** (used both at registration time and at runtime):
 
