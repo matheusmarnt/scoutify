@@ -147,6 +147,16 @@ public static function globalSearchIcon(): string   { return 'heroicon-o-user'; 
 public static function globalSearchColor(): string  { return 'blue'; }
 ```
 
+> **Icon packs:** `globalSearchIcon()` accepts any icon name supported by [Blade Icons](https://github.com/blade-ui-kit/blade-icons). Short names (e.g. `user`) get the configured prefix (`heroicon-o-` by default, overridable via `icon_prefix` in `config/scoutify.php`). Fully-qualified names whose prefix matches an installed pack are auto-detected and passed through as-is. Install any pack and use its prefix directly:
+>
+> ```bash
+> composer require andreiio/blade-remix-icon
+> ```
+>
+> ```php
+> public static function globalSearchIcon(): string { return 'ri-customer-service-2-fill'; }
+> ```
+
 > **`globalSearchSubtitle()` auto-discovery:** the trait automatically detects `description`, `subtitle`, `excerpt`, `summary`, `bio`, or `body` attributes. The value is **sanitized to plain text** (HTML tags stripped, entities decoded, whitespace collapsed) then truncated to 150 chars. CMS fields with HTML markup (`<p>`, `<strong>`, `<a>`, etc.) display cleanly in the result row without escaped tags. Override the method only when you need custom logic or a different attribute.
 
 > **Overriding with HTML content:** when you override `globalSearchTitle()` or `globalSearchSubtitle()`, default sanitization is bypassed. If the returned value may contain HTML, call `Sanitizer::toPlainText()` explicitly:

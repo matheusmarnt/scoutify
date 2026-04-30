@@ -75,6 +75,18 @@ public static function globalSearchIcon(): string   { return 'heroicon-o-documen
 public static function globalSearchColor(): string  { return 'blue'; }
 ```
 
+> **Icon packs:** `globalSearchIcon()` accepts any icon name supported by [Blade Icons](https://github.com/blade-ui-kit/blade-icons). Short names (e.g. `user`) get the configured prefix (`heroicon-o-` by default). Fully-qualified names whose prefix matches an installed pack are passed through as-is — install any pack (e.g. `composer require andreiio/blade-remix-icon`) and use its prefixed names directly:
+>
+> ```php
+> public static function globalSearchIcon(): string { return 'ri-customer-service-2-fill'; }
+> ```
+>
+> Change the default prefix for all unqualified names via `config/scoutify.php`:
+>
+> ```php
+> 'icon_prefix' => 'heroicon-o-',
+> ```
+
 > **`globalSearchSubtitle()` auto-discovery:** if your model has a `description`, `subtitle`, `excerpt`, `summary`, `bio`, or `body` attribute, the trait returns it automatically — HTML is sanitized to plain text (tags stripped, entities decoded, whitespace collapsed) then truncated to 150 chars. Override only when you need custom logic or a different field.
 
 Use `--dry-run` to preview edits without touching files:
