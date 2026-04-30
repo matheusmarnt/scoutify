@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.11.1](https://github.com/matheusmarnt/scoutify/compare/v1.11.0...v1.11.1) (2026-04-30)
+
+
+### Bug Fixes
+
+* add missing blade-icons pack prefixes to icon qualifier regex ([#77](https://github.com/matheusmarnt/scoutify/issues/77)) ([854865e](https://github.com/matheusmarnt/scoutify/commit/854865ee09b4e74e71b91039af5c063c1420cc84))
+
 ## [1.11.0](https://github.com/matheusmarnt/scoutify/compare/v1.10.0...v1.11.0) (2026-04-30)
 
 
