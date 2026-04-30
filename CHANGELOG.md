@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.11.3](https://github.com/matheusmarnt/scoutify/compare/v1.11.2...v1.11.3) (2026-04-30)
+
+
+### Bug Fixes
+
+* access Factory sets as array in icon.blade.php (fixes ri-*, tabler-* prefix detection) ([0f0e5b4](https://github.com/matheusmarnt/scoutify/commit/0f0e5b43f0b3a30adbc1c795082bd9af70b83c50))
+* access Factory sets as array, not object, in icon.blade.php ([5741a72](https://github.com/matheusmarnt/scoutify/commit/5741a72843603af709c2f21a5bd05d1e46a29e5f))
+
 ## [1.11.2](https://github.com/matheusmarnt/scoutify/compare/v1.11.1...v1.11.2) (2026-04-30)
 
 
