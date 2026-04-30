@@ -2,6 +2,8 @@
 
 namespace Matheusmarnt\Scoutify\Tests;
 
+use BladeUI\Heroicons\BladeHeroiconsServiceProvider;
+use BladeUI\Icons\BladeIconsServiceProvider;
 use Laravel\Scout\ScoutServiceProvider;
 use Livewire\LivewireServiceProvider;
 use Matheusmarnt\Scoutify\ScoutifyServiceProvider;
@@ -12,6 +14,8 @@ class TestCase extends Orchestra
     protected function getPackageProviders($app): array
     {
         return [
+            BladeIconsServiceProvider::class,
+            BladeHeroiconsServiceProvider::class,
             ScoutServiceProvider::class,
             LivewireServiceProvider::class,
             ScoutifyServiceProvider::class,
