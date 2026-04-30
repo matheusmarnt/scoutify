@@ -12,7 +12,7 @@ beforeEach(function () {
 });
 
 it('passes through remix icon when ri prefix is registered', function () {
-    $tmpDir = sys_get_temp_dir() . '/scoutify-ri-' . uniqid();
+    $tmpDir = sys_get_temp_dir().'/scoutify-ri-'.uniqid();
     mkdir($tmpDir, 0755, true);
     file_put_contents("$tmpDir/customer-service-2-fill.svg", '<svg xmlns="http://www.w3.org/2000/svg"></svg>');
 
@@ -39,7 +39,7 @@ it('passes through already-qualified heroicon name', function () {
 });
 
 it('passes through tabler icon when tabler prefix is registered', function () {
-    $tmpDir = sys_get_temp_dir() . '/scoutify-tabler-' . uniqid();
+    $tmpDir = sys_get_temp_dir().'/scoutify-tabler-'.uniqid();
     mkdir($tmpDir, 0755, true);
     file_put_contents("$tmpDir/home.svg", '<svg xmlns="http://www.w3.org/2000/svg"></svg>');
 
