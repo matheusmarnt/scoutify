@@ -299,6 +299,26 @@ All UI classes are configurable via `config/scoutify.php`:
 ],
 ```
 
+### Default icon prefix
+
+Short icon names (without a pack prefix) get `icon_prefix` prepended. Override in `config/scoutify.php`:
+
+```php
+'icon_prefix' => 'heroicon-o-',
+```
+
+To use a different default pack:
+
+```bash
+composer require andreiio/blade-remix-icon
+```
+
+```php
+'icon_prefix' => 'ri-',
+```
+
+Fully-qualified names (e.g. `heroicon-o-user`, `ri-customer-service-2-fill`) are auto-detected by matching against all registered pack prefixes and passed through unchanged, regardless of `icon_prefix`.
+
 ### Publish views
 
 ```bash

@@ -31,6 +31,7 @@ Drops a production-ready ⌘K search experience into any Laravel application. Re
 - **i18n** — ships with `pt_BR`, `en`, and `es` translations
 - **Dark mode** — full dark mode support out of the box
 - **WCAG AA** — accessible markup with focus management and keyboard navigation
+- **Any blade-icons pack** — `globalSearchIcon()` accepts fully-qualified names from any installed [Blade Icons](https://github.com/blade-ui-kit/blade-icons) pack (e.g. `ri-*`, `mdi-*`); short names fall back to the configured default prefix (`heroicon-o-`)
 - **Tailwind v4** — utility classes inlined, override via config
 
 ## Quick Start
