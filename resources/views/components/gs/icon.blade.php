@@ -5,11 +5,14 @@
 
 @php
     $prefix = config('scoutify.icon_prefix', 'heroicon-o-');
-    $registeredPrefixes = collect(config('blade-icons.sets', []))
-        ->pluck('prefix')
-        ->filter()
-        ->unique()
-        ->map(fn ($p) => preg_quote($p, '#'));
+    try {
+        $registeredPrefixes = collect(app(\BladeUI\Icons\Factory::class)->all())
+            ->map(fn ($set) => preg_quote($set->prefix(), '#'))
+            ->unique()
+            ->filter();
+    } catch (\Throwable) {
+        $registeredPrefixes = collect();
+    }
     $isQualified = $registeredPrefixes->isNotEmpty()
         && (bool) preg_match('#^(' . $registeredPrefixes->implode('|') . ')-#', $name);
     $resolved = $isQualified ? $name : $prefix . ltrim($name, '-');
