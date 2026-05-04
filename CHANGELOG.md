@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.13.1](https://github.com/matheusmarnt/scoutify/compare/v1.13.0...v1.13.1) (2026-05-04)
+
+
+### Bug Fixes
+
+* **docs:** remove html tags from browser tab title ([3d49300](https://github.com/matheusmarnt/scoutify/commit/3d49300fc0d115248c8bb6b5e94f7482c0cd408e))
+
 ## [1.13.0](https://github.com/matheusmarnt/scoutify/compare/v1.12.1...v1.13.0) (2026-05-04)
 
 
