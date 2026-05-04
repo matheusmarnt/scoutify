@@ -1,0 +1,63 @@
+---
+title: Meilisearch
+description: Production setup for Meilisearch with Scoutify.
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+Meilisearch is the recommended driver for Scoutify due to its speed and excellent typo tolerance.
+
+## Environment Variables
+
+Configure your `.env` file for production:
+
+```env
+SCOUT_DRIVER=meilisearch
+SCOUT_QUEUE=true
+MEILISEARCH_HOST=https://your-meilisearch-host
+MEILISEARCH_KEY=your-search-only-api-key
+```
+
+<Aside type="danger">
+  **Security:** Always use a **search-only** API key for `MEILISEARCH_KEY`. Never expose your Master Key in a production environment.
+</Aside>
+
+## Index Settings
+
+You must declare filterable and sortable attributes in `config/scout.php` before importing data:
+
+```php
+'meilisearch' => [
+    'index-settings' => [
+        \App\Models\User::class => [
+            'filterableAttributes' => ['deleted_at', 'role'],
+            'sortableAttributes'   => ['name', 'created_at'],
+        ],
+    ],
+],
+```
+
+Apply these settings:
+
+```bash
+php artisan scout:sync-index-settings
+```
+
+## Word-boundary Limitation
+
+By default, Meilisearch only matches word prefixes. A search for `"ano"` will not match `"Mariano"`. 
+
+If you need substring matching, configure `attributesToSearchOn` in Meilisearch or switch to the `database` driver.
+
+## Self-hosted Setup
+
+When running Meilisearch on your own server, ensure it's behind a reverse proxy (like Nginx) with TLS enabled.
+
+```bash
+docker run -d --name meilisearch \
+  -p 7700:7700 \
+  -e MEILI_MASTER_KEY=your-strong-master-key \
+  -e MEILI_ENV=production \
+  -v $(pwd)/meili_data:/meili_data \
+  getmeili/meilisearch:latest
+```
