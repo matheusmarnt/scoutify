@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.12.0](https://github.com/matheusmarnt/scoutify/compare/v1.11.4...v1.12.0) (2026-05-04)
+
+
+### Features
+
+* implement per-model global search visibility ([#87](https://github.com/matheusmarnt/scoutify/issues/87)) ([136e4c3](https://github.com/matheusmarnt/scoutify/commit/136e4c36d70b305a48f9f17ce441ddeb0d305395))
+
 ## [1.11.4](https://github.com/matheusmarnt/scoutify/compare/v1.11.3...v1.11.4) (2026-04-30)
 
 
