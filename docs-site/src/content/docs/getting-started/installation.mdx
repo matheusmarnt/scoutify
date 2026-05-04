@@ -44,7 +44,9 @@ php artisan vendor:publish --tag=scoutify-config
 
 ## Tailwind CSS v4 Setup
 
-Scoutify uses standard Tailwind CSS classes. To ensure the styles are correctly applied, add the Scoutify CSS to your `app.css`:
+The `scoutify:install` command automatically adds the necessary `@import` to your `resources/css/app.css` file. 
+
+If you're setting up manually or using a different CSS file, ensure you have the following import:
 
 ```css
 @import 'tailwindcss';

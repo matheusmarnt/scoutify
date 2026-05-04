@@ -10,7 +10,7 @@ export default defineConfig({
       title: 'Scoutify',
       description: '⌘K global search modal for Laravel — multi-model Livewire UI powered by Scout.',
       logo: {
-        src: './src/assets/scoutify.png',
+        src: './src/assets/scoutify_header.png',
         replacesTitle: true,
       },
       favicon: '/favicon.svg',
