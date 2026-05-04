@@ -40,75 +40,132 @@ class Article extends Model implements GloballySearchable
 
 ## Customization Methods
 
-You can override any of the following methods on your model to customize its appearance and behavior in the search results:
+Tailor how your models appear in the search results by overriding these methods:
 
-### `globalSearchTitle()`
-The main title of the result row. Defaults to the model's title or name field.
+<Tabs>
+  <TabItem label="Content">
+    ### Title & Subtitle
+    Control the primary and secondary text for each result.
+
+    ```php
+    public function globalSearchTitle(): string
+    {
+        return $this->full_name;
+    }
+
+    public function globalSearchSubtitle(): ?string
+    {
+        return "Department: {$this->department->name} • Joined {$this->created_at->diffForHumans()}";
+    }
+    ```
+
+    ### Destination URL
+    The action taken when a user selects the result.
+
+    ```php
+    public function globalSearchUrl(): string
+    {
+        return route('users.profile', $this->username);
+    }
+    ```
+  </TabItem>
+
+  <TabItem label="Branding">
+    ### Icons
+    Supports [Blade Icons](https://github.com/blade-ui-kit/blade-icons) syntax.
+
+    ```php
+    public static function globalSearchIcon(): string
+    {
+        return 'heroicon-o-user-circle';
+    }
+    ```
+
+    ### Colors
+    Defines the accent color for group chips and UI highlights.
+
+    ```php
+    public static function globalSearchColor(): string
+    {
+        return 'sky'; // Tailwind color name
+    }
+    ```
+  </TabItem>
+
+  <TabItem label="Organization">
+    ### Grouping
+    Cluster results under a specific category header.
+
+    ```php
+    public static function globalSearchGroup(): string
+    {
+        return 'System Operators';
+    }
+    ```
+
+    ### Filter Labels
+    The display name shown in the top filter bar.
+
+    ```php
+    public static function globalSearchLabel(): string
+    {
+        return 'Admins';
+    }
+    ```
+  </TabItem>
+</Tabs>
+
+---
+
+## Advanced Customization
+
+Scoutify allows for deep integration with your business logic. Here is an example of a high-power implementation:
 
 ```php
-public function globalSearchTitle(): string
+namespace App\Models;
+
+use Matheusmarnt\Scoutify\Concerns\Searchable;
+use Matheusmarnt\Scoutify\Contracts\GloballySearchable;
+use Matheusmarnt\Scoutify\Contracts\HasGlobalSearchVisibility; // Optional for auth
+use Illuminate\Database\Eloquent\Model;
+
+class Project extends Model implements GloballySearchable, HasGlobalSearchVisibility
 {
-    return $this->full_name;
-}
-```
+    use Searchable;
 
-### `globalSearchSubtitle()`
-The subtitle shown below the title. Defaults to auto-discovery of common fields like `summary`, `bio`, or `description`.
+    /**
+     * Context-aware titles: show status if project is archived.
+     */
+    public function globalSearchTitle(): string
+    {
+        return $this->is_archived 
+            ? "[Archived] {$this->name}" 
+            : $this->name;
+    }
 
-```php
-public function globalSearchSubtitle(): ?string
-{
-    return "Department: {$this->department->name}";
-}
-```
+    /**
+     * Dynamic icons based on model state.
+     */
+    public static function globalSearchIcon(): string
+    {
+        return 'heroicon-o-folder-open';
+    }
 
-### `globalSearchUrl()`
-The destination URL when the result is clicked. **Required** if not using the command's auto-resolver.
+    /**
+     * Authorization: only show projects the user can actually view.
+     * This works at the database query level for performance.
+     */
+    public static function globalSearchVisibility(): VisibilityRule
+    {
+        return VisibilityRule::make()
+            ->gate('view-project')
+            ->callback(fn ($query) => $query->where('team_id', auth()->user()->current_team_id));
+    }
 
-```php
-public function globalSearchUrl(): string
-{
-    return route('users.show', $this);
-}
-```
-
-### `globalSearchGroup()`
-The group name used for result clustering. Defaults to the pluralized class name.
-
-```php
-public static function globalSearchGroup(): string
-{
-    return 'Staff Members';
-}
-```
-
-### `globalSearchLabel()`
-The label shown in the filter chips at the top of the modal.
-
-```php
-public static function globalSearchLabel(): string
-{
-    return 'Employees';
-}
-```
-
-### `globalSearchIcon()`
-The icon shown next to the result. Supports [Blade Icons](https://github.com/blade-ui-kit/blade-icons) names.
-
-```php
-public static function globalSearchIcon(): string
-{
-    return 'heroicon-o-identification';
-}
-```
-
-### `globalSearchColor()`
-The color token used for the group chip. Supports standard Tailwind colors.
-
-```php
-public static function globalSearchColor(): string
-{
-    return 'indigo';
+    public function globalSearchUrl(): string
+    {
+        return route('projects.show', $this);
+    }
 }
 ```
 
