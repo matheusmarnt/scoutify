@@ -1,5 +1,20 @@
 # Changelog
 
+## [1.13.0](https://github.com/matheusmarnt/scoutify/compare/v1.12.1...v1.13.0) (2026-05-04)
+
+
+### Features
+
+* astro starlight docs site ([737dcac](https://github.com/matheusmarnt/scoutify/commit/737dcac7cce7f16a863918c852e41dca50d746a7))
+* **docs-site:** add og-card image ([d317213](https://github.com/matheusmarnt/scoutify/commit/d3172136b8581d6053ad74e1f22853b9e276e0ed))
+* **docs-site:** apply scoutify brand palette and hero theme ([93e4741](https://github.com/matheusmarnt/scoutify/commit/93e474156d786913b7ce1775e0046bde03f55bb7))
+* **docs-site:** wire astro config, splash hero, and sidebar stubs ([4b14975](https://github.com/matheusmarnt/scoutify/commit/4b1497599066a4a21a5937e8097f238b9dd0716f))
+
+
+### Miscellaneous Chores
+
+* **docs-site:** scaffold astro starlight project ([2f0fdd2](https://github.com/matheusmarnt/scoutify/commit/2f0fdd2712196abef1ff438e611833b39d049b15))
+
 ## [1.12.1](https://github.com/matheusmarnt/scoutify/compare/v1.12.0...v1.12.1) (2026-05-04)
 
 
