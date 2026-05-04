@@ -10,11 +10,14 @@
     <a href="https://laravel.com"><img src="https://img.shields.io/badge/Laravel-11%7C12-FF2D20?style=flat-square&logo=laravel&logoColor=white" alt="Laravel" /></a>
     <a href="https://livewire.laravel.com"><img src="https://img.shields.io/badge/Livewire-3%7C4-FB70A9?style=flat-square" alt="Livewire" /></a>
     <a href="https://laravel.com/docs/scout"><img src="https://img.shields.io/badge/Scout-11-FF2D20?style=flat-square&logo=laravel&logoColor=white" alt="Scout" /></a>
+    <a href="https://matheusmarnt.github.io/scoutify/"><img src="https://img.shields.io/badge/docs-online-7c3aed?style=flat-square" alt="Docs" /></a>
 </p>
 
 # Scoutify
 
 ⌘K global search modal for Laravel — multi-model Livewire UI powered by Scout.
+
+> 📘 **Documentation**: <https://matheusmarnt.github.io/scoutify/>
 
 Drops a production-ready ⌘K search experience into any Laravel application. Register Eloquent models, choose a Scout driver, and ship a keyboard-triggered modal that queries multiple model types simultaneously, groups results by type, and persists recent search history to session.
 
