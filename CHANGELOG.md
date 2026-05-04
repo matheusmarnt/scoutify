@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.12.1](https://github.com/matheusmarnt/scoutify/compare/v1.12.0...v1.12.1) (2026-05-04)
+
+
+### Miscellaneous Chores
+
+* **deps:** bump actions/github-script from 7 to 9 ([#85](https://github.com/matheusmarnt/scoutify/issues/85)) ([39e65d8](https://github.com/matheusmarnt/scoutify/commit/39e65d892cd9b35fa3b52f514a78a8b6bfb1ca1d))
+* **deps:** bump dependabot/fetch-metadata from 2 to 3 ([#86](https://github.com/matheusmarnt/scoutify/issues/86)) ([219b43a](https://github.com/matheusmarnt/scoutify/commit/219b43aa464998347a8274f939b66609e7f946a9))
+
 ## [1.12.0](https://github.com/matheusmarnt/scoutify/compare/v1.11.4...v1.12.0) (2026-05-04)
 
 
