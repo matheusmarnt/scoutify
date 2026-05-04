@@ -19,7 +19,7 @@ hero:
       variant: minimal
 ---
 
-import { Card, CardGrid, LinkCard } from '@astrojs/starlight/components';
+import { Card, CardGrid, LinkCard, Tabs, TabItem } from '@astrojs/starlight/components';
 
 ## Why Scoutify?
 
@@ -36,17 +36,84 @@ import { Card, CardGrid, LinkCard } from '@astrojs/starlight/components';
     Per-model visibility rules with a fluent builder. Policies, Gates, Spatie
     permissions and roles, custom callbacks.
   </Card>
-  <Card title="Zero-config setup" icon="magnifier">
+  <Card title="Artisan Ready" icon="laptop">
     `php artisan scoutify:install` provisions config, packages, env, and a
-    starter searchable model.
+    starter searchable model. Zero-config deployment.
+  </Card>
+  <Card title="Highly Customizable" icon="pencil">
+    Customize icons, colors, labels, and even the query builder per model using 
+    standard Eloquent methods.
+  </Card>
+  <Card title="Production Tested" icon="starlight">
+    Comprehensive test suite, PHPStan level 8, and optimized for performance with large datasets.
   </Card>
 </CardGrid>
 
-## Quick links
+## Quick taste
+
+<Tabs>
+<TabItem label="Model">
+
+```php
+namespace App\Models;
+
+use Matheusmarnt\Scoutify\Concerns\Searchable;
+use Matheusmarnt\Scoutify\Contracts\GloballySearchable;
+use Illuminate\Database\Eloquent\Model;
+
+class Article extends Model implements GloballySearchable
+{
+    use Searchable;
+
+    public function globalSearchTitle(): string { return $this->title; }
+    public function globalSearchUrl(): string { return route('articles.show', $this); }
+}
+```
+
+</TabItem>
+<TabItem label="Blade">
+
+```blade
+{{-- Root layout --}}
+<livewire:scoutify::modal />
+
+{{-- Header --}}
+<x-scoutify::gs.trigger />
+```
+
+</TabItem>
+</Tabs>
+
+## Explore the docs
 
 <CardGrid>
-  <LinkCard title="Installation" href="/scoutify/getting-started/installation/" />
-  <LinkCard title="Quick Start" href="/scoutify/getting-started/quick-start/" />
-  <LinkCard title="Visibility Rules" href="/scoutify/authorization/visibility-rules/" />
-  <LinkCard title="Production Setup" href="/scoutify/production/meilisearch/" />
+  <LinkCard 
+    title="Installation" 
+    description="Composer install, provider setup, and asset publishing."
+    href="/scoutify/getting-started/installation/" 
+  />
+  <LinkCard 
+    title="Quick Start" 
+    description="Ship a searchable model in under two minutes."
+    href="/scoutify/getting-started/quick-start/" 
+  />
+  <LinkCard 
+    title="Visibility Rules" 
+    description="Fine-grained access control with a fluent API."
+    href="/scoutify/authorization/visibility-rules/" 
+  />
+  <LinkCard 
+    title="Production Setup" 
+    description="Optimize for Meilisearch, Algolia, or Typesense."
+    href="/scoutify/production/meilisearch/" 
+  />
 </CardGrid>
+
+## Compatibility
+
+| Stack | Versions |
+|---|---|
+| PHP | 8.2 · 8.3 · 8.4 |
+| Laravel | 11 · 12 |
+| Livewire | 3 · 4 |
+| Scout | 10 · 11 |

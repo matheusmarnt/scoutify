@@ -3,6 +3,8 @@ title: Registering Models
 description: Make your Eloquent models searchable in the global search modal.
 ---
 
+import { Aside, Tabs, TabItem } from '@astrojs/starlight/components';
+
 ## The `scoutify:searchable` command
 
 The easiest way to register a model is using the provided Artisan command:
@@ -40,21 +42,85 @@ class Article extends Model implements GloballySearchable
 
 You can override any of the following methods on your model to customize its appearance and behavior in the search results:
 
-| Method | Default | Description |
-|---|---|---|
-| `globalSearchTitle()` | Model title/name | The main title of the result row. |
-| `globalSearchSubtitle()` | Auto-discovered | The subtitle/description shown below the title. |
-| `globalSearchUrl()` | Resolved | The destination URL when the result is clicked. |
-| `globalSearchGroup()` | Class name | The group name used for result clustering. |
-| `globalSearchLabel()` | Class name | The label shown in the filter chips. |
-| `globalSearchIcon()` | `heroicon-o-` | The icon shown next to the result. |
-| `globalSearchColor()` | `blue` | The color token used for the group chip. |
+### `globalSearchTitle()`
+The main title of the result row. Defaults to the model's title or name field.
+
+```php
+public function globalSearchTitle(): string
+{
+    return $this->full_name;
+}
+```
+
+### `globalSearchSubtitle()`
+The subtitle shown below the title. Defaults to auto-discovery of common fields like `summary`, `bio`, or `description`.
+
+```php
+public function globalSearchSubtitle(): ?string
+{
+    return "Department: {$this->department->name}";
+}
+```
+
+### `globalSearchUrl()`
+The destination URL when the result is clicked. **Required** if not using the command's auto-resolver.
+
+```php
+public function globalSearchUrl(): string
+{
+    return route('users.show', $this);
+}
+```
+
+### `globalSearchGroup()`
+The group name used for result clustering. Defaults to the pluralized class name.
+
+```php
+public static function globalSearchGroup(): string
+{
+    return 'Staff Members';
+}
+```
+
+### `globalSearchLabel()`
+The label shown in the filter chips at the top of the modal.
+
+```php
+public static function globalSearchLabel(): string
+{
+    return 'Employees';
+}
+```
+
+### `globalSearchIcon()`
+The icon shown next to the result. Supports [Blade Icons](https://github.com/blade-ui-kit/blade-icons) names.
+
+```php
+public static function globalSearchIcon(): string
+{
+    return 'heroicon-o-identification';
+}
+```
+
+### `globalSearchColor()`
+The color token used for the group chip. Supports standard Tailwind colors.
+
+```php
+public static function globalSearchColor(): string
+{
+    return 'indigo';
+}
+```
 
 ## Subtitle Auto-discovery
 
 Scoutify automatically looks for common fields to use as a subtitle, such as `description`, `subtitle`, `excerpt`, `summary`, `bio`, or `body`. 
 
 HTML content in these fields is automatically sanitized to plain text and truncated to 150 characters.
+
+<Aside type="tip">
+  You can customize which fields are scanned for auto-discovery in the `config/scoutify.php` file.
+</Aside>
 
 ## Icon Resolution
 

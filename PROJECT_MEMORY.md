@@ -1,7 +1,7 @@
 # Scoutify — Project Memory
 
 **Package:** `matheusmarnt/scoutify`
-**Current version:** `1.12.0`
+**Current version:** `1.13.0`
 **Main branch:** `main` (squash-merge workflow via GitHub PRs)
 
 ---
@@ -53,6 +53,8 @@ Laravel Scout UI layer: global search modal (Livewire + Alpine.js) with grouped 
 
 | Versão | Feature |
 |--------|---------|
+| 1.13.0 | Astro Starlight docs site (`docs-site/`), GitHub Pages deploy via Actions |
+| 1.12.1 | Chore: dependency updates (actions/github-script, dependabot/fetch-metadata) |
 | 1.12.0 | Per-model global search visibility (`VisibilityRule`, `GlobalSearchAuthorizer`) |
 | 1.11.x | Icon prefix detection para third-party blade-icon packs |
 | 1.11.0 | HTML sanitization em subtitle auto-discovery |
@@ -70,6 +72,9 @@ Laravel Scout UI layer: global search modal (Livewire + Alpine.js) with grouped 
 ### Limpeza realizada em 2026-05-04
 - Deletado `origin/feat/global-search-visibility` (squash-merged em `136e4c3` → PR #87).
 - Removido worktree `.worktrees/global-search-visibility/`.
+- Deletado `origin/docs/online-documentation` (squash-merged via PR #91).
+- Deletado `origin/feat/docs-site` (squash-merged via PR #90).
+- Removido worktree `.worktrees/docs-site/`.
 
 ---
 
