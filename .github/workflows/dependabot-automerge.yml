@@ -44,7 +44,7 @@ jobs:
     steps:
       - name: Find open dependabot PR
         id: pr
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9
         with:
           result-encoding: string
           script: |
