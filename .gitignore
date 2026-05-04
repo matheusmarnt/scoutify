@@ -37,3 +37,5 @@ testbench.yaml
 # Claude Code
 .claude/
 CLAUDE.md
+PROJECT_MEMORY.md
+AGENTS.md

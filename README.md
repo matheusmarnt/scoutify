@@ -160,6 +160,65 @@ window.dispatchEvent(new CustomEvent('scoutify:open'))
 
 > **Do not use** `wire:click="$dispatch('scoutify:open')"` on plain Blade elements — outside a Livewire component tree, Livewire.js never initialises those directives.
 
+## Visibility Gating (Authorization)
+
+By default, Scoutify is **secure-by-default**:
+- **Guests:** cannot see results (always denied).
+- **Authenticated users:** can see results if they pass a registered policy check for `view` (e.g. `Gate::check('view', $record)`). If no policy exists for the model, authenticated users are allowed by default.
+
+To customize this behavior per model, implement the `HasGlobalSearchVisibility` contract and use the fluent `VisibilityRule` builder:
+
+```php
+use Matheusmarnt\Scoutify\Authorization\VisibilityRule;
+use Matheusmarnt\Scoutify\Contracts\HasGlobalSearchVisibility;
+
+class Article extends Model implements GloballySearchable, HasGlobalSearchVisibility
+{
+    use Searchable;
+
+    public function globalSearchVisibility(): VisibilityRule
+    {
+        return VisibilityRule::make()
+            ->visibleToGuests()                  // expose to non-authenticated visitors
+            ->orWhenAuthenticated()              // OR when authenticated +
+                ->policy('view')                 //   passes registered policy
+                ->orPermission('view-articles')  //   OR has Spatie permission
+                ->orRole('admin')                //   OR has Spatie role
+                ->orAttribute('is_active');      //   OR has boolean attribute true
+    }
+}
+```
+
+### Supported Rules
+
+| Rule | Description |
+|---|---|
+| `->visibleToGuests()` | Allows guests to see results from this model. |
+| `->policy(ability, ...args)` | Checks `Gate::check(ability, $record, ...args)`. |
+| `->permission(name)` | Checks Spatie `hasPermissionTo()`. Supports array for multiple. |
+| `->role(name)` | Checks Spatie `hasRole()`. Supports array for multiple. |
+| `->attribute(name, expected)` | Compares `$record->name` with `expected` (default `true`). |
+| `->using(Closure)` | Custom logic: `fn($record, $user) => bool`. |
+
+Use `->mode(VisibilityMode::All)` to require **all** rules to pass (logical AND) instead of any (logical OR).
+
+> **Spatie Integration:** `->permission()` and `->role()` require `spatie/laravel-permission`. Scoutify detects it automatically and fails closed if the package is missing when these rules are used.
+
+### Global Configuration
+
+Customize the default behavior in `config/scoutify.php`:
+
+```php
+'authorization' => [
+    'default' => 'secure',          // secure | permissive | gate-only
+    'gate_ability' => 'view',       // ability used for policy/gate checks
+],
+```
+
+- `secure` (default): Guest denied, Auth checks gate if policy/gate exists, else allow.
+- `permissive`: Everyone allowed.
+- `gate-only`: Everyone (including guest if gate closure allows) must pass gate check; fails closed if gate/policy is missing.
+
 ## Commands
 
 | Command | Description |
