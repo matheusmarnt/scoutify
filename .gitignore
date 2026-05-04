@@ -39,3 +39,8 @@ testbench.yaml
 CLAUDE.md
 PROJECT_MEMORY.md
 AGENTS.md
+
+# docs-site build artefacts
+docs-site/node_modules
+docs-site/dist
+docs-site/.astro

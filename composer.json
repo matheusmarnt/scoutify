@@ -7,6 +7,12 @@
         "livewire",
         "search"
     ],
+    "homepage": "https://matheusmarnt.github.io/scoutify/",
+    "support": {
+        "issues": "https://github.com/matheusmarnt/scoutify/issues",
+        "source": "https://github.com/matheusmarnt/scoutify",
+        "docs": "https://matheusmarnt.github.io/scoutify/"
+    },
     "license": "MIT",
     "authors": [
         {

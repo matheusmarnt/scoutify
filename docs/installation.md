@@ -240,7 +240,7 @@ Dispatch from any element:
 
 ## 6. Tailwind CSS v4
 
-`scoutify:install` automatically adds the Scoutify CSS partial to `resources/css/app.css`. To add it manually:
+`scoutify:install` automatically adds the Scoutify CSS partial to `resources/css/app.css`. Manual import only needed if installer fails to find your CSS file:
 
 ```css
 @import 'tailwindcss';
