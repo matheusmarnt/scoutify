@@ -235,6 +235,7 @@ header.header {
 .hero h1 
 .sc-title-scout {
   color: #ffffff;
+  -webkit-text-fill-color: #ffffff;
   font-weight: 800;
   letter-spacing: -0.02em;
 }
@@ -247,6 +248,7 @@ header.header {
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
+  -webkit-text-fill-color: transparent;
   font-weight: 800;
   letter-spacing: -0.02em;
   animation: gradient-shift 10s ease infinite;
