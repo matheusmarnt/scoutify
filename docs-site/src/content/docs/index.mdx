@@ -1,0 +1,52 @@
+---
+title: Scoutify
+description: ⌘K global search modal for Laravel — multi-model Livewire UI powered by Scout.
+template: splash
+hero:
+  title: |
+    <span class="sc-title-scout">Scout</span><span class="sc-title-ify">ify</span>
+  tagline: ⌘K global search modal for Laravel — multi-model Livewire UI powered by Scout.
+  image:
+    file: ../../assets/scoutify-square.png
+  actions:
+    - text: Get Started
+      link: /scoutify/getting-started/installation/
+      icon: right-arrow
+      variant: primary
+    - text: View on GitHub
+      link: https://github.com/matheusmarnt/scoutify
+      icon: external
+      variant: minimal
+---
+
+import { Card, CardGrid, LinkCard } from '@astrojs/starlight/components';
+
+## Why Scoutify?
+
+<CardGrid>
+  <Card title="⌘K Modal" icon="rocket">
+    Drop-in Livewire global search modal with grouped results, accent-insensitive
+    highlighting, and keyboard navigation out of the box.
+  </Card>
+  <Card title="Multi-driver" icon="setting">
+    Works with Meilisearch, Algolia, Typesense, or the Database driver. Zero
+    coupling to a specific Scout backend.
+  </Card>
+  <Card title="Fluent Authorization" icon="approve-check">
+    Per-model visibility rules with a fluent builder. Policies, Gates, Spatie
+    permissions and roles, custom callbacks.
+  </Card>
+  <Card title="Zero-config setup" icon="magnifier">
+    `php artisan scoutify:install` provisions config, packages, env, and a
+    starter searchable model.
+  </Card>
+</CardGrid>
+
+## Quick links
+
+<CardGrid>
+  <LinkCard title="Installation" href="/scoutify/getting-started/installation/" />
+  <LinkCard title="Quick Start" href="/scoutify/getting-started/quick-start/" />
+  <LinkCard title="Visibility Rules" href="/scoutify/authorization/visibility-rules/" />
+  <LinkCard title="Production Setup" href="/scoutify/production/meilisearch/" />
+</CardGrid>
