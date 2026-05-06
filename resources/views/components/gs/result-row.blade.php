@@ -9,6 +9,7 @@
     'closeOnClick' => true,
     'rememberQuery'=> null,
     'linkTarget'   => 'navigate',
+    'result'       => [],
 ])
 
 @php
@@ -59,6 +60,10 @@
             <p class="truncate text-xs text-zinc-500 dark:text-zinc-400">{!! $subtitleHtml !!}</p>
         @endif
     </div>
+
+    @if (!empty($result['preview']))
+        <x-scoutify::gs.result-row-actions :result="$result" />
+    @endif
 
     <x-scoutify::gs.icon
         name="heroicon-o-arrow-turn-down-left"

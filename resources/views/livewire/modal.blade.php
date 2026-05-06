@@ -9,11 +9,13 @@
     @keydown.end.window.prevent="if (isOpen && isFocusInside()) navEnd()"
     @keydown.page-down.window.prevent="if (isOpen && isFocusInside()) navPageDown()"
     @keydown.page-up.window.prevent="if (isOpen && isFocusInside()) navPageUp()"
+    @keydown.escape.window="if (isOpen) { if (previewOpen) { $wire.closePreview(); } else { $wire.call('close'); } }"
     @keydown.enter.window.prevent="if (isOpen && isFocusInside()) activate(allResults[activeIdx])"
     @scoutify:open.window="if (!isOpen) $wire.call('open')"
     @scoutify:opened.window="handleOpened()"
     @scoutify:closed.window="handleClosed()"
     @scoutify:remember.window="rememberTerm($event.detail?.term)"
+    @scoutify:download.window="triggerDownload($event.detail.url, $event.detail.filename)"
 >
     <x-scoutify::gs.shell wire="isOpen" id="scoutify-search">
         {{-- Header: search input --}}
@@ -49,54 +51,59 @@
             @endif
         </div>
 
-        {{-- Body --}}
-        <x-scoutify::gs.results-listbox id="scoutify-listbox">
-            {{-- Skeleton during loading --}}
-            <div wire:loading.delay.long wire:target="query,toggleType,onlyActive,includeTrashed">
-                <x-scoutify::gs.skeleton-list :count="5" />
-            </div>
+        {{-- Body: preview pane OR results listbox --}}
+        @if ($selectedPreview)
+            <x-scoutify::gs.preview.pane :preview="$selectedPreview" />
+        @else
+            <x-scoutify::gs.results-listbox id="scoutify-listbox">
+                {{-- Skeleton during loading --}}
+                <div wire:loading.delay.long wire:target="query,toggleType,onlyActive,includeTrashed">
+                    <x-scoutify::gs.skeleton-list :count="5" />
+                </div>
 
-            <div wire:loading.remove.delay.long wire:target="query,toggleType,onlyActive,includeTrashed">
-                @if (blank($this->query))
-                    <x-scoutify::gs.idle-state />
-                @elseif (empty($this->results))
-                    <x-scoutify::gs.empty-state />
-                @else
-                    @php $globalIdx = 0; @endphp
-                    @foreach (collect($this->results)->groupBy('group') as $groupKey => $groupResults)
-                        @php
-                            $firstResult = $groupResults->first();
-                            $groupLabel  = $firstResult['groupLabel'] ?? $groupKey;
-                            $groupIcon   = $firstResult['icon'] ?? 'heroicon-o-magnifying-glass';
-                            $groupTotal  = $groupResults->count();
-                        @endphp
-                        <div class="px-2 pt-3 pb-1 not-first:border-t not-first:border-dashed not-first:border-zinc-100 dark:not-first:border-zinc-800">
-                            <x-scoutify::gs.group-header
-                                :icon="$groupIcon"
-                                :label="$groupLabel"
-                                :total="$groupTotal"
-                                :color="$firstResult['groupColor'] ?? 'zinc'"
-                            />
-
-                            @foreach ($groupResults as $result)
-                                @php $idx = $globalIdx++; @endphp
-                                <x-scoutify::gs.result-row
-                                    :id="'scoutify-result-'.$idx"
-                                    :url="$result['url']"
-                                    :icon="$result['icon']"
-                                    :group-color="$result['groupColor'] ?? 'zinc'"
-                                    :link-target="$result['linkTarget'] ?? 'navigate'"
-                                    :title-html="$result['titleHtml']"
-                                    :subtitle-html="$result['subtitleHtml']"
-                                    :index="$idx"
-                                    :remember-query="$this->query"
+                <div wire:loading.remove.delay.long wire:target="query,toggleType,onlyActive,includeTrashed">
+                    @if (blank($this->query))
+                        <x-scoutify::gs.idle-state />
+                    @elseif (empty($this->results))
+                        <x-scoutify::gs.empty-state />
+                    @else
+                        @php $globalIdx = 0; @endphp
+                        @foreach (collect($this->results)->groupBy('group') as $groupKey => $groupResults)
+                            @php
+                                $firstResult = $groupResults->first();
+                                $groupLabel  = $firstResult['groupLabel'] ?? $groupKey;
+                                $groupIcon   = $firstResult['icon'] ?? 'heroicon-o-magnifying-glass';
+                                $groupTotal  = $groupResults->count();
+                            @endphp
+                            <div class="px-2 pt-3 pb-1 not-first:border-t not-first:border-dashed not-first:border-zinc-100 dark:not-first:border-zinc-800">
+                                <x-scoutify::gs.group-header
+                                    :icon="$groupIcon"
+                                    :label="$groupLabel"
+                                    :total="$groupTotal"
+                                    :color="$firstResult['groupColor'] ?? 'zinc'"
                                 />
-                            @endforeach
-                        </div>
-                    @endforeach
-                @endif
-            </div>
-        </x-scoutify::gs.results-listbox>
+
+                                @foreach ($groupResults as $result)
+                                    @php $idx = $globalIdx++; @endphp
+                                    <x-scoutify::gs.result-row
+                                        :id="'scoutify-result-'.$idx"
+                                        :url="$result['url']"
+                                        :icon="$result['icon']"
+                                        :group-color="$result['groupColor'] ?? 'zinc'"
+                                        :link-target="$result['linkTarget'] ?? 'navigate'"
+                                        :title-html="$result['titleHtml']"
+                                        :subtitle-html="$result['subtitleHtml']"
+                                        :index="$idx"
+                                        :remember-query="$this->query"
+                                        :result="$result"
+                                    />
+                                @endforeach
+                            </div>
+                        @endforeach
+                    @endif
+                </div>
+            </x-scoutify::gs.results-listbox>
+        @endif
 
         {{-- Footer --}}
         <x-scoutify::gs.hint-bar />
@@ -111,6 +118,10 @@
 
         get isOpen() {
             return this.$wire.isOpen;
+        },
+
+        get previewOpen() {
+            return this.$wire.selectedPreview !== null;
         },
 
         get allResults() {
@@ -162,6 +173,15 @@
         handleClosed() {
             document.body.classList.remove('overflow-hidden');
             this.$nextTick(() => this.triggerEl?.focus());
+        },
+
+        triggerDownload(url, filename) {
+            const a = document.createElement('a');
+            a.href = url;
+            if (filename) a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
         },
 
         rememberTerm(term) {
