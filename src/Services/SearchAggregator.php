@@ -78,7 +78,7 @@ final class SearchAggregator
                 continue;
             }
 
-            $models = $models->filter(fn ($record) => app(GlobalSearchAuthorizer::class)->authorize($record, auth()->user()))->values();
+            $models = $models->filter(fn ($record) => app(GlobalSearchAuthorizer::class)->authorize($record, auth()->guard()->user()))->values();
 
             if ($onlyActive && method_exists($modelClass, 'scopeActive')) {
                 $models = $models->filter(fn ($m) => (bool) ($m->active ?? true));
@@ -101,7 +101,7 @@ final class SearchAggregator
 
             $dtos = [];
             foreach ($models as $model) {
-                if ($model instanceof GloballySearchable) {
+                if ($model instanceof Model && $model instanceof GloballySearchable) {
                     $preview = $model instanceof HasGlobalSearchPreview
                         ? $model->globalSearchPreview()
                         : null;

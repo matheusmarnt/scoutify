@@ -194,8 +194,8 @@ class Modal extends Component
         $highlighter = app(Highlighter::class);
         $this->results = $dtos->map(
             fn ($dto) => $dto->toArray() + [
-                'titleHtml' => (string) $highlighter->highlight($dto->title, $this->query),
-                'subtitleHtml' => (string) $highlighter->highlight($dto->subtitle, $this->query),
+                'titleHtml' => $highlighter->highlight($dto->title, $this->query)->toHtml(),
+                'subtitleHtml' => $highlighter->highlight($dto->subtitle, $this->query)->toHtml(),
             ],
         )->all();
     }
@@ -224,7 +224,7 @@ class Modal extends Component
             $merged[$class] = array_merge($merged[$class] ?? [], $meta);
         }
 
-        return array_values(array_map(
+        return array_map(
             function ($class, $meta) {
                 // Resolve label dynamically at request time so locale changes
                 // after boot are reflected correctly in the chip label.
@@ -236,7 +236,7 @@ class Modal extends Component
             },
             array_keys($merged),
             array_values($merged),
-        ));
+        );
     }
 
     public function render(): View

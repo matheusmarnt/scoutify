@@ -39,7 +39,7 @@ final class ModelDiscoverer
         foreach ((new Finder)->files()->name('*.php')->in($path) as $file) {
             $fqcn = $this->fileToFqcn($file->getRealPath(), $path);
 
-            if ($fqcn !== null && $this->isEloquentModel($fqcn)) {
+            if ($this->isEloquentModel($fqcn)) {
                 $models[] = $fqcn;
             }
         }
@@ -47,7 +47,7 @@ final class ModelDiscoverer
         return $models;
     }
 
-    private function fileToFqcn(string $filePath, string $basePath): ?string
+    private function fileToFqcn(string $filePath, string $basePath): string
     {
         $relative = Str::of($filePath)
             ->after($basePath.DIRECTORY_SEPARATOR)

@@ -45,8 +45,8 @@ final readonly class ResultDto
         ?PreviewDto $preview = null,
     ): self {
         return new self(
-            title: method_exists($model, 'globalSearchTitle') ? $model->globalSearchTitle() : '',
-            subtitle: method_exists($model, 'globalSearchSubtitle') ? $model->globalSearchSubtitle() : null,
+            title: $model->globalSearchTitle(),
+            subtitle: $model->globalSearchSubtitle(),
             url: $url,
             icon: $model::globalSearchIcon(),
             group: $model::globalSearchGroup(),

@@ -3,6 +3,7 @@
 namespace Matheusmarnt\Scoutify\Services;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Filesystem\FilesystemAdapter;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\URL;
 use Matheusmarnt\Scoutify\Support\PreviewDto;
@@ -17,9 +18,10 @@ final class PreviewResolver
 
         $expires = now()->addSeconds($dto->ttl ?? config('scoutify.preview.ttl_seconds', 300));
         $filename = rawurlencode($dto->filename ?? basename($dto->path));
+        $disk = Storage::disk($dto->disk);
 
-        if (Storage::disk($dto->disk)->providesTemporaryUrls()) {
-            return Storage::disk($dto->disk)->temporaryUrl(
+        if ($disk instanceof FilesystemAdapter && $disk->providesTemporaryUrls()) {
+            return $disk->temporaryUrl(
                 $dto->path,
                 $expires,
                 ['ResponseContentDisposition' => 'inline; filename="'.$filename.'"'],
@@ -42,9 +44,10 @@ final class PreviewResolver
 
         $expires = now()->addSeconds($dto->ttl ?? config('scoutify.preview.ttl_seconds', 300));
         $filename = rawurlencode($dto->filename ?? basename($dto->path));
+        $disk = Storage::disk($dto->disk);
 
-        if (Storage::disk($dto->disk)->providesTemporaryUrls()) {
-            return Storage::disk($dto->disk)->temporaryUrl(
+        if ($disk instanceof FilesystemAdapter && $disk->providesTemporaryUrls()) {
+            return $disk->temporaryUrl(
                 $dto->path,
                 $expires,
                 ['ResponseContentDisposition' => 'attachment; filename="'.$filename.'"'],
@@ -67,9 +70,12 @@ final class PreviewResolver
 
         if ($dto->isStorageBased()) {
             try {
-                $mime = Storage::disk($dto->disk)->mimeType($dto->path);
-                if ($mime !== false) {
-                    return $mime;
+                $disk = Storage::disk($dto->disk);
+                if ($disk instanceof FilesystemAdapter) {
+                    $mime = $disk->mimeType($dto->path);
+                    if ($mime !== false) {
+                        return $mime;
+                    }
                 }
             } catch (\Throwable) {
             }
