@@ -28,7 +28,7 @@ class ExternalPreviewArticle extends Model implements GloballySearchable, HasGlo
 
     public function globalSearchUrl(): string
     {
-        return '/articles/' . $this->id;
+        return '/articles/'.$this->id;
     }
 
     public function globalSearchPreview(): ?PreviewDto

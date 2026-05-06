@@ -27,7 +27,7 @@ class PreviewStreamController
 
         return Storage::disk($disk)->response($path, basename($path), [
             'Content-Type' => $mime,
-            'Content-Disposition' => 'inline; filename="' . $filename . '"',
+            'Content-Disposition' => 'inline; filename="'.$filename.'"',
             'X-Content-Type-Options' => 'nosniff',
             'Cache-Control' => 'private, max-age=0, no-store',
         ]);

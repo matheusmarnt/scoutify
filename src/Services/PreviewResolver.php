@@ -22,7 +22,7 @@ final class PreviewResolver
             return Storage::disk($dto->disk)->temporaryUrl(
                 $dto->path,
                 $expires,
-                ['ResponseContentDisposition' => 'inline; filename="' . $filename . '"'],
+                ['ResponseContentDisposition' => 'inline; filename="'.$filename.'"'],
             );
         }
 
@@ -47,7 +47,7 @@ final class PreviewResolver
             return Storage::disk($dto->disk)->temporaryUrl(
                 $dto->path,
                 $expires,
-                ['ResponseContentDisposition' => 'attachment; filename="' . $filename . '"'],
+                ['ResponseContentDisposition' => 'attachment; filename="'.$filename.'"'],
             );
         }
 
@@ -97,7 +97,7 @@ final class PreviewResolver
         }
 
         [$type] = explode('/', $mime, 2);
-        $wildcard = $type . '/*';
+        $wildcard = $type.'/*';
         if (isset($map[$wildcard])) {
             return $map[$wildcard];
         }

@@ -38,7 +38,7 @@ describe('PreviewDto', function () {
 
     it('throws when disk and url both provided', function () {
         expect(fn () => new PreviewDto(disk: 's3', path: 'a.pdf', url: 'https://x.com/a.pdf'))
-            ->toThrow(\InvalidArgumentException::class);
+            ->toThrow(InvalidArgumentException::class);
     });
 
     it('serializes to array and back', function () {

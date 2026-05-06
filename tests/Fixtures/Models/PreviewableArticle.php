@@ -23,7 +23,7 @@ class PreviewableArticle extends Model implements GloballySearchable, HasGlobalS
 
     public function globalSearchUrl(): string
     {
-        return '/articles/' . $this->id;
+        return '/articles/'.$this->id;
     }
 
     public function globalSearchPreview(): ?PreviewDto

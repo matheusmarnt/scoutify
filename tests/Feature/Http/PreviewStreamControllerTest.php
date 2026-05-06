@@ -59,7 +59,7 @@ it('returns 403 for invalid signature', function () {
     $user = User::create(['name' => 'User']);
     $this->actingAs($user);
 
-    $this->get('/scoutify/preview/stream?disk=local&path=reports/q4.pdf&model_class=' . urlencode(PreviewableArticle::class) . '&model_key=' . $article->id)
+    $this->get('/scoutify/preview/stream?disk=local&path=reports/q4.pdf&model_class='.urlencode(PreviewableArticle::class).'&model_key='.$article->id)
         ->assertStatus(403);
 });
 
