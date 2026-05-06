@@ -48,8 +48,12 @@ it('linkTarget defaults to navigate', function () {
 });
 
 it('fromModel resolves linkTarget from globalSearchLinkTarget', function () {
-    $model = new class (['name' => 'Test']) extends Article {
-        public function globalSearchLinkTarget(): string { return '_blank'; }
+    $model = new class(['name' => 'Test']) extends Article
+    {
+        public function globalSearchLinkTarget(): string
+        {
+            return '_blank';
+        }
     };
 
     $dto = ResultDto::fromModel(model: $model, url: 'https://external.com/foo');
@@ -58,7 +62,7 @@ it('fromModel resolves linkTarget from globalSearchLinkTarget', function () {
 });
 
 it('fromModel defaults linkTarget to navigate when model has no globalSearchLinkTarget', function () {
-    $model = new class (['name' => 'Test']) extends Article {};
+    $model = new class(['name' => 'Test']) extends Article {};
 
     $dto = ResultDto::fromModel(model: $model, url: 'http://localhost/articles/1');
 

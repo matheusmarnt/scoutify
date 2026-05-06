@@ -111,7 +111,7 @@ trait Searchable
 
     public function globalSearchLinkTarget(): string
     {
-        $url     = $this->globalSearchUrl();
+        $url = $this->globalSearchUrl();
         $urlHost = parse_url($url, PHP_URL_HOST);
 
         if ($urlHost === null) {
