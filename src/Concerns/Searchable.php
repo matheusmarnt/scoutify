@@ -109,6 +109,20 @@ trait Searchable
         return url('/');
     }
 
+    public function globalSearchLinkTarget(): string
+    {
+        $url     = $this->globalSearchUrl();
+        $urlHost = parse_url($url, PHP_URL_HOST);
+
+        if ($urlHost === null) {
+            return 'navigate';
+        }
+
+        $appHost = parse_url(url('/'), PHP_URL_HOST);
+
+        return $urlHost !== $appHost ? '_blank' : 'navigate';
+    }
+
     protected function globalSearchTitleAttribute(): string
     {
         return 'name';

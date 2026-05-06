@@ -32,9 +32,37 @@ it('toArray returns all keys', function () {
     );
 
     expect($dto->toArray())->toHaveKeys([
-        'title', 'subtitle', 'url', 'icon', 'group', 'groupLabel', 'groupColor', 'modelKey',
+        'title', 'subtitle', 'url', 'icon', 'group', 'groupLabel', 'groupColor', 'modelKey', 'linkTarget',
     ])->and($dto->toArray()['subtitle'])->toBeNull()
-        ->and($dto->toArray()['modelKey'])->toBeNull();
+        ->and($dto->toArray()['modelKey'])->toBeNull()
+        ->and($dto->toArray()['linkTarget'])->toBe('navigate');
+});
+
+it('linkTarget defaults to navigate', function () {
+    $dto = new ResultDto(
+        title: 'T', subtitle: null, url: '/foo',
+        icon: 'x', group: 'g', groupLabel: 'G', groupColor: 'zinc',
+    );
+
+    expect($dto->linkTarget)->toBe('navigate');
+});
+
+it('fromModel resolves linkTarget from globalSearchLinkTarget', function () {
+    $model = new class (['name' => 'Test']) extends Article {
+        public function globalSearchLinkTarget(): string { return '_blank'; }
+    };
+
+    $dto = ResultDto::fromModel(model: $model, url: 'https://external.com/foo');
+
+    expect($dto->linkTarget)->toBe('_blank');
+});
+
+it('fromModel defaults linkTarget to navigate when model has no globalSearchLinkTarget', function () {
+    $model = new class (['name' => 'Test']) extends Article {};
+
+    $dto = ResultDto::fromModel(model: $model, url: 'http://localhost/articles/1');
+
+    expect($dto->linkTarget)->toBe('navigate');
 });
 
 it('fromModel creates dto from GloballySearchable model', function () {

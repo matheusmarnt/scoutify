@@ -15,19 +15,21 @@ final readonly class ResultDto
         public string $groupLabel,
         public string $groupColor,
         public ?string $modelKey = null,
+        public string $linkTarget = 'navigate',
     ) {}
 
     public function toArray(): array
     {
         return [
-            'title' => $this->title,
-            'subtitle' => $this->subtitle,
-            'url' => $this->url,
-            'icon' => $this->icon,
-            'group' => $this->group,
+            'title'      => $this->title,
+            'subtitle'   => $this->subtitle,
+            'url'        => $this->url,
+            'icon'       => $this->icon,
+            'group'      => $this->group,
             'groupLabel' => $this->groupLabel,
             'groupColor' => $this->groupColor,
-            'modelKey' => $this->modelKey,
+            'modelKey'   => $this->modelKey,
+            'linkTarget' => $this->linkTarget,
         ];
     }
 
@@ -38,14 +40,15 @@ final readonly class ResultDto
         ?string $modelKey = null,
     ): self {
         return new self(
-            title: method_exists($model, 'globalSearchTitle') ? $model->globalSearchTitle() : '',
-            subtitle: method_exists($model, 'globalSearchSubtitle') ? $model->globalSearchSubtitle() : null,
-            url: $url,
-            icon: $model::globalSearchIcon(),
-            group: $model::globalSearchGroup(),
+            title:      method_exists($model, 'globalSearchTitle')      ? $model->globalSearchTitle()      : '',
+            subtitle:   method_exists($model, 'globalSearchSubtitle')   ? $model->globalSearchSubtitle()   : null,
+            url:        $url,
+            icon:       $model::globalSearchIcon(),
+            group:      $model::globalSearchGroup(),
             groupLabel: $groupLabel ?: $model::globalSearchGroup(),
             groupColor: $model::globalSearchColor(),
-            modelKey: $modelKey,
+            modelKey:   $modelKey,
+            linkTarget: method_exists($model, 'globalSearchLinkTarget') ? $model->globalSearchLinkTarget() : 'navigate',
         );
     }
 }
