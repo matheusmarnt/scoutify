@@ -8,6 +8,7 @@ use Illuminate\Support\Collection;
 use Laravel\Scout\Builder;
 use Matheusmarnt\Scoutify\Authorization\GlobalSearchAuthorizer;
 use Matheusmarnt\Scoutify\Contracts\GloballySearchable;
+use Matheusmarnt\Scoutify\Contracts\HasGlobalSearchPreview;
 use Matheusmarnt\Scoutify\Support\GlobalSearchGroup;
 use Matheusmarnt\Scoutify\Support\GlobalSearchRegistry;
 use Matheusmarnt\Scoutify\Support\ResultDto;
@@ -101,11 +102,16 @@ final class SearchAggregator
             $dtos = [];
             foreach ($models as $model) {
                 if ($model instanceof GloballySearchable) {
+                    $preview = $model instanceof HasGlobalSearchPreview
+                        ? $model->globalSearchPreview()
+                        : null;
+
                     $dtos[] = ResultDto::fromModel(
                         model: $model,
                         url: $model->globalSearchUrl(),
                         groupLabel: $label,
                         modelKey: (string) $model->getKey(),
+                        preview: $preview,
                     );
                 } else {
                     $dtos[] = new ResultDto(
