@@ -15,6 +15,7 @@ final readonly class ResultDto
         public string $groupLabel,
         public string $groupColor,
         public ?string $modelKey = null,
+        public string $linkTarget = 'navigate',
     ) {}
 
     public function toArray(): array
@@ -28,6 +29,7 @@ final readonly class ResultDto
             'groupLabel' => $this->groupLabel,
             'groupColor' => $this->groupColor,
             'modelKey' => $this->modelKey,
+            'linkTarget' => $this->linkTarget,
         ];
     }
 
@@ -46,6 +48,7 @@ final readonly class ResultDto
             groupLabel: $groupLabel ?: $model::globalSearchGroup(),
             groupColor: $model::globalSearchColor(),
             modelKey: $modelKey,
+            linkTarget: method_exists($model, 'globalSearchLinkTarget') ? $model->globalSearchLinkTarget() : 'navigate',
         );
     }
 }

@@ -1,23 +1,34 @@
 @props([
-    'id' => null,
+    'id'           => null,
     'url',
     'icon',
-    'groupColor' => 'zinc',
+    'groupColor'   => 'zinc',
     'titleHtml',
     'subtitleHtml' => null,
-    'index' => 0,
+    'index'        => 0,
     'closeOnClick' => true,
-    'rememberQuery' => null,
+    'rememberQuery'=> null,
+    'linkTarget'   => 'navigate',
 ])
 
 @php
     $tileClasses = \Matheusmarnt\Scoutify\Enums\Color::resolveClasses($groupColor);
+
+    // Defense-in-depth: never emit wire:navigate for external URLs even if linkTarget arrives wrong.
+    // Livewire navigate removes wire:navigate from DOM after binding the click listener, so DOM
+    // inspection shows "no wire:navigate" while the hijack listener is already installed.
+    $appHost         = parse_url(url('/'), PHP_URL_HOST);
+    $urlHost         = parse_url($url, PHP_URL_HOST);
+    $isInternal      = $urlHost === null || $urlHost === $appHost;
+    $effectiveTarget = (! $isInternal && $linkTarget === 'navigate') ? '_blank' : $linkTarget;
 @endphp
 
 <a
     @if ($id) id="{{ $id }}" @endif
     href="{{ $url }}"
-    wire:navigate
+    @if ($effectiveTarget === 'navigate') wire:navigate @endif
+    @if ($effectiveTarget === '_blank') target="_blank" rel="noopener noreferrer" @endif
+    {{-- _self: plain link, no wire:navigate --}}
     role="option"
     data-search-result
     :aria-selected="{{ $index }} === activeIdx ? 'true' : 'false'"
@@ -26,7 +37,7 @@
         @if ($rememberQuery)
             window.dispatchEvent(new CustomEvent('scoutify:remember', { detail: { term: @js($rememberQuery) } }));
         @endif
-        @if ($closeOnClick) $wire.close(); @endif
+        @if ($closeOnClick) setTimeout(() => $wire.close(), 0); @endif
     "
     class="group relative flex items-center gap-3 rounded-lg px-2.5 py-2.5 transition-colors md:py-2 motion-safe:transition-[transform,colors]"
     x-bind:class="{{ $index }} === activeIdx

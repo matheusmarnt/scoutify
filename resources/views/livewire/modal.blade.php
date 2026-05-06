@@ -9,7 +9,7 @@
     @keydown.end.window.prevent="if (isOpen && isFocusInside()) navEnd()"
     @keydown.page-down.window.prevent="if (isOpen && isFocusInside()) navPageDown()"
     @keydown.page-up.window.prevent="if (isOpen && isFocusInside()) navPageUp()"
-    @keydown.enter.window.prevent="if (isOpen && isFocusInside()) allResults[activeIdx]?.click()"
+    @keydown.enter.window.prevent="if (isOpen && isFocusInside()) activate(allResults[activeIdx])"
     @scoutify:open.window="if (!isOpen) $wire.call('open')"
     @scoutify:opened.window="handleOpened()"
     @scoutify:closed.window="handleClosed()"
@@ -85,6 +85,7 @@
                                     :url="$result['url']"
                                     :icon="$result['icon']"
                                     :group-color="$result['groupColor'] ?? 'zinc'"
+                                    :link-target="$result['linkTarget'] ?? 'navigate'"
                                     :title-html="$result['titleHtml']"
                                     :subtitle-html="$result['subtitleHtml']"
                                     :index="$idx"
@@ -170,6 +171,20 @@
             const list = JSON.parse(localStorage.getItem(key) || '[]');
             const next = [t, ...list.filter(s => s !== t)].slice(0, 8);
             localStorage.setItem(key, JSON.stringify(next));
+        },
+
+        // Use window.open for _blank links so that:
+        // 1. Browsers don't block the new tab as a pop-up (synthetic clicks are gated)
+        // 2. Livewire navigate's isProgrammaticClick interceptor never sees the event
+        activate(el) {
+            if (! el) return;
+            const target = el.getAttribute('target');
+            const href   = el.getAttribute('href');
+            if (target === '_blank' && href) {
+                window.open(href, '_blank', 'noopener,noreferrer');
+                return;
+            }
+            el.click();
         },
     }));
 </script>
