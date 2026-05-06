@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.13.2](https://github.com/matheusmarnt/scoutify/compare/v1.13.1...v1.13.2) (2026-05-06)
+
+
+### Bug Fixes
+
+* **navigation:** prevent wire:navigate from hijacking external URLs ([#97](https://github.com/matheusmarnt/scoutify/issues/97)) ([54795f6](https://github.com/matheusmarnt/scoutify/commit/54795f626fea446c214bbe9afd11901234eb20f0))
+
 ## [1.13.1](https://github.com/matheusmarnt/scoutify/compare/v1.13.0...v1.13.1) (2026-05-04)
 
 
