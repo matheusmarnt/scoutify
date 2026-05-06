@@ -6,6 +6,7 @@ use Livewire\Livewire;
 use Livewire\LivewireManager;
 use Matheusmarnt\Scoutify\Authorization\GlobalSearchAuthorizer;
 use Matheusmarnt\Scoutify\Console\DoctorCommand;
+use Matheusmarnt\Scoutify\Services\PreviewResolver;
 use Matheusmarnt\Scoutify\Console\FlushCommand;
 use Matheusmarnt\Scoutify\Console\ImportCommand;
 use Matheusmarnt\Scoutify\Console\InstallCommand;
@@ -28,6 +29,7 @@ class ScoutifyServiceProvider extends PackageServiceProvider
             ->hasConfigFile()
             ->hasViews('scoutify')
             ->hasTranslations()
+            ->hasRoute('web')
             ->hasCommands([
                 DoctorCommand::class,
                 InstallCommand::class,
@@ -43,6 +45,7 @@ class ScoutifyServiceProvider extends PackageServiceProvider
     {
         $this->app->singleton(GlobalSearchRegistry::class);
         $this->app->singleton(GlobalSearchAuthorizer::class);
+        $this->app->singleton(PreviewResolver::class);
 
         // Load manifest and populate registry
         $registry = $this->app->make(GlobalSearchRegistry::class);
