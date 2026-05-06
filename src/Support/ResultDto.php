@@ -16,6 +16,8 @@ final readonly class ResultDto
         public string $groupColor,
         public ?string $modelKey = null,
         public string $linkTarget = 'navigate',
+        public ?string $modelClass = null,
+        public ?PreviewDto $preview = null,
     ) {}
 
     public function toArray(): array
@@ -30,6 +32,8 @@ final readonly class ResultDto
             'groupColor' => $this->groupColor,
             'modelKey' => $this->modelKey,
             'linkTarget' => $this->linkTarget,
+            'modelClass' => $this->modelClass,
+            'preview' => $this->preview?->toArray(),
         ];
     }
 
@@ -38,6 +42,7 @@ final readonly class ResultDto
         string $url,
         string $groupLabel = '',
         ?string $modelKey = null,
+        ?PreviewDto $preview = null,
     ): self {
         return new self(
             title: method_exists($model, 'globalSearchTitle') ? $model->globalSearchTitle() : '',
@@ -49,6 +54,8 @@ final readonly class ResultDto
             groupColor: $model::globalSearchColor(),
             modelKey: $modelKey,
             linkTarget: method_exists($model, 'globalSearchLinkTarget') ? $model->globalSearchLinkTarget() : 'navigate',
+            modelClass: get_class($model),
+            preview: $preview,
         );
     }
 }
