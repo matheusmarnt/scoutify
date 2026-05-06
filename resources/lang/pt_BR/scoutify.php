@@ -20,6 +20,10 @@ return [
     'hint_close' => 'fechar',
     'results_count' => '{0} Nenhum resultado|[1] :count resultado|[2,*] :count resultados',
     'results_listbox_label' => 'Resultados da busca',
+    'preview' => 'Visualizar',
+    'download' => 'Baixar',
+    'back' => 'Voltar',
+    'video_unsupported' => 'Seu navegador não suporta o elemento de vídeo.',
     'type_filter' => 'Tipo:',
     'types' => [
         // Adicione uma entrada por model usando o padrão '<snake_class>_plural'.
