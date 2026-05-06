@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.13.3](https://github.com/matheusmarnt/scoutify/compare/v1.13.2...v1.13.3) (2026-05-06)
+
+
+### Miscellaneous Chores
+
+* stop tracking PROJECT_MEMORY.md (covered by .gitignore) ([e244740](https://github.com/matheusmarnt/scoutify/commit/e2447404bc1935e7279bc42c10888e21ca9fc259))
+
 ## [1.13.2](https://github.com/matheusmarnt/scoutify/compare/v1.13.1...v1.13.2) (2026-05-06)
 
 
