@@ -36,6 +36,10 @@ import { Card, CardGrid, LinkCard, Tabs, TabItem } from '@astrojs/starlight/comp
     Per-model visibility rules with a fluent builder. Policies, Gates, Spatie
     permissions and roles, custom callbacks.
   </Card>
+  <Card title="File Preview" icon="document">
+    Inline PDF, image, and video previews directly in the modal. Models expose a
+    `PreviewDto` — Scoutify handles signed routes, streaming, and download events.
+  </Card>
   <Card title="Artisan Ready" icon="laptop">
     `php artisan scoutify:install` provisions config, packages, env, and a
     starter searchable model. Zero-config deployment.
@@ -45,7 +49,7 @@ import { Card, CardGrid, LinkCard, Tabs, TabItem } from '@astrojs/starlight/comp
     standard Eloquent methods.
   </Card>
   <Card title="Production Tested" icon="starlight">
-    Comprehensive test suite, PHPStan level 8, and optimized for performance with large datasets.
+    Comprehensive test suite, PHPStan level 5 static analysis, and optimized for performance with large datasets.
   </Card>
 </CardGrid>
 
@@ -101,6 +105,11 @@ class Article extends Model implements GloballySearchable
     title="Visibility Rules" 
     description="Fine-grained access control with a fluent API."
     href="/scoutify/authorization/visibility-rules/" 
+  />
+  <LinkCard 
+    title="File Preview" 
+    description="Inline PDF, image, and video previews in the search modal."
+    href="/scoutify/usage/file-preview/" 
   />
   <LinkCard 
     title="Production Setup" 

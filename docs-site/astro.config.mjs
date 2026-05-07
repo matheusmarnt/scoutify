@@ -57,6 +57,7 @@ export default defineConfig({
             { label: 'Trigger Components',  slug: 'usage/trigger-components' },
             { label: 'Customizing Builder', slug: 'usage/customizing-builder' },
             { label: 'Programmatic Open',   slug: 'usage/programmatic-open' },
+            { label: 'File Preview',        slug: 'usage/file-preview' },
           ],
         },
         {
