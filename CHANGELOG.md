@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.14.0](https://github.com/matheusmarnt/scoutify/compare/v1.13.3...v1.14.0) (2026-05-07)
+
+
+### Features
+
+* file preview & download in global search modal ([#100](https://github.com/matheusmarnt/scoutify/issues/100)) ([b830159](https://github.com/matheusmarnt/scoutify/commit/b83015972d07abb4f50c9764bae16d9beb3a3bb1))
+
 ## [1.13.3](https://github.com/matheusmarnt/scoutify/compare/v1.13.2...v1.13.3) (2026-05-06)
 
 
