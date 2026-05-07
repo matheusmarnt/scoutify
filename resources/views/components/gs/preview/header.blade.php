@@ -6,6 +6,7 @@
         wire:click="closePreview"
         class="inline-flex size-8 shrink-0 items-center justify-center rounded-lg text-zinc-500 transition hover:bg-zinc-100 hover:text-zinc-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40 dark:hover:bg-zinc-800 dark:hover:text-zinc-200 {{ config('scoutify.classes.preview.back_button', '') }}"
         aria-label="{{ __('scoutify::scoutify.back') }}"
+        data-preview-back-btn
         x-ref="previewBackBtn"
     >
         <x-scoutify::gs.icon name="heroicon-o-arrow-left" class="size-4" />
