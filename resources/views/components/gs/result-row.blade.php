@@ -30,6 +30,7 @@
     data-search-result
     :aria-selected="{{ $index }} === activeIdx ? 'true' : 'false'"
     @mouseenter="activeIdx = {{ $index }}"
+    @click="if (!$event.target.closest('[data-result-action]') && !$event.target.closest('a[href]')) activate($el)"
     class="group relative rounded-lg px-2.5 py-2.5 transition-colors md:py-2 motion-safe:transition-[transform,colors]"
     x-bind:class="{{ $index }} === activeIdx
         ? 'bg-accent/10 ring-1 ring-inset ring-accent/20 dark:bg-accent/15 outline-none'
