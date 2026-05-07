@@ -20,6 +20,10 @@ return [
     'hint_close' => 'close',
     'results_count' => '{0} No results|[1] :count result|[2,*] :count results',
     'results_listbox_label' => 'Search results',
+    'preview' => 'Preview',
+    'download' => 'Download',
+    'back' => 'Back',
+    'video_unsupported' => 'Your browser does not support the video tag.',
     'type_filter' => 'Type:',
     'types' => [
         // Add one entry per model using the pattern '<snake_class>_plural'.

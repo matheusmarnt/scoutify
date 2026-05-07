@@ -64,6 +64,7 @@ class InstallCommand extends Command
         return self::SUCCESS;
     }
 
+    /** @return 'sail'|'docker'|'host' */
     private function detectEnvironment(): string
     {
         if (is_dir(base_path('vendor/laravel/sail'))) {

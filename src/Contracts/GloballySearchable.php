@@ -20,6 +20,8 @@ interface GloballySearchable
      */
     public function globalSearchUrl(): string;
 
+    public static function globalSearchLabel(): string;
+
     public static function globalSearchGroup(): string;
 
     public static function globalSearchIcon(): string;

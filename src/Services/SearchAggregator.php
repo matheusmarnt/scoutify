@@ -8,6 +8,7 @@ use Illuminate\Support\Collection;
 use Laravel\Scout\Builder;
 use Matheusmarnt\Scoutify\Authorization\GlobalSearchAuthorizer;
 use Matheusmarnt\Scoutify\Contracts\GloballySearchable;
+use Matheusmarnt\Scoutify\Contracts\HasGlobalSearchPreview;
 use Matheusmarnt\Scoutify\Support\GlobalSearchGroup;
 use Matheusmarnt\Scoutify\Support\GlobalSearchRegistry;
 use Matheusmarnt\Scoutify\Support\ResultDto;
@@ -77,7 +78,7 @@ final class SearchAggregator
                 continue;
             }
 
-            $models = $models->filter(fn ($record) => app(GlobalSearchAuthorizer::class)->authorize($record, auth()->user()))->values();
+            $models = $models->filter(fn ($record) => app(GlobalSearchAuthorizer::class)->authorize($record, auth()->guard()->user()))->values();
 
             if ($onlyActive && method_exists($modelClass, 'scopeActive')) {
                 $models = $models->filter(fn ($m) => (bool) ($m->active ?? true));
@@ -100,12 +101,17 @@ final class SearchAggregator
 
             $dtos = [];
             foreach ($models as $model) {
-                if ($model instanceof GloballySearchable) {
+                if ($model instanceof Model && $model instanceof GloballySearchable) {
+                    $preview = $model instanceof HasGlobalSearchPreview
+                        ? $model->globalSearchPreview()
+                        : null;
+
                     $dtos[] = ResultDto::fromModel(
                         model: $model,
                         url: $model->globalSearchUrl(),
                         groupLabel: $label,
                         modelKey: (string) $model->getKey(),
+                        preview: $preview,
                     );
                 } else {
                     $dtos[] = new ResultDto(

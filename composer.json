@@ -37,17 +37,20 @@
         "typesense/typesense-php": "^6.0"
     },
     "require-dev": {
+        "laravel/pint": "^1.14",
+        "nunomaduro/collision": "^8.0",
         "orchestra/testbench": "^9.0|^10.0",
         "pestphp/pest": "^3.0|^4.0",
         "pestphp/pest-plugin-laravel": "^3.0|^4.0",
         "pestphp/pest-plugin-livewire": "^3.0|^4.0",
-        "laravel/pint": "^1.14",
-        "nunomaduro/collision": "^8.0"
+        "phpstan/phpstan": "^2.1"
     },
     "suggest": {
         "algolia/algoliasearch-client-php": "Algolia driver for Scout",
+        "intervention/image": "Reserved for future thumbnail generation in file preview (^3.0)",
         "meilisearch/meilisearch-php": "Meilisearch driver for Scout",
         "spatie/laravel-permission": "Required to use ->permission()/->role() in VisibilityRule (^6.0)",
+        "spatie/pdf-to-image": "Reserved for future PDF thumbnail generation in file preview (^3.0)",
         "typesense/typesense-php": "Typesense driver for Scout"
     },
     "autoload": {

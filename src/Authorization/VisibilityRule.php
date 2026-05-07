@@ -18,7 +18,7 @@ class VisibilityRule
 
     public static function make(): self
     {
-        return new static;
+        return new self;
     }
 
     public function visibleToGuests(bool $allow = true): self
@@ -51,7 +51,7 @@ class VisibilityRule
             }
 
             return is_array($perm)
-                ? $user->hasAnyPermission($perm, $guard)
+                ? (method_exists($user, 'hasAnyPermission') && $user->hasAnyPermission($perm, $guard))
                 : $user->hasPermissionTo($perm, $guard);
         });
     }
@@ -69,7 +69,7 @@ class VisibilityRule
             }
 
             return is_array($role)
-                ? $user->hasAnyRole($role, $guard)
+                ? (method_exists($user, 'hasAnyRole') && $user->hasAnyRole($role, $guard))
                 : $user->hasRole($role, $guard);
         });
     }

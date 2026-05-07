@@ -6,9 +6,11 @@ use Illuminate\Contracts\View\View;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\On;
 use Livewire\Component;
+use Matheusmarnt\Scoutify\Services\PreviewResolver;
 use Matheusmarnt\Scoutify\Services\SearchAggregator;
 use Matheusmarnt\Scoutify\Support\GlobalSearchRegistry;
 use Matheusmarnt\Scoutify\Support\Highlighter;
+use Matheusmarnt\Scoutify\Support\PreviewDto;
 
 class Modal extends Component
 {
@@ -32,6 +34,9 @@ class Modal extends Component
      */
     public array $results = [];
 
+    /** @var array<string, mixed>|null */
+    public ?array $selectedPreview = null;
+
     #[On('scoutify:open')]
     public function open(?string $preset = null): void
     {
@@ -48,8 +53,72 @@ class Modal extends Component
     public function close(): void
     {
         $this->isOpen = false;
-        $this->reset(['query', 'results', 'activeIndex', 'activeTypes', 'includeTrashed', 'onlyActive']);
+        $this->reset(['query', 'results', 'activeIndex', 'activeTypes', 'includeTrashed', 'onlyActive', 'selectedPreview']);
         $this->dispatch('scoutify:closed');
+    }
+
+    public function openPreview(string $modelKey): void
+    {
+        $result = collect($this->results)->firstWhere('modelKey', $modelKey);
+        if (! $result || empty($result['preview'])) {
+            return;
+        }
+
+        $dto = PreviewDto::fromArray($result['preview']);
+        $resolver = app(PreviewResolver::class);
+        $mime = $resolver->resolveMime($dto);
+        $viewerView = $dto->view ?? $resolver->pickViewerView($mime);
+
+        $urls = ['stream_url' => null, 'download_url' => null];
+
+        if ($dto->isExternalUrl()) {
+            $urls = ['stream_url' => $dto->url, 'download_url' => $dto->url];
+        } elseif ($dto->isStorageBased() && ! empty($result['modelClass'])) {
+            $modelClass = $result['modelClass'];
+            $record = $modelClass::find($modelKey);
+            if ($record) {
+                $urls = [
+                    'stream_url' => $resolver->resolveStreamUrl($dto, $record),
+                    'download_url' => $resolver->resolveDownloadUrl($dto, $record),
+                ];
+            }
+        }
+
+        $this->selectedPreview = array_merge($result['preview'], $urls, [
+            'modelKey' => $modelKey,
+            'resolved_mime' => $mime,
+            'viewer_view' => $viewerView,
+        ]);
+    }
+
+    public function closePreview(): void
+    {
+        $this->selectedPreview = null;
+    }
+
+    public function downloadPreview(string $modelKey): void
+    {
+        $result = collect($this->results)->firstWhere('modelKey', $modelKey);
+        if (! $result || empty($result['preview'])) {
+            return;
+        }
+
+        $dto = PreviewDto::fromArray($result['preview']);
+        $url = null;
+
+        if ($dto->isExternalUrl()) {
+            $url = $dto->url;
+        } elseif ($dto->isStorageBased() && ! empty($result['modelClass'])) {
+            $modelClass = $result['modelClass'];
+            $record = $modelClass::find($modelKey);
+            if ($record) {
+                $url = app(PreviewResolver::class)->resolveDownloadUrl($dto, $record);
+            }
+        }
+
+        if ($url) {
+            $this->dispatch('scoutify:download', url: $url, filename: $dto->filename ?? '');
+        }
     }
 
     public function updatedQuery(): void
@@ -125,8 +194,8 @@ class Modal extends Component
         $highlighter = app(Highlighter::class);
         $this->results = $dtos->map(
             fn ($dto) => $dto->toArray() + [
-                'titleHtml' => (string) $highlighter->highlight($dto->title, $this->query),
-                'subtitleHtml' => (string) $highlighter->highlight($dto->subtitle, $this->query),
+                'titleHtml' => $highlighter->highlight($dto->title, $this->query)->toHtml(),
+                'subtitleHtml' => $highlighter->highlight($dto->subtitle, $this->query)->toHtml(),
             ],
         )->all();
     }
@@ -155,7 +224,7 @@ class Modal extends Component
             $merged[$class] = array_merge($merged[$class] ?? [], $meta);
         }
 
-        return array_values(array_map(
+        return array_map(
             function ($class, $meta) {
                 // Resolve label dynamically at request time so locale changes
                 // after boot are reflected correctly in the chip label.
@@ -167,7 +236,7 @@ class Modal extends Component
             },
             array_keys($merged),
             array_values($merged),
-        ));
+        );
     }
 
     public function render(): View
