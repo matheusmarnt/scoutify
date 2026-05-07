@@ -156,3 +156,71 @@ it('returns false if Spatie methods do not exist', function () {
 
     expect($rule->evaluate($model, $user))->toBeFalse();
 });
+
+it('uses hasAnyPermission when permission is passed as array', function () {
+    $rule = VisibilityRule::make()->permission(['edit', 'view']);
+    $model = Mockery::mock(Model::class);
+    $user = Mockery::mock(new class implements Authenticatable
+    {
+        use Illuminate\Auth\Authenticatable;
+
+        public function hasPermissionTo($permission, $guard = null): bool
+        {
+            return false;
+        }
+
+        public function hasAnyPermission($permissions, $guard = null): bool
+        {
+            return false;
+        }
+    });
+    $user->shouldReceive('hasAnyPermission')->with(['edit', 'view'], null)->andReturn(true);
+
+    expect($rule->evaluate($model, $user))->toBeTrue();
+});
+
+it('orPermission delegates to permission', function () {
+    $rule = VisibilityRule::make()->orPermission('edit');
+    $model = Mockery::mock(Model::class);
+    $user = Mockery::mock(Authenticatable::class);
+
+    expect($rule->evaluate($model, $user))->toBeFalse();
+});
+
+it('returns false when user lacks hasRole method', function () {
+    $rule = VisibilityRule::make()->role('admin');
+    $model = Mockery::mock(Model::class);
+    $user = Mockery::mock(Authenticatable::class);
+
+    expect($rule->evaluate($model, $user))->toBeFalse();
+});
+
+it('uses hasAnyRole when role is passed as array', function () {
+    $rule = VisibilityRule::make()->role(['admin', 'editor']);
+    $model = Mockery::mock(Model::class);
+    $user = Mockery::mock(new class implements Authenticatable
+    {
+        use Illuminate\Auth\Authenticatable;
+
+        public function hasRole($role, $guard = null): bool
+        {
+            return false;
+        }
+
+        public function hasAnyRole($roles, $guard = null): bool
+        {
+            return false;
+        }
+    });
+    $user->shouldReceive('hasAnyRole')->with(['admin', 'editor'], null)->andReturn(true);
+
+    expect($rule->evaluate($model, $user))->toBeTrue();
+});
+
+it('orRole delegates to role', function () {
+    $rule = VisibilityRule::make()->orRole('admin');
+    $model = Mockery::mock(Model::class);
+    $user = Mockery::mock(Authenticatable::class);
+
+    expect($rule->evaluate($model, $user))->toBeFalse();
+});

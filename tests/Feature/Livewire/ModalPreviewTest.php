@@ -120,3 +120,30 @@ it('does nothing when openPreview called with unknown modelKey', function () {
 
     expect($component->get('selectedPreview'))->toBeNull();
 });
+
+it('downloadPreview dispatches scoutify:download for external url', function () {
+    ExternalPreviewArticle::create(['name' => 'Download External']);
+
+    $component = Livewire::test(Modal::class)
+        ->call('open')
+        ->set('query', 'Download External')
+        ->call('search');
+
+    $results = $component->get('results');
+    $modelKey = collect($results)->first()['modelKey'] ?? null;
+
+    expect($modelKey)->not->toBeNull();
+
+    $component->call('downloadPreview', $modelKey)
+        ->assertDispatched('scoutify:download');
+});
+
+it('downloadPreview does nothing for unknown model key', function () {
+    $component = Livewire::test(Modal::class)
+        ->call('open')
+        ->set('query', 'nothing')
+        ->call('search');
+
+    $component->call('downloadPreview', 'nonexistent-999')
+        ->assertNotDispatched('scoutify:download');
+});
