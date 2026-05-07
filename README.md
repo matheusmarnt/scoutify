@@ -257,6 +257,7 @@ class Document extends Model implements GloballySearchable, HasGlobalSearchPrevi
 - **Authorization** reuses the same `GlobalSearchAuthorizer` rules as search results — the record must be visible to the current user.
 - **Signed route** (`scoutify.preview.stream`) is auto-registered. No manual route publishing needed.
 - **Temporary URLs** — if the disk supports them (e.g. S3 with pre-signed URLs), Scoutify uses them directly; otherwise it streams through the signed route.
+- **Keyboard accessible** — `Tab` / `Shift+Tab` cycle focus between the search input and the Preview / Download buttons on the active row. `Enter` on a focused button activates it without navigating to the record's route. Opening the preview auto-focuses the Back button; `Esc` closes the pane.
 
 ### Download
 
