@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.14.2](https://github.com/matheusmarnt/scoutify/compare/v1.14.1...v1.14.2) (2026-05-07)
+
+
+### Bug Fixes
+
+* keyboard nav & click propagation for preview/download buttons ([#104](https://github.com/matheusmarnt/scoutify/issues/104)) ([db26838](https://github.com/matheusmarnt/scoutify/commit/db268381c1ece93c39507347622e49d0f34bd79f))
+
 ## [1.14.1](https://github.com/matheusmarnt/scoutify/compare/v1.14.0...v1.14.1) (2026-05-07)
 
 
