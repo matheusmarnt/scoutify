@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.14.1](https://github.com/matheusmarnt/scoutify/compare/v1.14.0...v1.14.1) (2026-05-07)
+
+
+### Miscellaneous Chores
+
+* stop tracking AGENTS.md (covered by .gitignore) ([5160603](https://github.com/matheusmarnt/scoutify/commit/5160603566a6922580e098e05ff8a657d0f82079))
+
 ## [1.14.0](https://github.com/matheusmarnt/scoutify/compare/v1.13.3...v1.14.0) (2026-05-07)
 
 
