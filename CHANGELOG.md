@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.14.3](https://github.com/matheusmarnt/scoutify/compare/v1.14.2...v1.14.3) (2026-05-07)
+
+
+### Bug Fixes
+
+* mouse click on result row no longer navigates ([#107](https://github.com/matheusmarnt/scoutify/issues/107)) ([9c56225](https://github.com/matheusmarnt/scoutify/commit/9c5622586a087fda8fd0d9797328604ae8b21ecb))
+
 ## [1.14.2](https://github.com/matheusmarnt/scoutify/compare/v1.14.1...v1.14.2) (2026-05-07)
 
 
