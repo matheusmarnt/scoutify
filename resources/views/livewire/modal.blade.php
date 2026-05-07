@@ -3,14 +3,16 @@
     @keydown.window.prevent.ctrl.k="if (!isOpen) $wire.call('open')"
     @keydown.window.prevent.cmd.k="if (!isOpen) $wire.call('open')"
     @keydown.window="if (event.key === '/' && !['INPUT','TEXTAREA','SELECT'].includes(document.activeElement?.tagName) && !document.activeElement?.isContentEditable) { event.preventDefault(); if (!isOpen) $wire.call('open'); }"
-    @keydown.arrow-down.window.prevent="if (isOpen && isFocusInside()) nav(1)"
-    @keydown.arrow-up.window.prevent="if (isOpen && isFocusInside()) nav(-1)"
-    @keydown.home.window.prevent="if (isOpen && isFocusInside()) navHome()"
-    @keydown.end.window.prevent="if (isOpen && isFocusInside()) navEnd()"
-    @keydown.page-down.window.prevent="if (isOpen && isFocusInside()) navPageDown()"
-    @keydown.page-up.window.prevent="if (isOpen && isFocusInside()) navPageUp()"
+    @keydown.arrow-down.window="if (isOpen && isFocusInside() && !previewOpen) { $event.preventDefault(); nav(1); }"
+    @keydown.arrow-up.window="if (isOpen && isFocusInside() && !previewOpen) { $event.preventDefault(); nav(-1); }"
+    @keydown.home.window="if (isOpen && isFocusInside() && !previewOpen) { $event.preventDefault(); navHome(); }"
+    @keydown.end.window="if (isOpen && isFocusInside() && !previewOpen) { $event.preventDefault(); navEnd(); }"
+    @keydown.page-down.window="if (isOpen && isFocusInside() && !previewOpen) { $event.preventDefault(); navPageDown(); }"
+    @keydown.page-up.window="if (isOpen && isFocusInside() && !previewOpen) { $event.preventDefault(); navPageUp(); }"
     @keydown.escape.window="if (isOpen) { if (previewOpen) { $wire.closePreview(); } else { $wire.call('close'); } }"
-    @keydown.enter.window.prevent="if (isOpen && isFocusInside()) activate(allResults[activeIdx])"
+    @keydown.enter.window="if (isOpen && isFocusInside() && !previewOpen && !document.activeElement?.closest('[data-result-action]')) { $event.preventDefault(); activate(allResults[activeIdx]); }"
+    @keydown.tab.window="if (isOpen && isFocusInside() && !previewOpen && navSubAction(1)) $event.preventDefault()"
+    @keydown.shift.tab.window="if (isOpen && isFocusInside() && !previewOpen && navSubAction(-1)) $event.preventDefault()"
     @scoutify:open.window="if (!isOpen) $wire.call('open')"
     @scoutify:opened.window="handleOpened()"
     @scoutify:closed.window="handleClosed()"
@@ -106,7 +108,15 @@
         @endif
 
         {{-- Footer --}}
-        <x-scoutify::gs.hint-bar />
+        <x-scoutify::gs.hint-bar :hints="$selectedPreview
+            ? [['key' => 'esc', 'label' => 'scoutify::scoutify.hint_back']]
+            : [
+                ['key' => '↑↓', 'label' => 'scoutify::scoutify.hint_navigate'],
+                ['key' => '↵',  'label' => 'scoutify::scoutify.hint_open'],
+                ['key' => 'tab', 'label' => 'scoutify::scoutify.hint_actions'],
+                ['key' => 'esc', 'label' => 'scoutify::scoutify.hint_close'],
+            ]
+        " />
     </x-scoutify::gs.shell>
 </div>
 
@@ -115,6 +125,14 @@
     Alpine.data('scoutifyModal', () => ({
         triggerEl: null,
         activeIdx: 0,
+
+        init() {
+            this.$wire.$watch('selectedPreview', (val) => {
+                if (val !== null) {
+                    this.$nextTick(() => document.querySelector('[data-preview-back-btn]')?.focus());
+                }
+            });
+        },
 
         get isOpen() {
             return this.$wire.isOpen;
@@ -133,26 +151,95 @@
             if (! items.length) return;
             this.activeIdx = ((this.activeIdx + delta) % items.length + items.length) % items.length;
             items[this.activeIdx]?.scrollIntoView({ block: 'nearest' });
+            if (document.activeElement?.closest('[data-result-action]')) {
+                document.querySelector('[data-focus="gs-input"]')?.focus();
+            }
         },
 
         navHome() {
             const i = this.allResults;
-            if (i.length) { this.activeIdx = 0; i[0]?.scrollIntoView({ block: 'nearest' }); }
+            if (i.length) {
+                this.activeIdx = 0;
+                i[0]?.scrollIntoView({ block: 'nearest' });
+                if (document.activeElement?.closest('[data-result-action]')) {
+                    document.querySelector('[data-focus="gs-input"]')?.focus();
+                }
+            }
         },
 
         navEnd() {
             const i = this.allResults;
-            if (i.length) { this.activeIdx = i.length - 1; i[this.activeIdx]?.scrollIntoView({ block: 'nearest' }); }
+            if (i.length) {
+                this.activeIdx = i.length - 1;
+                i[this.activeIdx]?.scrollIntoView({ block: 'nearest' });
+                if (document.activeElement?.closest('[data-result-action]')) {
+                    document.querySelector('[data-focus="gs-input"]')?.focus();
+                }
+            }
         },
 
         navPageUp() {
             const i = this.allResults;
-            if (i.length) { this.activeIdx = Math.max(this.activeIdx - 5, 0); i[this.activeIdx]?.scrollIntoView({ block: 'nearest' }); }
+            if (i.length) {
+                this.activeIdx = Math.max(this.activeIdx - 5, 0);
+                i[this.activeIdx]?.scrollIntoView({ block: 'nearest' });
+                if (document.activeElement?.closest('[data-result-action]')) {
+                    document.querySelector('[data-focus="gs-input"]')?.focus();
+                }
+            }
         },
 
         navPageDown() {
             const i = this.allResults;
-            if (i.length) { this.activeIdx = Math.min(this.activeIdx + 5, i.length - 1); i[this.activeIdx]?.scrollIntoView({ block: 'nearest' }); }
+            if (i.length) {
+                this.activeIdx = Math.min(this.activeIdx + 5, i.length - 1);
+                i[this.activeIdx]?.scrollIntoView({ block: 'nearest' });
+                if (document.activeElement?.closest('[data-result-action]')) {
+                    document.querySelector('[data-focus="gs-input"]')?.focus();
+                }
+            }
+        },
+
+        navSubAction(direction) {
+            const row = this.allResults[this.activeIdx];
+            if (! row) return false;
+
+            const buttons = [...row.querySelectorAll('[data-result-action]')];
+            if (! buttons.length) return false;
+
+            const activeEl   = document.activeElement;
+            const currentIdx = buttons.findIndex(b => b === activeEl);
+
+            if (currentIdx === -1) {
+                const isInput  = activeEl?.getAttribute('data-focus') === 'gs-input';
+                const isInRow  = activeEl?.closest('[data-search-result]') === row;
+                if (! isInput && ! isInRow) return false;
+                buttons[direction > 0 ? 0 : buttons.length - 1]?.focus();
+            } else {
+                const next = currentIdx + direction;
+                if (next >= 0 && next < buttons.length) {
+                    buttons[next]?.focus();
+                } else {
+                    document.querySelector('[data-focus="gs-input"]')?.focus();
+                }
+            }
+            return true;
+        },
+
+        navPreview(delta) {
+            const results     = this.$wire.results;
+            if (! results?.length) return;
+
+            const previewable = results.filter(r => r.preview && r.modelKey);
+            if (! previewable.length) return;
+
+            const currentKey = this.$wire.selectedPreview?.modelKey;
+            const currentIdx = currentKey
+                ? previewable.findIndex(r => r.modelKey === currentKey)
+                : -1;
+
+            const nextIdx = ((currentIdx + delta) % previewable.length + previewable.length) % previewable.length;
+            this.$wire.openPreview(previewable[nextIdx].modelKey);
         },
 
         isFocusInside() {
@@ -193,18 +280,20 @@
             localStorage.setItem(key, JSON.stringify(next));
         },
 
+        // el is a [data-search-result] wrapper div; the actual link is a child <a>.
         // Use window.open for _blank links so that:
         // 1. Browsers don't block the new tab as a pop-up (synthetic clicks are gated)
         // 2. Livewire navigate's isProgrammaticClick interceptor never sees the event
         activate(el) {
             if (! el) return;
-            const target = el.getAttribute('target');
-            const href   = el.getAttribute('href');
+            const link   = el.querySelector('a[href]') ?? el;
+            const target = link.getAttribute('target');
+            const href   = link.getAttribute('href');
             if (target === '_blank' && href) {
                 window.open(href, '_blank', 'noopener,noreferrer');
                 return;
             }
-            el.click();
+            link.click();
         },
     }));
 </script>

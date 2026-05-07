@@ -18,6 +18,8 @@ return [
     'hint_navigate' => 'navegar',
     'hint_open' => 'abrir',
     'hint_close' => 'cerrar',
+    'hint_back' => 'Volver',
+    'hint_actions' => 'Acciones',
     'results_count' => '{0} Sin resultados|[1] :count resultado|[2,*] :count resultados',
     'results_listbox_label' => 'Resultados de la búsqueda',
     'preview' => 'Vista previa',

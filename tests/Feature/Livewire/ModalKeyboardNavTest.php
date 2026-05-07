@@ -11,16 +11,19 @@ it('scoutifyModal exposes isOpen getter reading from $wire', function () {
         ->toContain('this.$wire.isOpen');
 });
 
-// ModalKeyboardNavArrowDownTest: keydown handlers reference isOpen in blade
+// ModalKeyboardNavArrowDownTest: keydown handlers guard on isOpen + !previewOpen in blade
 it('keyboard nav handlers reference isOpen in blade source', function () {
     $source = file_get_contents(realpath(__DIR__.'/../../../resources/views/livewire/modal.blade.php'));
     expect($source)
-        ->toContain('if (isOpen && isFocusInside()) nav(1)')
-        ->toContain('if (isOpen && isFocusInside()) nav(-1)')
-        ->toContain('if (isOpen && isFocusInside()) navHome()')
-        ->toContain('if (isOpen && isFocusInside()) navEnd()')
-        ->toContain('if (isOpen && isFocusInside()) navPageDown()')
-        ->toContain('if (isOpen && isFocusInside()) navPageUp()');
+        ->toContain('isOpen && isFocusInside() && !previewOpen')
+        ->toContain('nav(1)')
+        ->toContain('nav(-1)')
+        ->toContain('navHome()')
+        ->toContain('navEnd()')
+        ->toContain('navPageDown()')
+        ->toContain('navPageUp()')
+        ->toContain('navSubAction(1)')
+        ->toContain('navSubAction(-1)');
 });
 
 // ModalKeyboardNavClosedNoOpTest: modal starts closed, open() sets isOpen = true
