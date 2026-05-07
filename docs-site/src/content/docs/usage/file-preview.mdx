@@ -1,0 +1,131 @@
+---
+title: File Preview & Download
+description: Add inline file previews to search results with a single interface implementation.
+---
+
+import { Tabs, TabItem, Aside } from '@astrojs/starlight/components';
+
+Any model can expose an inline file preview pane inside the search modal. Implement `HasGlobalSearchPreview` and return a `PreviewDto` — Scoutify handles the rest.
+
+## Basic setup
+
+```php
+use Matheusmarnt\Scoutify\Contracts\HasGlobalSearchPreview;
+use Matheusmarnt\Scoutify\Support\PreviewDto;
+
+class Document extends Model implements GloballySearchable, HasGlobalSearchPreview
+{
+    use Searchable;
+
+    public function globalSearchPreview(): ?PreviewDto
+    {
+        return PreviewDto::fromDisk(
+            disk: 'documents',
+            path: $this->file_path,
+        );
+    }
+}
+```
+
+Return `null` to suppress the preview pane for a specific record (e.g. when no file is attached).
+
+## Storage-based vs. external URL
+
+<Tabs>
+<TabItem label="Storage disk">
+
+Use `PreviewDto::fromDisk()` when the file lives on a Laravel filesystem disk:
+
+```php
+PreviewDto::fromDisk(
+    disk: 'documents',           // any disk defined in config/filesystems.php
+    path: $this->file_path,      // path relative to the disk root
+    mime: 'application/pdf',     // optional — auto-detected from disk if omitted
+    filename: $this->name,       // optional — defaults to basename($path)
+    sizeBytes: $this->size,      // optional
+    ttl: 3600,                   // optional — signed URL TTL in seconds (default 3600)
+)
+```
+
+**URL resolution order:**
+1. If the disk supports temporary URLs (e.g. S3), Scoutify generates a pre-signed URL directly.
+2. Otherwise, Scoutify streams the file through a signed `scoutify.preview.stream` route — no extra config needed.
+
+</TabItem>
+<TabItem label="External URL">
+
+Use `PreviewDto::fromUrl()` when the file is already publicly accessible:
+
+```php
+PreviewDto::fromUrl(
+    url: 'https://cdn.example.com/reports/q1.pdf',
+    mime: 'application/pdf',  // optional
+    filename: 'Q1 Report',    // optional — defaults to basename of URL path
+)
+```
+
+External URLs are passed directly to the viewer. No signed route, no streaming.
+
+</TabItem>
+</Tabs>
+
+## Viewer selection
+
+Scoutify picks the viewer automatically based on the resolved MIME type:
+
+| MIME | Viewer |
+|---|---|
+| `application/pdf` | Native PDF embed |
+| `image/*` | Inline image |
+| `video/*` | HTML5 video player |
+| Anything else | Fallback — external link and download button |
+
+MIME resolution order:
+1. Explicit `mime` on the `PreviewDto`
+2. Auto-detected from the disk (`mimeType()`) — storage-based files only
+3. Falls back to `application/octet-stream`
+
+## Download
+
+When the user clicks the download button, Scoutify dispatches a `scoutify:download` browser event. Add a listener to your root layout to trigger the browser's native download:
+
+```js
+window.addEventListener('scoutify:download', (e) => {
+    const a = document.createElement('a');
+    a.href = e.detail.url;
+    a.download = e.detail.filename ?? '';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+});
+```
+
+The `scoutify:download` event carries `{ url: string, filename: string }` in its `detail`.
+
+<Aside type="note">
+The download button only appears when the model's `PreviewDto` has a resolvable URL (disk-based or external). The button is always rendered — controlling access happens at the authorization layer, not the view layer.
+</Aside>
+
+## Authorization
+
+Preview and download reuse the same authorization rules as search results. A user who cannot see a record in search results cannot stream or download its file either — `GlobalSearchAuthorizer` is checked at the stream route level before serving any content.
+
+No additional policy configuration is needed.
+
+## Keyboard
+
+Press `Escape` inside the modal to close the preview pane and return to the results list. A second `Escape` dismisses the modal entirely.
+
+## Custom viewer
+
+Override the viewer Blade view for a specific record by setting the `view` parameter:
+
+```php
+PreviewDto::fromDisk(
+    disk: 'documents',
+    path: $this->file_path,
+    view: 'my-package::preview.custom',
+)
+```
+
+The custom view receives `$dto` (`PreviewDto`) and `$url` (resolved stream/temporary URL) as variables.

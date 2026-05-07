@@ -35,6 +35,7 @@ Drops a production-ready ⌘K search experience into any Laravel application. Re
 - **Dark mode** — full dark mode support out of the box
 - **WCAG AA** — accessible markup with focus management and keyboard navigation
 - **Any blade-icons pack** — `globalSearchIcon()` accepts any icon name from any [Blade Icons](https://github.com/blade-ui-kit/blade-icons) pack installed via Composer (e.g. `ri-*`, `tabler-*`, `mdi-*`); fully-qualified names are auto-detected by matching against all registered pack prefixes and passed through as-is; short names fall back to the configured default prefix (`heroicon-o-`)
+- **File preview & download** — models implementing `HasGlobalSearchPreview` expose an inline file preview pane inside the modal. PDFs, images, and videos render natively; any other type falls back to an external-link/download button. Download is opt-in and dispatches a `scoutify:download` browser event you can handle with a single listener
 - **Tailwind v4** — utility classes inlined, override via config
 
 ## Quick Start
@@ -221,6 +222,63 @@ Customize the default behavior in `config/scoutify.php`:
 - `secure` (default): Guest denied, Auth checks gate if policy/gate exists, else allow.
 - `permissive`: Everyone allowed.
 - `gate-only`: Everyone (including guest if gate closure allows) must pass gate check; fails closed if gate/policy is missing.
+
+## File Preview & Download
+
+Any model can expose an inline file preview pane inside the search modal by implementing `HasGlobalSearchPreview`:
+
+```php
+use Matheusmarnt\Scoutify\Contracts\HasGlobalSearchPreview;
+use Matheusmarnt\Scoutify\Support\PreviewDto;
+
+class Document extends Model implements GloballySearchable, HasGlobalSearchPreview
+{
+    use Searchable;
+
+    public function globalSearchPreview(): ?PreviewDto
+    {
+        // Storage-based file (disk + path)
+        return PreviewDto::fromDisk(
+            disk: 'documents',
+            path: $this->file_path,
+            filename: $this->original_name,  // optional; defaults to basename($path)
+        );
+
+        // OR: external / CDN URL
+        // return PreviewDto::fromUrl('https://cdn.example.com/file.pdf');
+    }
+}
+```
+
+### How it works
+
+- **PDFs, images, and videos** render inline inside the preview pane.
+- **Other types** show a fallback with an external-link button.
+- **Authorization** reuses the same `GlobalSearchAuthorizer` rules as search results — the record must be visible to the current user.
+- **Signed route** (`scoutify.preview.stream`) is auto-registered. No manual route publishing needed.
+- **Temporary URLs** — if the disk supports them (e.g. S3 with pre-signed URLs), Scoutify uses them directly; otherwise it streams through the signed route.
+
+### Download
+
+Implement the download by listening to the `scoutify:download` browser event:
+
+```js
+window.addEventListener('scoutify:download', (e) => {
+    const a = document.createElement('a');
+    a.href = e.detail.url;
+    a.download = e.detail.filename ?? '';
+    a.click();
+});
+```
+
+### `PreviewDto` reference
+
+| Factory method | When to use |
+|---|---|
+| `PreviewDto::fromDisk(disk, path, ...)` | File lives on a Laravel filesystem disk |
+| `PreviewDto::fromUrl(url, ...)` | File is already a publicly-accessible URL |
+
+Optional parameters: `mime`, `filename`, `sizeBytes`, `view` (custom Blade view), `ttl` (signed URL TTL in seconds, default 3600).
 
 ## Commands
 
