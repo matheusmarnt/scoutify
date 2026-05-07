@@ -114,7 +114,23 @@ No additional policy configuration is needed.
 
 ## Keyboard
 
-Press `Escape` inside the modal to close the preview pane and return to the results list. A second `Escape` dismisses the modal entirely.
+### Results list
+
+| Key | Action |
+|---|---|
+| `Tab` | Moves focus from the search input to the **Preview** button on the active row. A second `Tab` moves to the **Download** button. A third `Tab` returns focus to the search input. |
+| `Shift+Tab` | Reverses the focus cycle: input ← Download ← Preview. |
+| `Enter` | When focus is on a Preview or Download button, activates the button — does **not** navigate to the record's route. |
+| `↑` / `↓` | Navigate between rows. If an action button is focused, focus returns to the input first. |
+
+### Preview pane
+
+| Key | Action |
+|---|---|
+| `Esc` | Closes the preview pane and returns to the results list. A second `Esc` dismisses the modal entirely. |
+| `Enter` | When focus is on the Back button (auto-focused when the preview opens), closes the preview. |
+| `Tab` | Cycles through the Back button and the download link in the preview header. |
+| `↑` `↓` `PageDown` `PageUp` | Not intercepted — the browser forwards them to the embedded PDF or video viewer. |
 
 ## Custom viewer
 

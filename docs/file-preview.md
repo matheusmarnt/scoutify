@@ -83,6 +83,26 @@ window.addEventListener('scoutify:download', (e) => {
 
 Preview and download reuse `GlobalSearchAuthorizer`. A user who cannot see a record in search results cannot stream or download its file.
 
+## Keyboard
+
+**Results list (preview closed):**
+
+| Key | Action |
+|---|---|
+| `Tab` | Moves focus from the search input to the **Preview** button on the active row. A second `Tab` moves to the **Download** button. A third `Tab` returns focus to the search input. |
+| `Shift+Tab` | Reverses the cycle: input ← Download ← Preview. |
+| `Enter` | When focus is on a Preview or Download button, activates it without navigating to the record's route. |
+| `↑` / `↓` | Navigate rows. If an action button is focused, focus returns to the input before the row changes. |
+
+**Preview pane (preview open):**
+
+| Key | Action |
+|---|---|
+| `Esc` | Closes the preview pane and returns to the results list. A second `Esc` dismisses the modal. |
+| `Enter` | When focus is on the Back button (auto-focused on open), closes the preview. |
+| `Tab` | Cycles through the Back button and the download link in the preview header. |
+| `↑` / `↓` / `PageDown` / `PageUp` | Not intercepted by Scoutify — the browser forwards them to the embedded PDF/video viewer. |
+
 ## Custom viewer
 
 Set the `view` parameter to override the Blade view used for a specific record:
