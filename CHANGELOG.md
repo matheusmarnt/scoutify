@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.15.2](https://github.com/matheusmarnt/scoutify/compare/v1.15.1...v1.15.2) (2026-05-08)
+
+
+### Bug Fixes
+
+* **deps:** widen symfony/yaml to ^7.0|^8.0 ([#118](https://github.com/matheusmarnt/scoutify/issues/118)) ([5d13b32](https://github.com/matheusmarnt/scoutify/commit/5d13b32692a50eb515cb213a01d607d6b27961f4))
+
 ## [1.15.1](https://github.com/matheusmarnt/scoutify/compare/v1.15.0...v1.15.1) (2026-05-08)
 
 
