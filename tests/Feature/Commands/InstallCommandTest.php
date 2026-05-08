@@ -196,7 +196,7 @@ it('sail mode detects existing service in compose.yaml and skips sail:add', func
         $called = true;
     });
 
-    $this->artisan('scoutify:install', ['--driver' => 'meilisearch']);
+    $this->artisan('scoutify:install', ['--driver' => 'meilisearch', '--patch-compose' => 'skip']);
 
     expect($called)->toBeFalse();
 });

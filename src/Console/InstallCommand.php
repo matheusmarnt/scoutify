@@ -4,6 +4,7 @@ namespace Matheusmarnt\Scoutify\Console;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Process;
+use Matheusmarnt\Scoutify\Services\ComposePatcher;
 
 use function Laravel\Prompts\info;
 use function Laravel\Prompts\select;
@@ -11,7 +12,9 @@ use function Laravel\Prompts\spin;
 
 class InstallCommand extends Command
 {
-    protected $signature = 'scoutify:install {--driver= : Scout driver to install (algolia|meilisearch|typesense)}';
+    protected $signature = 'scoutify:install
+        {--driver= : Scout driver to install (algolia|meilisearch|typesense)}
+        {--patch-compose= : Compose patch behavior (auto|skip|prompt). Default: prompt}';
 
     protected $description = 'Install and configure Scoutify with a Scout search driver';
 
@@ -103,12 +106,10 @@ class InstallCommand extends Command
             $this->updateEnvValue('MEILISEARCH_HOST', 'http://meilisearch:7700', 'http://localhost:7700');
             $this->setEnvValue('SCOUT_QUEUE', 'true');
 
+            $this->maybePatchCompose('laravel.test', 'meilisearch');
+
             $this->newLine();
-            $this->warn('  Action required: update depends_on in compose.yaml to avoid race conditions:');
-            $this->line("  In your laravel.test service, replace \`- meilisearch\` with:");
-            $this->line('      meilisearch:');
-            $this->line('          condition: service_healthy');
-            $this->line('  Then: sail down && sail up -d');
+            $this->line('  <comment>Next:</comment> sail down && sail up -d');
 
             return;
         }
@@ -126,12 +127,10 @@ class InstallCommand extends Command
             $this->setEnvValue('TYPESENSE_PROTOCOL', 'http');
             $this->setEnvValue('TYPESENSE_API_KEY', 'xyz');
 
+            $this->maybePatchCompose('laravel.test', 'typesense');
+
             $this->newLine();
-            $this->warn('  Action required: update depends_on in compose.yaml to avoid race conditions:');
-            $this->line("  In your laravel.test service, replace \`- typesense\` with:");
-            $this->line('      typesense:');
-            $this->line('          condition: service_healthy');
-            $this->line('  Then: sail down && sail up -d');
+            $this->line('  <comment>Next:</comment> sail down && sail up -d');
 
             return;
         }
@@ -236,6 +235,55 @@ class InstallCommand extends Command
         if ($driver === 'algolia') {
             $this->configureAlgoliaCredentials();
         }
+    }
+
+    private function maybePatchCompose(string $appService, string $dependency): void
+    {
+        $mode = $this->option('patch-compose') ?: 'prompt';
+        $composeFile = $this->detectComposeFile();
+
+        if ($composeFile === null || $mode === 'skip') {
+            $this->printManualPatchInstruction($appService, $dependency);
+
+            return;
+        }
+
+        if ($mode === 'prompt') {
+            $accept = $this->confirm(
+                'Patch compose.yaml automatically to add condition: service_healthy?',
+                true,
+            );
+
+            if (! $accept) {
+                $this->printManualPatchInstruction($appService, $dependency);
+
+                return;
+            }
+        }
+
+        try {
+            $changed = (new ComposePatcher(base_path($composeFile)))
+                ->patchDependsOn($appService, $dependency);
+
+            if ($changed) {
+                $this->info("  Patched {$composeFile}: {$appService}.depends_on.{$dependency}.condition = service_healthy");
+                $this->line('  Backup saved alongside the file (compose.yaml.scoutify-backup-*).');
+            } else {
+                $this->line("  <info>✓</info> {$composeFile} already declares {$dependency} with condition: service_healthy.");
+            }
+        } catch (\RuntimeException $e) {
+            $this->warn("  Could not patch {$composeFile}: {$e->getMessage()}");
+            $this->printManualPatchInstruction($appService, $dependency);
+        }
+    }
+
+    private function printManualPatchInstruction(string $appService, string $dependency): void
+    {
+        $this->newLine();
+        $this->warn('  Action required: update depends_on in compose.yaml to avoid race conditions:');
+        $this->line("  In your {$appService} service, replace \`- {$dependency}\` with:");
+        $this->line("      {$dependency}:");
+        $this->line('          condition: service_healthy');
     }
 
     private function configureAlgoliaCredentials(): void
