@@ -150,6 +150,8 @@ Schedule::command('scoutify:doctor')->daily();
 
 Wire exit code `0` into your uptime monitor or alerting system.
 
+`scoutify:doctor` also checks for `MakeSearchable` jobs stuck in the `failed_jobs` table (only when `SCOUT_QUEUE=true`). If found, it prints the count and suggests `queue:retry all` or `queue:flush`.
+
 ### Manual recovery
 
 Index drifted or corrupted — full wipe and rebuild:
@@ -318,8 +320,10 @@ services:
       - ./:/var/www/html
       - ./docker/production/supervisor/laravel-worker.conf:/etc/supervisor/conf.d/laravel-worker.conf
     depends_on:
-      - redis
-      - meilisearch
+      redis:
+        condition: service_started
+      meilisearch:
+        condition: service_healthy
     networks:
       - app-network
 
@@ -346,7 +350,7 @@ services:
       - app-network
 
   meilisearch:
-    image: getmeili/meilisearch:latest
+    image: getmeili/meilisearch:v1.12.8
     restart: unless-stopped
     environment:
       MEILI_MASTER_KEY: ${MEILI_MASTER_KEY}
@@ -355,6 +359,11 @@ services:
       - meilisearch-data:/meili_data
     networks:
       - app-network
+    healthcheck:
+      test: ['CMD', 'wget', '--no-verbose', '--spider', 'http://localhost:7700/health']
+      interval: 10s
+      retries: 5
+      timeout: 5s
     # Do NOT expose port 7700 publicly — access only within app-network
 
 networks:
@@ -383,11 +392,13 @@ services:
   app:
     # ... same as above ...
     depends_on:
-      - redis
-      - typesense
+      redis:
+        condition: service_started
+      typesense:
+        condition: service_healthy
 
   typesense:
-    image: typesense/typesense:latest
+    image: typesense/typesense:27.1
     restart: unless-stopped
     environment:
       TYPESENSE_DATA_DIR: /data
@@ -396,6 +407,11 @@ services:
       - typesense-data:/data
     networks:
       - app-network
+    healthcheck:
+      test: ['CMD', 'wget', '--no-verbose', '--spider', 'http://localhost:8108/health']
+      interval: 10s
+      retries: 5
+      timeout: 5s
     # Do NOT expose port 8108 publicly — access only within app-network
 
 volumes:
@@ -469,7 +485,7 @@ docker run -d --name meilisearch \
   -e MEILI_MASTER_KEY=your-strong-master-key \
   -e MEILI_ENV=production \
   -v $(pwd)/meili_data:/meili_data \
-  getmeili/meilisearch:latest
+  getmeili/meilisearch:v1.12.8
 ```
 
 ---
