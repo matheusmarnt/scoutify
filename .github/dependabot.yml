@@ -17,6 +17,23 @@ updates:
       interval: "weekly"
     labels:
       - "dependencies"
+    groups:
+      dev-tooling:
+        patterns:
+          - "pestphp/*"
+          - "phpstan/*"
+          - "larastan/*"
+          - "laravel/pint"
+          - "orchestra/testbench"
+        update-types:
+          - "minor"
+          - "patch"
+      laravel-framework:
+        patterns:
+          - "laravel/framework"
+          - "laravel/scout"
+        update-types:
+          - "patch"
 
   - package-ecosystem: "docker"
     directory: "/stubs"
