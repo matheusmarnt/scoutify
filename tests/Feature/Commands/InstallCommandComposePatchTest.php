@@ -91,3 +91,25 @@ it('is idempotent on second run', function () {
     expect(file_get_contents($this->tmpDir.'/compose.yaml'))->toBe($afterFirst);
     expect(glob($this->tmpDir.'/compose.yaml.scoutify-backup-*'))->toHaveCount(1);
 });
+
+it('docker mode (non-sail) patches compose.yaml when prompt accepted, prompting for service name', function () {
+    rmdir($this->tmpDir.'/vendor/laravel/sail');
+    rmdir($this->tmpDir.'/vendor/laravel');
+    rmdir($this->tmpDir.'/vendor');
+
+    file_put_contents($this->tmpDir.'/compose.yaml', <<<'YAML'
+services:
+    app:
+        image: 'php:8.3-fpm'
+    meilisearch:
+        image: 'getmeili/meilisearch:v1.12.8'
+YAML);
+
+    $this->artisan('scoutify:install', ['--driver' => 'meilisearch'])
+        ->expectsQuestion('Which service in compose.yaml is your application service?', 'app')
+        ->expectsConfirmation('Patch compose.yaml automatically to add condition: service_healthy?', 'yes');
+
+    $parsed = Yaml::parseFile($this->tmpDir.'/compose.yaml');
+    expect($parsed['services']['app']['depends_on']['meilisearch'])
+        ->toBe(['condition' => 'service_healthy']);
+});

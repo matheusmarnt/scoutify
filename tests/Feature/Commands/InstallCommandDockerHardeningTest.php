@@ -61,14 +61,16 @@ it('host mode typesense docker run uses pinned version not latest', function () 
 it('docker mode meilisearch note includes condition service_healthy', function () {
     file_put_contents($this->tmpDir.'/compose.yaml', "services:\n  app:\n    image: php:8.3\n");
 
-    $this->artisan('scoutify:install', ['--driver' => 'meilisearch'])
+    $this->artisan('scoutify:install', ['--driver' => 'meilisearch', '--patch-compose' => 'skip'])
+        ->expectsQuestion('Which service in compose.yaml is your application service?', 'app')
         ->expectsOutputToContain('condition: service_healthy');
 });
 
 it('docker mode typesense note includes condition service_healthy', function () {
     file_put_contents($this->tmpDir.'/compose.yaml', "services:\n  app:\n    image: php:8.3\n");
 
-    $this->artisan('scoutify:install', ['--driver' => 'typesense'])
+    $this->artisan('scoutify:install', ['--driver' => 'typesense', '--patch-compose' => 'skip'])
+        ->expectsQuestion('Which service in compose.yaml is your application service?', 'app')
         ->expectsOutputToContain('condition: service_healthy');
 });
 

@@ -55,7 +55,8 @@ it('host mode writes MEILISEARCH_HOST=http://localhost:7700 when no Sail or comp
 it('docker mode creates compose.scoutify.yaml and sets container host', function () {
     file_put_contents($this->tmpDir.'/docker-compose.yml', "services:\n  app:\n    image: php:8.3\n");
 
-    $this->artisan('scoutify:install', ['--driver' => 'meilisearch']);
+    $this->artisan('scoutify:install', ['--driver' => 'meilisearch', '--patch-compose' => 'skip'])
+        ->expectsQuestion('Which service in compose.yaml is your application service?', 'app');
 
     expect(file_exists($this->tmpDir.'/compose.scoutify.yaml'))->toBeTrue();
     expect(file_get_contents($this->tmpDir.'/.env'))->toContain('MEILISEARCH_HOST=http://meilisearch:7700');
@@ -64,7 +65,8 @@ it('docker mode creates compose.scoutify.yaml and sets container host', function
 it('docker mode detects compose.yaml and uses it in suggested command', function () {
     file_put_contents($this->tmpDir.'/compose.yaml', "services:\n  app:\n    image: php:8.3\n");
 
-    $this->artisan('scoutify:install', ['--driver' => 'meilisearch'])
+    $this->artisan('scoutify:install', ['--driver' => 'meilisearch', '--patch-compose' => 'skip'])
+        ->expectsQuestion('Which service in compose.yaml is your application service?', 'app')
         ->expectsOutputToContain('compose.yaml');
 
     expect(file_exists($this->tmpDir.'/compose.scoutify.yaml'))->toBeTrue();
@@ -74,7 +76,8 @@ it('docker mode does not overwrite existing compose.scoutify.yaml', function () 
     file_put_contents($this->tmpDir.'/docker-compose.yml', "services:\n  app:\n    image: php:8.3\n");
     file_put_contents($this->tmpDir.'/compose.scoutify.yaml', 'existing-content');
 
-    $this->artisan('scoutify:install', ['--driver' => 'meilisearch']);
+    $this->artisan('scoutify:install', ['--driver' => 'meilisearch', '--patch-compose' => 'skip'])
+        ->expectsQuestion('Which service in compose.yaml is your application service?', 'app');
 
     expect(file_get_contents($this->tmpDir.'/compose.scoutify.yaml'))->toBe('existing-content');
 });
@@ -158,7 +161,8 @@ it('sail mode typesense sets TYPESENSE_HOST=typesense', function () {
 it('docker mode typesense creates compose.scoutify.yaml and sets container host', function () {
     file_put_contents($this->tmpDir.'/docker-compose.yml', "services:\n  app:\n    image: php:8.3\n");
 
-    $this->artisan('scoutify:install', ['--driver' => 'typesense']);
+    $this->artisan('scoutify:install', ['--driver' => 'typesense', '--patch-compose' => 'skip'])
+        ->expectsQuestion('Which service in compose.yaml is your application service?', 'app');
 
     expect(file_exists($this->tmpDir.'/compose.scoutify.yaml'))->toBeTrue();
     expect(file_get_contents($this->tmpDir.'/.env'))->toContain('TYPESENSE_HOST=typesense');

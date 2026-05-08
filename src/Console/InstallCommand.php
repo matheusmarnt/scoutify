@@ -153,11 +153,11 @@ class InstallCommand extends Command
 
             $this->updateEnvValue('MEILISEARCH_HOST', 'http://meilisearch:7700', 'http://localhost:7700');
 
+            $appService = $this->ask('Which service in compose.yaml is your application service?', 'app');
+            $this->maybePatchCompose($appService, 'meilisearch');
+
             $this->newLine();
             $this->line("  <comment>Next:</comment> docker compose -f {$composeFile} -f compose.scoutify.yaml up -d");
-            $this->line("  <comment>Note:</comment> Add \`meilisearch\` to your app service's depends_on in {$composeFile}:");
-            $this->line('      meilisearch:');
-            $this->line('          condition: service_healthy');
 
             return;
         }
@@ -176,11 +176,11 @@ class InstallCommand extends Command
             $this->setEnvValue('TYPESENSE_PROTOCOL', 'http');
             $this->setEnvValue('TYPESENSE_API_KEY', 'xyz');
 
+            $appService = $this->ask('Which service in compose.yaml is your application service?', 'app');
+            $this->maybePatchCompose($appService, 'typesense');
+
             $this->newLine();
             $this->line("  <comment>Next:</comment> docker compose -f {$composeFile} -f compose.scoutify.yaml up -d");
-            $this->line("  <comment>Note:</comment> Add \`typesense\` to your app service's depends_on in {$composeFile}:");
-            $this->line('      typesense:');
-            $this->line('          condition: service_healthy');
 
             return;
         }
