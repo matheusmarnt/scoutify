@@ -38,7 +38,7 @@ The installer prompts for a Scout driver (`meilisearch`, `algolia`, or `typesens
 ./vendor/bin/sail artisan scoutify:doctor
 ```
 
-The installer detects Sail, runs `sail:add meilisearch`, sets `MEILISEARCH_HOST=http://meilisearch:7700` in `.env`, and prompts to patch `compose.yaml` so `meilisearch` uses `condition: service_healthy` in `depends_on` (preventing race conditions). Pass `--patch-compose=auto` to skip the prompt.
+The installer detects Sail, runs `sail:add meilisearch`, and sets `MEILISEARCH_HOST=http://meilisearch:7700` in `.env`.
 
 > **Meilisearch search behaviour:** Meilisearch uses word-boundary prefix search. Substrings that are not word-prefixes (e.g. `"ano"` inside `"Mariano"`) return no results. Override `globalSearchBuilder()` on your model for custom matching, or switch to the `database` driver for `LIKE`-based substring search. See [Query customization](#query-customization) below.
 
@@ -52,13 +52,13 @@ docker compose -f compose.yaml -f compose.scoutify.yaml up -d
 docker compose exec app php artisan scoutify:doctor
 ```
 
-The installer will prompt to automatically patch your `compose.yaml` so that `meilisearch` is listed under `depends_on` with `condition: service_healthy` (preventing the app from starting before Meilisearch is ready). Accept the prompt or pass `--patch-compose=auto` to skip it. The generated `compose.scoutify.yaml` is safe to commit.
+Add `meilisearch` to your `app` service's `depends_on` in `compose.yaml`. The generated `compose.scoutify.yaml` is safe to commit.
 
 ### Meilisearch (host)
 
 ```bash
 # Start Meilisearch locally first
-docker run -d --name meilisearch -p 7700:7700 getmeili/meilisearch:v1.12.8
+docker run -d --name meilisearch -p 7700:7700 getmeili/meilisearch:latest
 
 php artisan scoutify:install
 php artisan scoutify:doctor
@@ -85,7 +85,7 @@ docker compose exec app php artisan scoutify:doctor
 ```bash
 docker run -d --name typesense -p 8108:8108 \
   -v $(pwd)/typesense_data:/data \
-  typesense/typesense:27.1 \
+  typesense/typesense:latest \
   --data-dir /data --api-key=xyz --enable-cors
 
 php artisan scoutify:install
