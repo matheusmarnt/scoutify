@@ -1,5 +1,22 @@
 # Changelog
 
+## [1.15.0](https://github.com/matheusmarnt/scoutify/compare/v1.14.3...v1.15.0) (2026-05-08)
+
+
+### Features
+
+* add ComposePatcher service for safe depends_on patching ([8124db5](https://github.com/matheusmarnt/scoutify/commit/8124db55f173a1f0e1817b0d2690a0c543b08643))
+* auto-patch compose.yaml depends_on via ComposePatcher in InstallCommand ([6f8488d](https://github.com/matheusmarnt/scoutify/commit/6f8488d9f3e287f88ed2b5d51cd6be1bf1d58f4a))
+* Docker/Sail reliability hardening ([3af8cc7](https://github.com/matheusmarnt/scoutify/commit/3af8cc78a96183acb5dae2277791cc3995904d8e))
+* extend compose patching to generic Docker installs ([f738279](https://github.com/matheusmarnt/scoutify/commit/f7382797cbcbb616db7407af59076fc78cb00237))
+
+
+### Miscellaneous Chores
+
+* group dev-tooling and Laravel patch bumps in Dependabot ([ceb0523](https://github.com/matheusmarnt/scoutify/commit/ceb0523782caad5be54f52b93e5ba0a8616b789e))
+* promote symfony/yaml to direct require for compose patching ([fac9452](https://github.com/matheusmarnt/scoutify/commit/fac9452aeded2c671934991649bff35831be543c))
+* track Meilisearch/Typesense image versions in stubs via Dependabot ([7cb9225](https://github.com/matheusmarnt/scoutify/commit/7cb92251ea34a1f773f6d50d6ce3391d0e132d1c))
+
 ## [1.14.3](https://github.com/matheusmarnt/scoutify/compare/v1.14.2...v1.14.3) (2026-05-07)
 
 
