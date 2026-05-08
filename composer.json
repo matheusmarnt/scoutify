@@ -34,7 +34,7 @@
         "meilisearch/meilisearch-php": "^1.16",
         "nikic/php-parser": "^5.0",
         "spatie/laravel-package-tools": "^1.16",
-        "symfony/yaml": "^7.0",
+        "symfony/yaml": "^7.0|^8.0",
         "typesense/typesense-php": "^6.0"
     },
     "require-dev": {
