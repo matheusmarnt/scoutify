@@ -104,7 +104,11 @@ class InstallCommand extends Command
             $this->setEnvValue('SCOUT_QUEUE', 'true');
 
             $this->newLine();
-            $this->line('  <comment>Next:</comment> sail down && sail up -d');
+            $this->warn('  Action required: update depends_on in compose.yaml to avoid race conditions:');
+            $this->line("  In your laravel.test service, replace \`- meilisearch\` with:");
+            $this->line('      meilisearch:');
+            $this->line('          condition: service_healthy');
+            $this->line('  Then: sail down && sail up -d');
 
             return;
         }
@@ -123,7 +127,11 @@ class InstallCommand extends Command
             $this->setEnvValue('TYPESENSE_API_KEY', 'xyz');
 
             $this->newLine();
-            $this->line('  <comment>Next:</comment> sail down && sail up -d');
+            $this->warn('  Action required: update depends_on in compose.yaml to avoid race conditions:');
+            $this->line("  In your laravel.test service, replace \`- typesense\` with:");
+            $this->line('      typesense:');
+            $this->line('          condition: service_healthy');
+            $this->line('  Then: sail down && sail up -d');
 
             return;
         }
@@ -148,7 +156,9 @@ class InstallCommand extends Command
 
             $this->newLine();
             $this->line("  <comment>Next:</comment> docker compose -f {$composeFile} -f compose.scoutify.yaml up -d");
-            $this->line("  <comment>Note:</comment> Add \`meilisearch\` to your app service's depends_on in {$composeFile}.");
+            $this->line("  <comment>Note:</comment> Add \`meilisearch\` to your app service's depends_on in {$composeFile}:");
+            $this->line('      meilisearch:');
+            $this->line('          condition: service_healthy');
 
             return;
         }
@@ -169,7 +179,9 @@ class InstallCommand extends Command
 
             $this->newLine();
             $this->line("  <comment>Next:</comment> docker compose -f {$composeFile} -f compose.scoutify.yaml up -d");
-            $this->line("  <comment>Note:</comment> Add \`typesense\` to your app service's depends_on in {$composeFile}.");
+            $this->line("  <comment>Note:</comment> Add \`typesense\` to your app service's depends_on in {$composeFile}:");
+            $this->line('      typesense:');
+            $this->line('          condition: service_healthy');
 
             return;
         }
@@ -198,7 +210,7 @@ class InstallCommand extends Command
             $this->newLine();
             $this->line('  <comment>Note:</comment> Meilisearch is not running. Start it with one of:');
             $this->line('    docker run -d --name meilisearch -p 7700:7700 \\');
-            $this->line('      -v $(pwd)/meili_data:/meili_data getmeili/meilisearch:latest');
+            $this->line('      -v $(pwd)/meili_data:/meili_data getmeili/meilisearch:v1.12.8');
             $this->line('    or: https://www.meilisearch.com/docs/learn/getting_started/installation');
 
             return;
@@ -214,7 +226,7 @@ class InstallCommand extends Command
             $this->line('  <comment>Note:</comment> Typesense is not running. Start it with:');
             $this->line('    docker run -d --name typesense -p 8108:8108 \\');
             $this->line('      -v $(pwd)/typesense_data:/data \\');
-            $this->line('      typesense/typesense:latest \\');
+            $this->line('      typesense/typesense:27.1 \\');
             $this->line('      --data-dir /data --api-key=xyz --enable-cors');
             $this->line('    or: https://typesense.org/docs/guide/install-typesense.html');
 

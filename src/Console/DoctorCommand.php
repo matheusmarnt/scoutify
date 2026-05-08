@@ -4,6 +4,7 @@ namespace Matheusmarnt\Scoutify\Console;
 
 use Illuminate\Console\Command;
 use Illuminate\Http\Client\ConnectionException;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Matheusmarnt\Scoutify\Contracts\GloballySearchable;
 use Matheusmarnt\Scoutify\Support\GlobalSearchRegistry;
@@ -31,6 +32,7 @@ class DoctorCommand extends Command
         $passed = $this->checkTypes();
         $this->checkLivewireScripts();
         $this->checkQueueConfig();
+        $this->checkFailedJobs();
 
         if (! $passed) {
             return self::FAILURE;
@@ -138,6 +140,34 @@ class DoctorCommand extends Command
 
         if ($queueEnabled) {
             $this->line('  <info>✓</info> Scout queue enabled.');
+        }
+
+        return true;
+    }
+
+    private function checkFailedJobs(): bool
+    {
+        if (! config('scout.queue', false)) {
+            return true;
+        }
+
+        try {
+            $count = DB::table('failed_jobs')
+                ->where('payload', 'like', '%MakeSearchable%')
+                ->count();
+
+            if ($count > 0) {
+                $this->warn("  ⚠  {$count} failed Scout indexing job(s) in failed_jobs table.");
+                $this->line('  These may have failed because the search engine was unreachable.');
+                $this->line('  Fix (drop):  php artisan queue:flush');
+                $this->line('  Fix (retry): php artisan queue:retry all');
+
+                return false;
+            }
+
+            $this->line('  <info>✓</info> No failed Scout indexing jobs.');
+        } catch (\Exception) {
+            // failed_jobs table may not exist (e.g. sync driver)
         }
 
         return true;

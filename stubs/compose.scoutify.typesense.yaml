@@ -5,7 +5,7 @@
 # Also add `typesense` to your app service's depends_on in compose.yaml.
 services:
   typesense:
-    image: 'typesense/typesense:latest'
+    image: 'typesense/typesense:27.1'
     ports:
       - '${FORWARD_TYPESENSE_PORT:-8108}:8108'
     environment:
