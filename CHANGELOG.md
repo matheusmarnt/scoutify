@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.15.1](https://github.com/matheusmarnt/scoutify/compare/v1.15.0...v1.15.1) (2026-05-08)
+
+
+### Miscellaneous Chores
+
+* **deps:** bump actions/checkout from 4 to 6 ([a317499](https://github.com/matheusmarnt/scoutify/commit/a317499890ebffc309942ea6859867f5b6fe2640))
+* **deps:** bump actions/configure-pages from 5 to 6 ([69248ab](https://github.com/matheusmarnt/scoutify/commit/69248abd692a21dc22ba24a8dae476d34e0a78f4))
+* **deps:** bump actions/setup-node from 4 to 6 ([97a55f1](https://github.com/matheusmarnt/scoutify/commit/97a55f1866f16c88a0165c44b22dd864868a250f))
+* **deps:** bump actions/setup-node from 4 to 6 ([30e97f8](https://github.com/matheusmarnt/scoutify/commit/30e97f88138e366ef20df3b4e9811e1481e7aa30))
+* **deps:** bump actions/upload-pages-artifact from 3 to 5 ([364fd38](https://github.com/matheusmarnt/scoutify/commit/364fd3827ca7c6dfa07c52a424c1e624a1aae5d2))
+* **deps:** bump actions/upload-pages-artifact from 3 to 5 ([96853ea](https://github.com/matheusmarnt/scoutify/commit/96853ea45622581bf64c7c8d370eb12f292c1824))
+
 ## [1.15.0](https://github.com/matheusmarnt/scoutify/compare/v1.14.3...v1.15.0) (2026-05-08)
 
 
