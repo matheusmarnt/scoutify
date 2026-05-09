@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.3.1](https://github.com/matheusmarnt/scoutify/compare/v2.3.0...v2.3.1) (2026-05-09)
+
+
+### Bug Fixes
+
+* **tests:** remove unused lambda import in DialogContentClassesTest ([#137](https://github.com/matheusmarnt/scoutify/issues/137)) ([e7a72e3](https://github.com/matheusmarnt/scoutify/commit/e7a72e36e4201163bf87f0e7ad9395ef9ba6a85f))
+
 ## [2.3.0](https://github.com/matheusmarnt/scoutify/compare/v2.2.0...v2.3.0) (2026-05-09)
 
 
