@@ -61,9 +61,10 @@ export default defineConfig({
         {
           label: 'Getting Started',
           items: [
-            { label: 'Installation',  slug: 'getting-started/installation' },
-            { label: 'Quick Start',   slug: 'getting-started/quick-start' },
-            { label: 'Configuration', slug: 'getting-started/configuration' },
+            { label: 'Installation',    slug: 'getting-started/installation' },
+            { label: 'Quick Start',     slug: 'getting-started/quick-start' },
+            { label: 'Configuration',   slug: 'getting-started/configuration' },
+            { label: 'AI Assistance',   slug: 'getting-started/ai-assistance' },
           ],
         },
         {

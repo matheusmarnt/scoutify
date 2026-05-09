@@ -1,0 +1,238 @@
+---
+title: AI Assistance
+description: Use AI assistants like Claude Code, Cursor, Gemini, and Codex with accurate, version-pinned Scoutify documentation via llms.txt and the official MCP server.
+---
+
+import { Tabs, TabItem, Aside, Steps, LinkCard } from '@astrojs/starlight/components';
+
+Scoutify ships a two-tier AI documentation mechanism so any AI assistant can access current, version-pinned documentation and scaffold correct code — without hallucinating removed config keys or invalid APIs.
+
+## Why this matters
+
+Scoutify v2.0.0 removed five config keys (`icon_prefix`, `types`, `classes`, `colors`, `modal.ui`) that throw a `RuntimeException` on boot if present. AI assistants trained on older content will generate code using these keys. The AI mechanism grounds every supported client against the live v2 documentation.
+
+## Layer 1 — Static files (any AI client)
+
+Two static files are published to the Scoutify docs site on every build:
+
+| File | Purpose |
+|------|---------|
+| `llms.txt` | Curated index: project summary, antipattern list, page index |
+| `llms-full.txt` | Full corpus: all documentation pages (~58 KB) |
+
+Any AI client that supports fetching a URL can use these:
+
+```
+https://matheusmarnt.github.io/scoutify/llms.txt
+https://matheusmarnt.github.io/scoutify/llms-full.txt
+```
+
+Paste either URL into your AI chat context, or configure your client to fetch it automatically.
+
+## Layer 2 — MCP server (structured tools)
+
+`@matheusmarnt/scoutify-mcp` is a [Model Context Protocol](https://modelcontextprotocol.io/) server that exposes 8 tools: 4 documentation tools and 4 PHP scaffolding tools. It fetches docs from the static files above with a 1-hour local cache.
+
+### Installation by client
+
+<Tabs>
+  <TabItem label="Claude Code">
+    ```bash
+    claude mcp add scoutify -- npx -y @matheusmarnt/scoutify-mcp
+    ```
+
+    Verify the server is registered:
+    ```bash
+    claude mcp list
+    ```
+  </TabItem>
+
+  <TabItem label="Cursor">
+    Add to `~/.cursor/mcp.json` (global) or `.cursor/mcp.json` (project):
+
+    ```json
+    {
+      "mcpServers": {
+        "scoutify": {
+          "command": "npx",
+          "args": ["-y", "@matheusmarnt/scoutify-mcp"]
+        }
+      }
+    }
+    ```
+
+    Restart Cursor after saving.
+  </TabItem>
+
+  <TabItem label="VS Code / Copilot">
+    Add to `.vscode/mcp.json` in your project root:
+
+    ```json
+    {
+      "servers": {
+        "scoutify": {
+          "type": "stdio",
+          "command": "npx",
+          "args": ["-y", "@matheusmarnt/scoutify-mcp"]
+        }
+      }
+    }
+    ```
+
+    Enable MCP in VS Code settings: `"github.copilot.chat.experimental.mcp": true`.
+  </TabItem>
+
+  <TabItem label="Gemini CLI">
+    Add to `~/.gemini/settings.json`:
+
+    ```json
+    {
+      "mcpServers": {
+        "scoutify": {
+          "command": "npx",
+          "args": ["-y", "@matheusmarnt/scoutify-mcp"]
+        }
+      }
+    }
+    ```
+  </TabItem>
+
+  <TabItem label="Codex CLI">
+    Add to `~/.codex/config.toml`:
+
+    ```toml
+    [[mcp_servers]]
+    name = "scoutify"
+    command = "npx"
+    args = ["-y", "@matheusmarnt/scoutify-mcp"]
+    ```
+  </TabItem>
+
+  <TabItem label="Windsurf">
+    Add to `~/.codeium/windsurf/mcp_config.json`:
+
+    ```json
+    {
+      "mcpServers": {
+        "scoutify": {
+          "command": "npx",
+          "args": ["-y", "@matheusmarnt/scoutify-mcp"]
+        }
+      }
+    }
+    ```
+
+    Restart Windsurf after saving.
+  </TabItem>
+
+  <TabItem label="Cline (VS Code)">
+    Open Cline settings → MCP Servers → Add:
+
+    ```json
+    {
+      "scoutify": {
+        "command": "npx",
+        "args": ["-y", "@matheusmarnt/scoutify-mcp"]
+      }
+    }
+    ```
+  </TabItem>
+</Tabs>
+
+<Aside type="tip">
+  All clients use the same command: `npx -y @matheusmarnt/scoutify-mcp`. The server runs as a stdio process (JSON-RPC 2.0) and requires Node.js ≥ 18.
+</Aside>
+
+### Smoke test
+
+Confirm the server starts correctly:
+
+```bash
+echo '{"jsonrpc":"2.0","id":1,"method":"tools/list"}' | npx -y @matheusmarnt/scoutify-mcp
+```
+
+Expected output: JSON listing 8 tools.
+
+---
+
+## Tool reference
+
+### Documentation tools
+
+| Tool | Input | What it returns |
+|------|-------|----------------|
+| `search_docs` | `query: string`, `limit?: number` | Top matching snippets from full corpus, ranked by term frequency. Each result includes slug, title, 200-char snippet, and canonical URL. |
+| `get_page` | `slug: string` | Full body of one documentation page (e.g. `usage/customization`). |
+| `list_pages` | _(none)_ | All available pages: slug, title, group. Use to discover what topics are covered. |
+| `get_antipatterns` | _(none)_ | Structured list of 13 antipatterns with severity, rule description, and fix hint. |
+
+### Scaffolding tools
+
+| Tool | Input | What it generates |
+|------|-------|------------------|
+| `scaffold_searchable_model` | `className`, `fields[]`, `titleField`, `subtitleField`, `routeName`, `typeKey` | PHP class stub implementing `GloballySearchable` with `toSearchableArray()` and `globalSearchResult()`. |
+| `scaffold_visibility_rule` | `className`, `strategy`, `role?`, `permission?` | `HasGlobalSearchVisibility` implementation. See [strategies](#visibility-strategies) below. |
+| `scaffold_theme_config` | `types[]?`, `themeOverrides?`, `uiFlags?` | `ScoutifyServiceProvider::boot()` body using `Scoutify::types()`, `Scoutify::theme()`, `Scoutify::configureUi()`. |
+| `validate_snippet` | `code: string` | Lint result: list of violations with ID, severity, line number, message, and fix hint. |
+
+---
+
+## Visibility strategies
+
+`scaffold_visibility_rule` accepts one of five strategies:
+
+| Strategy | Generated rule |
+|----------|---------------|
+| `guests-allowed` | `visibleToGuests()->orWhenAuthenticated()->policy('view')` |
+| `auth-only` | `whenAuthenticated()->policy('view')` |
+| `spatie-role` | `whenAuthenticated()->role('<role>')` |
+| `spatie-permission` | `whenAuthenticated()->permission('<permission>')` |
+| `callback` | `whenAuthenticated()->using(fn ($user, $record) => /* TODO */)` |
+
+---
+
+## Validate before committing
+
+The `validate_snippet` tool checks PHP and Blade code against 13 known antipatterns:
+
+| Rule ID | Pattern | Why it fails |
+|---------|---------|-------------|
+| `legacy_config_icon_prefix` | `'icon_prefix' =>` | Removed in v2 — throws `RuntimeException` on boot |
+| `legacy_config_types_array` | `'types' => [` | Removed in v2 — throws `RuntimeException` on boot |
+| `legacy_config_classes` | `'classes' =>` | Removed in v2 — throws `RuntimeException` on boot |
+| `legacy_config_colors` | `'colors' =>` | Removed in v2 — throws `RuntimeException` on boot |
+| `legacy_config_modal_ui` | `'modal' => ['ui' =>` | Removed in v2 — throws `RuntimeException` on boot |
+| `nonexistent_key_theme` | `'theme' =>` in config context | Never existed in any version |
+| `nonexistent_key_i18n` | `'i18n' =>` | Never existed in any version |
+| `nonexistent_key_behavior` | `'behavior' =>` | Never existed in any version |
+| `nonexistent_key_min_query_length` | `'min_query_length' =>` | Never existed in any version |
+| `button_in_anchor` | `<a ...><button` | HTML5 invalid — interactive content inside interactive content |
+| `alpine_prevent_with_guard` | `@x.prevent="if (` | `.prevent` fires before the expression — guard is ineffective |
+
+Use in your AI workflow:
+
+```
+1. scaffold_theme_config(...)           → generates boot() stub
+2. validate_snippet(generated_code)    → confirms zero violations
+3. Paste into your ServiceProvider
+```
+
+---
+
+## Example prompts
+
+Once the MCP server is installed, you can use natural language:
+
+- _"Search Scoutify docs for visibility rules"_ → calls `search_docs`
+- _"Get the customization page from Scoutify docs"_ → calls `get_page` with slug `usage/customization`
+- _"What Scoutify antipatterns should I avoid?"_ → calls `get_antipatterns`
+- _"Scaffold a GloballySearchable Post model with title and body fields"_ → calls `scaffold_searchable_model`
+- _"Validate this Scoutify config snippet"_ → calls `validate_snippet`
+
+---
+
+## Keeping docs current
+
+The static files rebuild automatically on every `npm run build` in `docs-site/` via the `astro:build:done` hook. No manual step needed — deploying the docs site is sufficient.
+
+The MCP server fetches from the deployed static files with a 1-hour ETag-based cache. New documentation is available to AI clients within 1 hour of a docs deploy.
