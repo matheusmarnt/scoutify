@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.2.0](https://github.com/matheusmarnt/scoutify/compare/v2.1.2...v2.2.0) (2026-05-09)
+
+
+### Features
+
+* **compat:** add Laravel 13 / Scout 12 / Testbench 11 compatibility ([#132](https://github.com/matheusmarnt/scoutify/issues/132)) ([c983e29](https://github.com/matheusmarnt/scoutify/commit/c983e29c7c5df2beffc4d7d039868e9dc7475117))
+
 ## [2.1.2](https://github.com/matheusmarnt/scoutify/compare/v2.1.1...v2.1.2) (2026-05-09)
 
 
