@@ -1,5 +1,6 @@
 <?php
 
+use Matheusmarnt\Scoutify\ScoutifyManager;
 use Matheusmarnt\Scoutify\Support\LivewireVersion;
 use Matheusmarnt\Scoutify\Tests\Fixtures\Models\Article;
 
@@ -10,9 +11,7 @@ beforeEach(function () {
 });
 
 it('reports invalid class in scoutify types', function () {
-    config([
-        'scoutify.types' => ['App\\NonExistentModel' => ['label' => 'Test']],
-    ]);
+    app(ScoutifyManager::class)->types()->register('App\\NonExistentModel', label: 'Test');
 
     $this->artisan('scoutify:doctor')
         ->expectsOutputToContain('not found')
@@ -20,9 +19,7 @@ it('reports invalid class in scoutify types', function () {
 });
 
 it('reports class that does not implement GloballySearchable', function () {
-    config([
-        'scoutify.types' => [stdClass::class => ['label' => 'Test']],
-    ]);
+    app(ScoutifyManager::class)->types()->register(stdClass::class, label: 'Test');
 
     $this->artisan('scoutify:doctor')
         ->expectsOutputToContain('does not implement GloballySearchable')
@@ -30,9 +27,7 @@ it('reports class that does not implement GloballySearchable', function () {
 });
 
 it('passes for valid GloballySearchable types', function () {
-    config([
-        'scoutify.types' => [Article::class => ['label' => 'Articles']],
-    ]);
+    app(ScoutifyManager::class)->types()->register(Article::class, label: 'Articles');
 
     $this->artisan('scoutify:doctor')
         ->expectsOutputToContain('implement GloballySearchable')
@@ -40,10 +35,6 @@ it('passes for valid GloballySearchable types', function () {
 });
 
 it('warns when no types configured', function () {
-    config([
-        'scoutify.types' => [],
-    ]);
-
     $this->artisan('scoutify:doctor')
         ->expectsOutputToContain('No types discovered');
 });

@@ -1,7 +1,8 @@
 @props(['label' => true])
 
 @php
-    $triggerClass = config('scoutify.classes.trigger', '');
+    $defaultClass = 'group inline-flex h-9 min-w-16 items-center gap-2 rounded-lg border border-zinc-200 bg-white px-3 text-sm text-zinc-500 transition hover:border-zinc-300 hover:text-zinc-700 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-scoutify-accent/40 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-400 dark:hover:border-zinc-600 dark:hover:text-zinc-200';
+    $triggerClass = app(\Matheusmarnt\Scoutify\ScoutifyManager::class)->theme()->getTrigger() ?? $defaultClass;
 @endphp
 
 <button

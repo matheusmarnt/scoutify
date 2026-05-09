@@ -34,9 +34,9 @@ Drops a production-ready ⌘K search experience into any Laravel application. Re
 - **i18n** — ships with `pt_BR`, `en`, and `es` translations
 - **Dark mode** — full dark mode support out of the box
 - **WCAG AA** — accessible markup with focus management and keyboard navigation
-- **Any blade-icons pack** — `globalSearchIcon()` accepts any icon name from any [Blade Icons](https://github.com/blade-ui-kit/blade-icons) pack installed via Composer (e.g. `ri-*`, `tabler-*`, `mdi-*`); fully-qualified names are auto-detected by matching against all registered pack prefixes and passed through as-is; short names fall back to the configured default prefix (`heroicon-o-`)
+- **Any blade-icons pack** — `globalSearchIcon()` accepts any icon name from any [Blade Icons](https://github.com/blade-ui-kit/blade-icons) pack installed via Composer (e.g. `ri-*`, `tabler-*`, `mdi-*`); fully-qualified names are auto-detected by matching against all registered pack prefixes and passed through as-is; short names fall back to the registered prefix (`heroicon-o-` by default; override via `Scoutify::types()->iconPrefix()` in a service provider)
 - **File preview & download** — models implementing `HasGlobalSearchPreview` expose an inline file preview pane inside the modal. PDFs, images, and videos render natively; any other type falls back to an external-link/download button. Download is opt-in and dispatches a `scoutify:download` browser event you can handle with a single listener
-- **Tailwind v4** — utility classes inlined, override via config
+- **Tailwind v4** — utility classes inlined, override via the fluent theme API
 
 ## Quick Start
 
@@ -92,10 +92,12 @@ public static function globalSearchColor(): string  { return 'blue'; }
 > public static function globalSearchIcon(): string { return 'tabler-home'; }
 > ```
 >
-> Short names (e.g. `user`) get the configured prefix prepended. Change the default in `config/scoutify.php`:
+> Short names (e.g. `user`) get the registered prefix prepended (`heroicon-o-` by default). Override in a service provider:
 >
 > ```php
-> 'icon_prefix' => 'heroicon-o-',  // default; any installed pack prefix works here
+> use Matheusmarnt\Scoutify\Facades\Scoutify;
+>
+> Scoutify::types()->iconPrefix('ri-');
 > ```
 
 > **`globalSearchSubtitle()` auto-discovery:** if your model has a `description`, `subtitle`, `excerpt`, `summary`, `bio`, or `body` attribute, the trait returns it automatically — HTML is sanitized to plain text (tags stripped, entities decoded, whitespace collapsed) then truncated to 150 chars. Override only when you need custom logic or a different field.

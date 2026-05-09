@@ -85,6 +85,12 @@ export default defineConfig({
             { label: 'Database',    slug: 'production/database' },
           ],
         },
+        {
+          label: 'Upgrading',
+          items: [
+            { label: 'v1.x → v2.0', slug: 'upgrading/v2' },
+          ],
+        },
       ],
     }),
   ],

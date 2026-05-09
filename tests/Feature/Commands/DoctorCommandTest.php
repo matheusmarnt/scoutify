@@ -3,6 +3,7 @@
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Support\Facades\Http;
+use Matheusmarnt\Scoutify\ScoutifyManager;
 use Matheusmarnt\Scoutify\Support\LivewireVersion;
 use Matheusmarnt\Scoutify\Tests\Fixtures\Models\Article;
 
@@ -254,7 +255,7 @@ it('checkLivewireScripts finds @livewireScripts in a nested subdirectory', funct
 });
 
 it('exits 1 when a configured type class does not exist', function () {
-    config(['scoutify.types' => ['App\Models\GhostModel' => ['icon' => 'x', 'color' => 'zinc']]]);
+    app(ScoutifyManager::class)->types()->register('App\Models\GhostModel', icon: 'x', color: 'zinc');
 
     $this->artisan('scoutify:doctor')
         ->assertFailed()
@@ -262,11 +263,7 @@ it('exits 1 when a configured type class does not exist', function () {
 });
 
 it('exits 1 when a configured type does not implement GloballySearchable', function () {
-    config([
-        'scoutify.types' => [
-            Model::class => ['icon' => 'x', 'color' => 'zinc'],
-        ],
-    ]);
+    app(ScoutifyManager::class)->types()->register(Model::class, icon: 'x', color: 'zinc');
 
     Http::fake(['http://localhost:7700/health' => Http::response(['status' => 'available'], 200)]);
 
@@ -280,10 +277,11 @@ it('prints success message when all configured types are valid', function () {
         'scout.driver' => 'algolia',
         'scout.algolia.id' => 'app-id',
         'scout.algolia.secret' => 'secret',
-        'scoutify.types' => [
-            Article::class => ['icon' => 'heroicon-o-document', 'color' => 'blue'],
-        ],
     ]);
+
+    app(ScoutifyManager::class)->types()->register(Article::class,
+        icon: 'heroicon-o-document', color: 'blue'
+    );
 
     $this->artisan('scoutify:doctor')
         ->expectsOutputToContain('All configured types exist and implement GloballySearchable');

@@ -3,6 +3,7 @@
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Schema;
+use Matheusmarnt\Scoutify\ScoutifyManager;
 use Matheusmarnt\Scoutify\Services\SearchAggregator;
 use Matheusmarnt\Scoutify\Support\GlobalSearchGroup;
 use Matheusmarnt\Scoutify\Tests\Fixtures\Models\Article;
@@ -74,12 +75,11 @@ it('groups non-GloballySearchable models using basic ResultDto fallback', functi
         ->and($group->results)->toHaveCount(1);
 });
 
-it('config metadata overrides registry defaults', function () {
+it('fluent API metadata overrides registry defaults', function () {
     Article::create(['name' => 'Test Article']);
 
-    config(['scoutify.types' => [
-        Article::class => ['label' => 'Config Label', 'icon' => 'heroicon-o-star', 'color' => 'red'],
-    ]]);
+    app(ScoutifyManager::class)->types()
+        ->register(Article::class, label: 'Config Label', icon: 'heroicon-o-star', color: 'red');
 
     $aggregator = SearchAggregator::make();
     $groups = $aggregator->search('Test');

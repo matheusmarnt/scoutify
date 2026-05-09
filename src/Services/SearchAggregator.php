@@ -9,6 +9,7 @@ use Laravel\Scout\Builder;
 use Matheusmarnt\Scoutify\Authorization\GlobalSearchAuthorizer;
 use Matheusmarnt\Scoutify\Contracts\GloballySearchable;
 use Matheusmarnt\Scoutify\Contracts\HasGlobalSearchPreview;
+use Matheusmarnt\Scoutify\ScoutifyManager;
 use Matheusmarnt\Scoutify\Support\GlobalSearchGroup;
 use Matheusmarnt\Scoutify\Support\GlobalSearchRegistry;
 use Matheusmarnt\Scoutify\Support\ResultDto;
@@ -20,7 +21,15 @@ final class SearchAggregator
 
     public static function make(?array $types = null): self
     {
-        return new self($types ?? config('scoutify.types', []));
+        if ($types !== null) {
+            return new self($types);
+        }
+
+        return new self(
+            app()->bound(ScoutifyManager::class)
+                ? app(ScoutifyManager::class)->types()->all()
+                : []
+        );
     }
 
     /**

@@ -3,6 +3,7 @@
 namespace Matheusmarnt\Scoutify\Console;
 
 use Illuminate\Console\Command;
+use Matheusmarnt\Scoutify\ScoutifyManager;
 use Matheusmarnt\Scoutify\Support\GlobalSearchRegistry;
 
 use function Laravel\Prompts\info;
@@ -18,10 +19,13 @@ class ImportCommand extends Command
         $registryTypes = app()->bound(GlobalSearchRegistry::class)
             ? app(GlobalSearchRegistry::class)->all()
             : [];
-        $types = array_merge($registryTypes, config('scoutify.types', []));
+        $fluentTypes = app()->bound(ScoutifyManager::class)
+            ? app(ScoutifyManager::class)->types()->all()
+            : [];
+        $types = array_merge($registryTypes, $fluentTypes);
 
         if (empty($types) && ! $this->argument('model')) {
-            $this->warn('No types configured in config/scoutify.php.');
+            $this->warn('No types discovered. Register models with Searchable trait, then run scoutify:rebuild.');
 
             return self::SUCCESS;
         }

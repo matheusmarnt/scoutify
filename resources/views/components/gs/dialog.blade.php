@@ -5,8 +5,9 @@
 ])
 
 @php
-    $scrimClass = config('scoutify.classes.dialog_scrim', '');
-    $panelClass = config('scoutify.classes.dialog_panel', '');
+    $theme = app(\Matheusmarnt\Scoutify\ScoutifyManager::class)->theme();
+    $scrimClass = $theme->getDialogScrim() ?? 'absolute inset-0 bg-zinc-950/50';
+    $panelClass = $theme->getDialogPanel() ?? 'relative w-full md:max-w-2xl';
 @endphp
 
 {{--

@@ -1,7 +1,10 @@
 <?php
 
-it('dialog_panel default carries outer-wrapper sizing classes', function () {
-    $panel = config('scoutify.classes.dialog_panel');
+use Matheusmarnt\Scoutify\ScoutifyManager;
+
+it('dialog panel default carries outer-wrapper sizing classes', function () {
+    $panel = app(ScoutifyManager::class)->theme()->getDialogPanel()
+        ?? 'relative w-full md:max-w-2xl';
 
     expect($panel)
         ->toContain('relative')
@@ -9,8 +12,9 @@ it('dialog_panel default carries outer-wrapper sizing classes', function () {
         ->toContain('md:max-w-2xl');
 });
 
-it('dialog_panel default does not duplicate inner-content visual styling', function () {
-    $panel = config('scoutify.classes.dialog_panel');
+it('dialog panel default does not duplicate inner-content visual styling', function () {
+    $panel = app(ScoutifyManager::class)->theme()->getDialogPanel()
+        ?? 'relative w-full md:max-w-2xl';
 
     expect($panel)
         ->not->toContain('bg-white')

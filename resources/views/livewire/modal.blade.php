@@ -29,10 +29,13 @@
                 controls-id="scoutify-listbox"
                 activedescendant-expr="'scoutify-result-' + activeIdx"
             />
+            @if ($this->resolvedUi->getSlot('header_trailing'))
+                {!! \Matheusmarnt\Scoutify\Support\SlotResolver::render($this->resolvedUi->getSlot('header_trailing'), $this->slotContext()) !!}
+            @endif
         </div>
 
         {{-- Filters row --}}
-        @if (count($this->availableTypes) > 1 || filled($this->query))
+        @if ($this->resolvedUi->typeChipsVisible() && (count($this->availableTypes) > 1 || filled($this->query)))
             <x-scoutify::gs.filter-row
                 wire:key="scoutify-filter-row"
                 :types="$this->availableTypes"
@@ -40,8 +43,12 @@
                 toggle-action="toggleType"
             >
                 <x-slot name="trailing">
-                    <x-scoutify::gs.toggle wire:model.live="onlyActive" :label="__('scoutify::scoutify.only_active')" />
-                    <x-scoutify::gs.toggle wire:model.live="includeTrashed" :label="__('scoutify::scoutify.include_trashed')" />
+                    @if ($this->resolvedUi->toggleOnlyActiveVisible())
+                        <x-scoutify::gs.toggle wire:model.live="onlyActive" :label="__('scoutify::scoutify.only_active')" />
+                    @endif
+                    @if ($this->resolvedUi->toggleIncludeTrashedVisible())
+                        <x-scoutify::gs.toggle wire:model.live="includeTrashed" :label="__('scoutify::scoutify.include_trashed')" />
+                    @endif
                 </x-slot>
             </x-scoutify::gs.filter-row>
         @endif
@@ -66,6 +73,9 @@
                 <div wire:loading.remove.delay.long wire:target="query,toggleType,onlyActive,includeTrashed">
                     @if (blank($this->query))
                         <x-scoutify::gs.idle-state />
+                        @if ($this->resolvedUi->getSlot('idle_extra'))
+                            {!! \Matheusmarnt\Scoutify\Support\SlotResolver::render($this->resolvedUi->getSlot('idle_extra'), $this->slotContext()) !!}
+                        @endif
                     @elseif (empty($this->results))
                         <x-scoutify::gs.empty-state />
                     @else
@@ -102,21 +112,26 @@
                                 @endforeach
                             </div>
                         @endforeach
+                        @if ($this->resolvedUi->getSlot('after_results'))
+                            {!! \Matheusmarnt\Scoutify\Support\SlotResolver::render($this->resolvedUi->getSlot('after_results'), $this->slotContext()) !!}
+                        @endif
                     @endif
                 </div>
             </x-scoutify::gs.results-listbox>
         @endif
 
         {{-- Footer --}}
-        <x-scoutify::gs.hint-bar :hints="$selectedPreview
-            ? [['key' => 'esc', 'label' => 'scoutify::scoutify.hint_back']]
-            : [
-                ['key' => '↑↓', 'label' => 'scoutify::scoutify.hint_navigate'],
-                ['key' => '↵',  'label' => 'scoutify::scoutify.hint_open'],
-                ['key' => 'tab', 'label' => 'scoutify::scoutify.hint_actions'],
-                ['key' => 'esc', 'label' => 'scoutify::scoutify.hint_close'],
-            ]
-        " />
+        @if ($this->resolvedUi->hintBarVisible())
+            <x-scoutify::gs.hint-bar :hints="$selectedPreview
+                ? [['key' => 'esc', 'label' => 'scoutify::scoutify.hint_back']]
+                : [
+                    ['key' => '↑↓', 'label' => 'scoutify::scoutify.hint_navigate'],
+                    ['key' => '↵',  'label' => 'scoutify::scoutify.hint_open'],
+                    ['key' => 'tab', 'label' => 'scoutify::scoutify.hint_actions'],
+                    ['key' => 'esc', 'label' => 'scoutify::scoutify.hint_close'],
+                ]
+            " />
+        @endif
     </x-scoutify::gs.shell>
 </div>
 

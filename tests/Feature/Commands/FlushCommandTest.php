@@ -2,6 +2,7 @@
 
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Matheusmarnt\Scoutify\ScoutifyManager;
 use Matheusmarnt\Scoutify\Tests\Fixtures\Models\Article;
 
 beforeEach(function () {
@@ -14,7 +15,6 @@ beforeEach(function () {
 });
 
 it('scoutify:flush succeeds with no types configured', function () {
-    config(['scoutify.types' => []]);
     $this->artisan('scoutify:flush')
         ->assertSuccessful();
 });
@@ -24,8 +24,8 @@ it('scoutify:flush flushes a specific model given as argument', function () {
         ->assertSuccessful();
 });
 
-it('scoutify:flush iterates all configured types', function () {
-    config(['scoutify.types' => [Article::class => []]]);
+it('scoutify:flush iterates all configured types via fluent API', function () {
+    app(ScoutifyManager::class)->types()->register(Article::class);
     $this->artisan('scoutify:flush')
         ->assertSuccessful();
 });
