@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.1.1](https://github.com/matheusmarnt/scoutify/compare/v2.1.0...v2.1.1) (2026-05-09)
+
+
+### Bug Fixes
+
+* **views:** apply ThemeConfig fallback to input component ([#127](https://github.com/matheusmarnt/scoutify/issues/127)) ([06a8695](https://github.com/matheusmarnt/scoutify/commit/06a8695bec4806d6db6bc743c7354473c79a88f8))
+
 ## [2.1.0](https://github.com/matheusmarnt/scoutify/compare/v2.0.0...v2.1.0) (2026-05-09)
 
 
