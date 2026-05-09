@@ -27,7 +27,7 @@ export async function generateLlmsTxt({ contentDir, templatePath, outDir }) {
 
   const groups = {};
   for (const p of pages) {
-    const group = dirname(p.slug);
+    const group = dirname(p.slug) === '.' ? 'root' : dirname(p.slug);
     if (!groups[group]) groups[group] = [];
     groups[group].push(p.slug);
   }
@@ -40,7 +40,7 @@ export async function generateLlmsTxt({ contentDir, templatePath, outDir }) {
     .replace('{{REFERENCE_MAP}}', referenceMap);
 
   const pageSections = pages
-    .map((p) => `---\n## ${p.slug}\n\n${p.content.trim()}`)
+    .map((p) => `## ${p.slug}\n\n${p.content.trim()}`)
     .join('\n\n');
 
   const full = `${index}\n\n${pageSections}`;
