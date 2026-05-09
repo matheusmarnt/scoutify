@@ -3,7 +3,7 @@ title: Configuration Reference
 description: Detailed reference for all configuration options in config/scoutify.php.
 ---
 
-This page covers the `config/scoutify.php` options that remain in v2. UI, theme, type, and color customisation moved to the [fluent PHP API](/scoutify/upgrading/v2).
+This page covers the `config/scoutify.php` options that remain in v2. UI, theme, type, and color customization moved to the [fluent PHP API](/scoutify/upgrading/v2).
 
 ### `debounce_ms`
 - **Default**: `250`

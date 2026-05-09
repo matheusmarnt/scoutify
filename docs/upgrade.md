@@ -1,6 +1,6 @@
 # Upgrading to v2.0
 
-Scoutify v2.0 replaces config-file UI customisation with a fluent PHP API. This is a **hard breaking change** — any removed config key still present in `config/scoutify.php` will throw a `RuntimeException` on boot.
+Scoutify v2.0 replaces config-file UI customization with a fluent PHP API. This is a **hard breaking change** — any removed config key still present in `config/scoutify.php` will throw a `RuntimeException` on boot.
 
 > **Warning:** If your `config/scoutify.php` still contains legacy keys (`icon_prefix`, `types`, `classes`, `colors`, `modal.ui`), running `composer update` will crash during the `post-update-cmd` step with a `RuntimeException` and no further guidance. Complete steps 1–2 below before updating.
 
@@ -36,7 +36,7 @@ Composer's caret (`^1.x`) blocks major-version upgrades — v2 will never be ins
 rm config/scoutify.php
 ```
 
-If you have customised keys that survive into v2 (`debounce_ms`, `recents`, `discovery`, `preview`, `modal.breakpoint_desktop`, `authorization`, `broadcast_events`), manually remove only the legacy keys (`icon_prefix`, `types`, `classes`, `colors`, `modal.ui`) instead of deleting the file.
+If you have customized keys that survive into v2 (`debounce_ms`, `recents`, `discovery`, `preview`, `modal.breakpoint_desktop`, `authorization`, `broadcast_events`), manually remove only the legacy keys (`icon_prefix`, `types`, `classes`, `colors`, `modal.ui`) instead of deleting the file.
 
 ### 3. Run `composer update`
 
@@ -50,13 +50,13 @@ composer update matheusmarnt/scoutify -W
 php artisan vendor:publish --tag=scoutify-config --force
 ```
 
-### 5. Migrate customisations
+### 5. Migrate customizations
 
 Move any values you removed in step 2 to `AppServiceProvider::boot()` using the fluent API. See the sections below.
 
 ---
 
-## Migrating customisations
+## Migrating customizations
 
 ### Move `types`
 

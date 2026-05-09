@@ -34,6 +34,21 @@ When a docker-image PR arrives:
 
 ---
 
+## CI Matrix
+
+Scoutify's test matrix covers: **PHP 8.2/8.3/8.4 × Laravel 11/12/13 × Livewire 3/4**.
+
+### Known incompatible combinations (excluded from matrix)
+
+| PHP | Laravel | Livewire | Reason |
+|-----|---------|---------|--------|
+| `8.2` | any | `^4.0` | `pestphp/pest-plugin-livewire ^4.x` requires PHP ^8.3 — composer cannot resolve the combination |
+| any | `13.*` | `^3.0` | Livewire 3 requires `laravel/framework ^10\|^11\|^12` — Laravel 13 not supported |
+
+These exclusions are declared in `.github/workflows/tests.yml` under `strategy.matrix.exclude`.
+
+---
+
 ## Local Dependency Updates
 
 Check drift against current constraints:

@@ -1,6 +1,6 @@
 # Fluent API Customization
 
-All UI, theme, type registration, and slot customisation is done via the fluent PHP API. Call in `AppServiceProvider::boot()` (or any service provider).
+All UI, theme, type registration, and slot customization is done via the fluent PHP API. Call in `AppServiceProvider::boot()` (or any service provider).
 
 ```php
 use Matheusmarnt\Scoutify\Facades\Scoutify;
