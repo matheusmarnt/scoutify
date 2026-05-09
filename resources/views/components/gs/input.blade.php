@@ -6,7 +6,10 @@
 
 @php
     $hasIcon = filled($icon);
-    $inputClass = config('scoutify.classes.input', '');
+
+    $theme = app(\Matheusmarnt\Scoutify\ScoutifyManager::class)->theme();
+    $defaultInputClass = 'block w-full rounded-lg border border-zinc-200 bg-white py-2 text-sm text-zinc-900 placeholder-zinc-400 outline-none transition focus-visible:border-zinc-300 focus-visible:ring-2 focus-visible:ring-scoutify-accent/30 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100 dark:placeholder-zinc-500 [&::-webkit-search-cancel-button]:hidden [&::-webkit-search-decoration]:hidden';
+    $inputClass = $theme->getInput() ?? $defaultInputClass;
 @endphp
 
 <div class="relative" x-data="{ value: @entangle($wireModel).live }">
