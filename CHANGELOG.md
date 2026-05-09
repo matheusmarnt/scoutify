@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.1.0](https://github.com/matheusmarnt/scoutify/compare/v2.0.0...v2.1.0) (2026-05-09)
+
+
+### Features
+
+* **ai:** llms.txt generator + MCP server cross-links for AI documentation access ([#124](https://github.com/matheusmarnt/scoutify/issues/124)) ([ee180ec](https://github.com/matheusmarnt/scoutify/commit/ee180eccc5842cc96724ddaa57eb4737307c9ecb))
+
 ## [2.0.0](https://github.com/matheusmarnt/scoutify/compare/v1.15.2...v2.0.0) (2026-05-09)
 
 
