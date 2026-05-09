@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.3.0](https://github.com/matheusmarnt/scoutify/compare/v2.2.0...v2.3.0) (2026-05-09)
+
+
+### Features
+
+* **theme:** add dialogContent() to customize modal background and visual style ([#135](https://github.com/matheusmarnt/scoutify/issues/135)) ([b719be5](https://github.com/matheusmarnt/scoutify/commit/b719be565ea5bc3ef5869af27a1d24ec05b97e8a))
+
 ## [2.2.0](https://github.com/matheusmarnt/scoutify/compare/v2.1.2...v2.2.0) (2026-05-09)
 
 
