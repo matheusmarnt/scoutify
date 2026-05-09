@@ -124,42 +124,33 @@ Scoutify allows for deep integration with your business logic. Here is an exampl
 ```php
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Model;
+use Matheusmarnt\Scoutify\Authorization\VisibilityRule;
 use Matheusmarnt\Scoutify\Concerns\Searchable;
 use Matheusmarnt\Scoutify\Contracts\GloballySearchable;
-use Matheusmarnt\Scoutify\Contracts\HasGlobalSearchVisibility; // Optional for auth
-use Illuminate\Database\Eloquent\Model;
+use Matheusmarnt\Scoutify\Contracts\HasGlobalSearchVisibility;
 
 class Project extends Model implements GloballySearchable, HasGlobalSearchVisibility
 {
     use Searchable;
 
-    /**
-     * Context-aware titles: show status if project is archived.
-     */
     public function globalSearchTitle(): string
     {
-        return $this->is_archived 
-            ? "[Archived] {$this->name}" 
+        return $this->is_archived
+            ? "[Archived] {$this->name}"
             : $this->name;
     }
 
-    /**
-     * Dynamic icons based on model state.
-     */
     public static function globalSearchIcon(): string
     {
         return 'heroicon-o-folder-open';
     }
 
-    /**
-     * Authorization: only show projects the user can actually view.
-     * This works at the database query level for performance.
-     */
-    public static function globalSearchVisibility(): VisibilityRule
+    public function globalSearchVisibility(): VisibilityRule
     {
         return VisibilityRule::make()
-            ->gate('view-project')
-            ->callback(fn ($query) => $query->where('team_id', auth()->user()->current_team_id));
+            ->policy('view')
+            ->using(fn ($record, $user) => $user->current_team_id === $record->team_id);
     }
 
     public function globalSearchUrl(): string
@@ -176,7 +167,7 @@ Scoutify automatically looks for common fields to use as a subtitle, such as `de
 HTML content in these fields is automatically sanitized to plain text and truncated to 150 characters.
 
 <Aside type="tip">
-  You can customize which fields are scanned for auto-discovery in the `config/scoutify.php` file.
+  Override `globalSearchSubtitle()` to provide a custom subtitle instead of relying on auto-discovery.
 </Aside>
 
 ## Icon Resolution

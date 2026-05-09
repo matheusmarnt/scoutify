@@ -1,0 +1,231 @@
+---
+title: Fluent API Customization
+description: Full reference for Scoutify::types(), Scoutify::theme(), and Scoutify::configureUi() in v2.
+---
+
+import { Aside, Tabs, TabItem } from '@astrojs/starlight/components';
+
+All UI, theme, type registration, and slot customisation is done via the fluent PHP API — not in `config/scoutify.php`. Register calls in `AppServiceProvider::boot()` (or any service provider).
+
+```php
+use Matheusmarnt\Scoutify\Facades\Scoutify;
+use Matheusmarnt\Scoutify\Support\UiConfig;
+
+public function boot(): void
+{
+    Scoutify::types()-> /* ... */ ;
+    Scoutify::theme()-> /* ... */ ;
+    Scoutify::configureUi(function (UiConfig $ui) { /* ... */ });
+}
+```
+
+---
+
+## `Scoutify::types()` — Type Registration
+
+Returns the singleton `TypesConfig` instance. All calls are additive and resolved on first use.
+
+### `register()`
+
+Register an Eloquent model as a searchable type:
+
+```php
+Scoutify::types()->register(
+    \App\Models\User::class,
+    label: 'Users',
+    icon:  'user',        // short name — prefix applied automatically
+    color: 'indigo',      // Tailwind color name or custom token
+);
+```
+
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `$class` | `class-string` | — | Fully-qualified model class |
+| `label` | `string` | `''` | Display name in the filter chip and group header |
+| `icon` | `string` | `''` | Icon identifier (short name or full Blade Icons name) |
+| `color` | `string` | `'zinc'` | Accent color — any Tailwind color name or a custom token registered via `theme()->color()` |
+
+Chain multiple calls to register several models at once:
+
+```php
+Scoutify::types()
+    ->register(\App\Models\User::class,    label: 'Users',    icon: 'user',          color: 'indigo')
+    ->register(\App\Models\Post::class,    label: 'Posts',    icon: 'document-text', color: 'sky')
+    ->register(\App\Models\Product::class, label: 'Products', icon: 'shopping-bag',  color: 'emerald');
+```
+
+### `iconPrefix()`
+
+Set a global prefix prepended to short icon names before resolving via [Blade Icons](https://github.com/blade-ui-kit/blade-icons):
+
+```php
+Scoutify::types()->iconPrefix('heroicon-o-');
+// 'user' → 'heroicon-o-user'
+```
+
+If a model returns a full icon name (e.g. `ri-user-line`) that does not start with the prefix, it is used as-is.
+
+<Aside type="tip">
+  To use Remix Icons instead of Heroicons: `Scoutify::types()->iconPrefix('ri-')`. Install `blade-remix-icon` and the icon names in your models should match the pack's naming convention.
+</Aside>
+
+---
+
+## `Scoutify::theme()` — CSS Class Overrides
+
+Returns the singleton `ThemeConfig` instance. Override any Tailwind class strings applied to modal elements. Unset methods fall back to the package defaults.
+
+```php
+Scoutify::theme()
+    ->dialogPanel('relative bg-white dark:bg-zinc-900 rounded-xl shadow-2xl ring-1 ring-black/5')
+    ->dialogScrim('fixed inset-0 bg-black/40 backdrop-blur-sm')
+    ->input('w-full bg-transparent text-gray-900 dark:text-white placeholder-gray-400 text-base outline-none')
+    ->trigger('inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-sm')
+    ->triggerMobile('flex items-center justify-center w-9 h-9 rounded-lg')
+    ->toggleActive('rounded-md px-3 py-1 text-sm font-medium bg-indigo-100 text-indigo-700 dark:bg-indigo-900/60 dark:text-indigo-200')
+    ->toggleInactive('rounded-md px-3 py-1 text-sm font-medium text-gray-500 hover:text-gray-700 dark:text-zinc-400');
+```
+
+### Available methods
+
+| Method | What it styles |
+|---|---|
+| `dialogPanel(string)` | The modal dialog container (white card) |
+| `dialogScrim(string)` | The backdrop overlay behind the modal |
+| `input(string)` | The search input field |
+| `trigger(string)` | Desktop trigger button (`<x-scoutify::gs.trigger />`) |
+| `triggerMobile(string)` | Mobile trigger button (`<x-scoutify::gs.trigger-mobile />`) |
+| `toggleActive(string)` | Active state of filter chips / toggle buttons |
+| `toggleInactive(string)` | Inactive state of filter chips / toggle buttons |
+| `accent(string)` | Primary accent Tailwind classes applied to highlighted elements |
+
+### Custom color tokens
+
+Register named color tokens that models can reference via `color: 'brand'` in `register()`:
+
+```php
+Scoutify::theme()->color('brand', 'bg-violet-100 text-violet-700', 'dark:bg-violet-900/60 dark:text-violet-200');
+```
+
+Then use in registration:
+
+```php
+Scoutify::types()->register(\App\Models\Order::class, label: 'Orders', icon: 'shopping-cart', color: 'brand');
+```
+
+<Aside type="caution">
+  Custom color classes must be present in your CSS build. Add them to your Tailwind source:
+
+  ```css
+  /* resources/css/app.css */
+  @source inline("bg-violet-100 text-violet-700 dark:bg-violet-900/60 dark:text-violet-200");
+  ```
+</Aside>
+
+---
+
+## `Scoutify::configureUi()` — Visibility Flags & Slots
+
+Pass a closure that receives a fresh `UiConfig` instance each time the modal boots:
+
+```php
+use Matheusmarnt\Scoutify\Support\UiConfig;
+
+Scoutify::configureUi(function (UiConfig $ui) {
+    $ui->showTypeChips(false)
+       ->showHintBar(false);
+});
+```
+
+### Visibility flags
+
+| Method | Default | Description |
+|---|---|---|
+| `showTypeChips(bool)` | `true` | Model-type filter chips above results |
+| `showToggleOnlyActive(bool)` | `true` | "Active only" toggle |
+| `showToggleIncludeTrashed(bool)` | `true` | "Include trashed" toggle |
+| `showHintBar(bool)` | `true` | Keyboard-shortcut hint bar at the bottom |
+| `showIdleHint(bool)` | `true` | Idle-state hint shown before the user types |
+
+### Slots
+
+Inject custom content into named positions inside the modal. Slots receive a `SlotContext` with the current search state:
+
+```php
+use Matheusmarnt\Scoutify\Support\SlotContext;
+use Matheusmarnt\Scoutify\Support\UiConfig;
+
+Scoutify::configureUi(function (UiConfig $ui) {
+    // Blade view name
+    $ui->slot('after-results', 'search.footer');
+
+    // Closure returning an HtmlString
+    $ui->slot('empty-state', function (SlotContext $ctx) {
+        return new \Illuminate\Support\HtmlString(
+            "<p class=\"text-sm text-gray-400\">No results for \"{$ctx->query}\".</p>"
+        );
+    });
+
+    // Blade component class-string
+    $ui->slot('empty-state', \App\View\Components\SearchEmptyState::class);
+});
+```
+
+#### `SlotContext` properties
+
+| Property | Type | Description |
+|---|---|---|
+| `$wire` | `Modal` | Livewire component instance |
+| `$query` | `string` | Current search query string |
+| `$results` | `array` | Current grouped results array |
+| `$hasResults` | `bool` | Whether results are non-empty |
+| `$isIdle` | `bool` | Whether the user has not typed yet |
+
+A slot value can be:
+- A **Blade view name** (string) — rendered with `SlotContext::toArray()` as view data
+- A **Closure** receiving `SlotContext` — return `HtmlString`, a `View`, or a castable-to-string value
+- A **Blade Component class-string** — constructor parameters auto-matched from `SlotContext`
+
+---
+
+## Complete example
+
+```php
+<?php
+
+namespace App\Providers;
+
+use App\Models\Order;
+use App\Models\Post;
+use App\Models\User;
+use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\HtmlString;
+use Matheusmarnt\Scoutify\Facades\Scoutify;
+use Matheusmarnt\Scoutify\Support\SlotContext;
+use Matheusmarnt\Scoutify\Support\UiConfig;
+
+class AppServiceProvider extends ServiceProvider
+{
+    public function boot(): void
+    {
+        Scoutify::types()
+            ->iconPrefix('heroicon-o-')
+            ->register(User::class,  label: 'Users',  icon: 'user',          color: 'indigo')
+            ->register(Post::class,  label: 'Posts',  icon: 'document-text', color: 'sky')
+            ->register(Order::class, label: 'Orders', icon: 'shopping-cart', color: 'brand');
+
+        Scoutify::theme()
+            ->dialogPanel('relative bg-white dark:bg-zinc-900 rounded-xl shadow-2xl ring-1 ring-black/5')
+            ->color('brand', 'bg-violet-100 text-violet-700', 'dark:bg-violet-900/60 dark:text-violet-200');
+
+        Scoutify::configureUi(function (UiConfig $ui) {
+            $ui->showHintBar(false)
+               ->slot('empty-state', function (SlotContext $ctx) {
+                   return new HtmlString(
+                       "<p class=\"text-center text-sm text-gray-400 py-6\">No results for &ldquo;{$ctx->query}&rdquo;.</p>"
+                   );
+               });
+        });
+    }
+}
+```
