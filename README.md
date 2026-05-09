@@ -7,9 +7,9 @@
     <a href="https://github.com/matheusmarnt/scoutify/actions?query=workflow%3Atests+branch%3Amain"><img src="https://img.shields.io/github/actions/workflow/status/matheusmarnt/scoutify/tests.yml?branch=main&label=tests&style=flat-square" alt="Tests" /></a>
     <a href="https://github.com/matheusmarnt/scoutify/actions?query=workflow%3Apint+branch%3Amain"><img src="https://img.shields.io/github/actions/workflow/status/matheusmarnt/scoutify/pint.yml?branch=main&label=code+style&style=flat-square" alt="Code Style" /></a>
     <a href="LICENSE.md"><img src="https://img.shields.io/badge/license-MIT-brightgreen?style=flat-square" alt="License" /></a>
-    <a href="https://laravel.com"><img src="https://img.shields.io/badge/Laravel-11%7C12-FF2D20?style=flat-square&logo=laravel&logoColor=white" alt="Laravel" /></a>
+    <a href="https://laravel.com"><img src="https://img.shields.io/badge/Laravel-11%7C12%7C13-FF2D20?style=flat-square&logo=laravel&logoColor=white" alt="Laravel" /></a>
     <a href="https://livewire.laravel.com"><img src="https://img.shields.io/badge/Livewire-3%7C4-FB70A9?style=flat-square" alt="Livewire" /></a>
-    <a href="https://laravel.com/docs/scout"><img src="https://img.shields.io/badge/Scout-11-FF2D20?style=flat-square&logo=laravel&logoColor=white" alt="Scout" /></a>
+    <a href="https://laravel.com/docs/scout"><img src="https://img.shields.io/badge/Scout-11%7C12-FF2D20?style=flat-square&logo=laravel&logoColor=white" alt="Scout" /></a>
     <a href="https://matheusmarnt.github.io/scoutify/"><img src="https://img.shields.io/badge/docs-online-7c3aed?style=flat-square" alt="Docs" /></a>
 </p>
 
