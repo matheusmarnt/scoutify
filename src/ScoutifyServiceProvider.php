@@ -81,20 +81,35 @@ class ScoutifyServiceProvider extends PackageServiceProvider
     {
         $scoutify = $this->app['config']->get('scoutify', []);
 
-        foreach (['icon_prefix', 'types', 'classes', 'colors'] as $key) {
-            if (array_key_exists($key, $scoutify)) {
-                throw new \RuntimeException(
-                    "Scoutify v2: config key \"{$key}\" was removed. Use the fluent API instead. "
-                    .'See https://matheusmarnt.github.io/scoutify/upgrading/v2'
-                );
-            }
-        }
+        $found = array_values(array_filter(
+            ['icon_prefix', 'types', 'classes', 'colors'],
+            fn ($key) => array_key_exists($key, $scoutify),
+        ));
 
         if (isset($scoutify['modal']['ui'])) {
-            throw new \RuntimeException(
-                'Scoutify v2: config key "modal.ui" was removed. Use Scoutify::configureUi() instead. '
-                .'See https://matheusmarnt.github.io/scoutify/upgrading/v2'
-            );
+            $found[] = 'modal.ui';
         }
+
+        if (empty($found)) {
+            return;
+        }
+
+        $keys = implode(', ', $found);
+
+        throw new \RuntimeException(<<<MSG
+            Scoutify v2: legacy config keys detected in config/scoutify.php: [{$keys}]
+
+              Upgrade steps:
+                1. Delete config/scoutify.php (or remove the listed keys manually)
+                2. Re-publish the v2 config:
+                     php artisan vendor:publish --tag=scoutify-config --force
+                3. Move customizations to AppServiceProvider::boot():
+                     Scoutify::types()->register(...)    — replaces 'types'
+                     Scoutify::types()->iconPrefix(...)  — replaces 'icon_prefix'
+                     Scoutify::theme()->input(...)       — replaces 'classes.input'
+                     Scoutify::theme()->color(...)       — replaces 'colors'
+
+              Full upgrade guide: https://matheusmarnt.github.io/scoutify/upgrading/v2
+            MSG);
     }
 }
