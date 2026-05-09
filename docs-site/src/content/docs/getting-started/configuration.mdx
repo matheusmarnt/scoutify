@@ -1,69 +1,44 @@
 ---
 title: Configuration
-description: Customize Scoutify to fit your application's needs.
+description: All config/scoutify.php options available in Scoutify v2.
 ---
 
 import { Aside } from '@astrojs/starlight/components';
 
-Scoutify is highly configurable. Most settings can be adjusted in the `config/scoutify.php` file.
+Publish the config file if you haven't already:
 
-## Theme
-
-You can control the theme of the search modal:
-
-```php
-'theme' => 'system', // 'light' | 'dark' | 'system'
+```bash
+php artisan vendor:publish --tag=scoutify-config
 ```
 
-## i18n
+<Aside type="note">
+  In v2, UI, theme, type, and color customisation moved out of config into the fluent PHP API.
+  See the [v2 upgrade guide](/scoutify/upgrading/v2) if you're migrating from v1.
+</Aside>
 
-Scoutify ships with support for English, Portuguese (Brazil), and Spanish.
+## `debounce_ms`
+
+Wait time in milliseconds before firing a search after the user stops typing.
 
 ```php
-'i18n' => [
-    'locales' => ['en', 'pt_BR', 'es'],
-    'fallback' => 'en',
+'debounce_ms' => 250,
+```
+
+## `recents`
+
+Persists the last few searches to the user's session.
+
+```php
+'recents' => [
+    'enabled' => true,
+    'limit'   => 5,
+    'storage' => 'session',
 ],
 ```
 
-## Behavior
+## `discovery`
 
-Fine-tune how the search modal behaves:
-
-```php
-'behavior' => [
-    'recent_searches' => [
-        'enabled' => true,
-        'limit' => 5,
-        'storage' => 'session',
-    ],
-    'debounce_ms' => 250,
-    'min_query_length' => 2,
-],
-```
-
-- **recent_searches**: Persists the last few searches to the user's session.
-- **debounce_ms**: Delay in milliseconds before triggering a search request.
-- **min_query_length**: Minimum characters required to start a search.
-
-## Authorization
-
-Configure the default visibility for searchable models:
-
-```php
-'authorization' => [
-    'default' => 'secure', // 'secure' | 'permissive' | 'gate-only'
-    'gate_ability' => 'view',
-],
-```
-
-- **secure**: Guests are denied, authenticated users must pass a policy check (if one exists).
-- **permissive**: Everyone is allowed.
-- **gate-only**: Everyone must pass a gate check.
-
-## Discovery
-
-Specify where Scoutify should look for Eloquent models:
+Paths where Scoutify scans for Eloquent models using the `Searchable` trait.
 
 ```php
 'discovery' => [
@@ -73,16 +48,76 @@ Specify where Scoutify should look for Eloquent models:
 ],
 ```
 
-## Appearance
-
-Customize icons and colors:
+## `modal`
 
 ```php
-'appearance' => [
-    'icon_prefix' => 'heroicon-o-',
+'modal' => [
+    'breakpoint_desktop' => 'md',  // Tailwind breakpoint for desktop layout
 ],
 ```
 
-<Aside type="tip">
-  For production, ensure you have configured your Scout driver correctly in `config/scout.php` and your `.env` file.
-</Aside>
+## `authorization`
+
+Default visibility behaviour for searchable models.
+
+```php
+'authorization' => [
+    'default'      => 'secure',  // 'secure' | 'permissive' | 'gate-only'
+    'gate_ability' => 'view',
+],
+```
+
+- **`secure`** (default): guests denied; authenticated users pass `Gate::check('view')` if a policy exists, otherwise allowed.
+- **`permissive`**: everyone allowed.
+- **`gate-only`**: everyone (including guests, if the gate closure allows) must pass the gate check; fails closed if no policy is found.
+
+## `broadcast_events`
+
+Browser event names dispatched by the modal. Override to avoid conflicts with other libraries.
+
+```php
+'broadcast_events' => [
+    'open'     => 'scoutify:open',
+    'opened'   => 'scoutify:opened',
+    'closed'   => 'scoutify:closed',
+    'remember' => 'scoutify:remember',
+],
+```
+
+## `preview`
+
+File preview feature configuration. See [File Preview](/scoutify/usage/file-preview) for full details.
+
+```php
+'preview' => [
+    'enabled'          => true,
+    'route_prefix'     => 'scoutify/preview',
+    'middleware'       => ['web'],
+    'ttl_seconds'      => 300,
+    'max_size_bytes'   => 50 * 1024 * 1024,
+    'allowed_mimes'    => [ /* ... */ ],
+    'viewer_for_mime'  => [ /* ... */ ],
+    'fallback_view'    => 'scoutify::components.gs.preview.viewer-fallback',
+],
+```
+
+## Fluent API (types, theme, UI)
+
+Type registration, icon prefix, CSS class overrides, custom color tokens, and UI visibility flags are configured in PHP — not in this file:
+
+```php
+use Matheusmarnt\Scoutify\Facades\Scoutify;
+use Matheusmarnt\Scoutify\Support\UiConfig;
+
+// In AppServiceProvider::boot()
+Scoutify::types()
+    ->iconPrefix('heroicon-o-')
+    ->register(\App\Models\User::class, label: 'Users', icon: 'user', color: 'indigo');
+
+Scoutify::theme()
+    ->dialogPanel('relative bg-white dark:bg-zinc-900 ...');
+
+Scoutify::configureUi(fn (UiConfig $ui) => $ui->showHintBar(false));
+```
+
+See the [v2 upgrade guide](/scoutify/upgrading/v2) for a full reference of all fluent methods.
