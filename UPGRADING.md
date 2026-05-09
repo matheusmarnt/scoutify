@@ -2,7 +2,7 @@
 
 ## v1.x → v2.0.0
 
-v2.0 replaces config-file UI customisation with a fluent PHP API. See the full migration guide at <https://matheusmarnt.github.io/scoutify/upgrading/v2>.
+v2.0 replaces config-file UI customization with a fluent PHP API. See the full migration guide at <https://matheusmarnt.github.io/scoutify/upgrading/v2>.
 
 **Removed `config/scoutify.php` keys** (boot throws `RuntimeException` if present):
 
