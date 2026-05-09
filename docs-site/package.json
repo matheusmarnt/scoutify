@@ -8,7 +8,8 @@
     "start": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "build:llms": "node scripts/generate-llms-txt.mjs --out dist"
   },
   "dependencies": {
     "@astrojs/starlight": "^0.38.4",
