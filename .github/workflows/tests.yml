@@ -34,6 +34,9 @@ jobs:
           # Livewire 3 requires laravel/framework ^10|^11|^12 — no Laravel 13 support
           - laravel: '13.*'
             livewire: '^3.0'
+          # pest-plugin-livewire ^4.x requires PHP ^8.3 — no PHP 8.2 + Livewire 4 support
+          - php: '8.2'
+            livewire: '^4.0'
 
     name: PHP ${{ matrix.php }} / Laravel ${{ matrix.laravel }} / Livewire ${{ matrix.livewire }}
 
