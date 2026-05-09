@@ -1,11 +1,27 @@
 // @ts-check
 import { defineConfig } from 'astro/config';
 import starlight from '@astrojs/starlight';
+import { fileURLToPath } from 'node:url';
+import { generateLlmsTxt } from './scripts/generate-llms-txt.mjs';
+
+const llmsIntegration = {
+  name: 'llms-txt',
+  hooks: {
+    'astro:build:done': async ({ dir }) => {
+      await generateLlmsTxt({
+        contentDir: fileURLToPath(new URL('./src/content/docs', import.meta.url)),
+        templatePath: fileURLToPath(new URL('./scripts/llms-template.md', import.meta.url)),
+        outDir: fileURLToPath(dir),
+      });
+    },
+  },
+};
 
 export default defineConfig({
   site: 'https://matheusmarnt.github.io',
   base: '/scoutify',
   integrations: [
+    llmsIntegration,
     starlight({
       title: 'Scoutify',
       description: '⌘K global search modal for Laravel — multi-model Livewire UI powered by Scout.',
