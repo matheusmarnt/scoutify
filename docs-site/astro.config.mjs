@@ -54,6 +54,7 @@ export default defineConfig({
           label: 'Usage',
           items: [
             { label: 'Registering Models',  slug: 'usage/registering-models' },
+            { label: 'Customization',       slug: 'usage/customization' },
             { label: 'Trigger Components',  slug: 'usage/trigger-components' },
             { label: 'Customizing Builder', slug: 'usage/customizing-builder' },
             { label: 'Programmatic Open',   slug: 'usage/programmatic-open' },
