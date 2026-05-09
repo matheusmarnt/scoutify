@@ -1,13 +1,8 @@
----
-title: Upgrading to v2.0
-description: Migration guide for upgrading from Scoutify v1.x to v2.0.
----
+# Upgrading to v2.0
 
-Scoutify v2.0 replaces config-file UI customisation with a fluent PHP API. This is a **hard breaking change** — any removed config key still present in `config/scoutify.php` will throw a `RuntimeException` on boot, pointing back to this page.
+Scoutify v2.0 replaces config-file UI customisation with a fluent PHP API. This is a **hard breaking change** — any removed config key still present in `config/scoutify.php` will throw a `RuntimeException` on boot.
 
-:::danger[Follow this sequence — do not run `composer update` first]
-If your `config/scoutify.php` still contains legacy keys (`icon_prefix`, `types`, `classes`, `colors`, `modal.ui`), running `composer update` will crash during the `post-update-cmd` step with a `RuntimeException` and no further guidance. Complete steps 1–2 below before updating.
-:::
+> **Warning:** If your `config/scoutify.php` still contains legacy keys (`icon_prefix`, `types`, `classes`, `colors`, `modal.ui`), running `composer update` will crash during the `post-update-cmd` step with a `RuntimeException` and no further guidance. Complete steps 1–2 below before updating.
 
 ## What changed
 
@@ -63,7 +58,7 @@ Move any values you removed in step 2 to `AppServiceProvider::boot()` using the 
 
 ## Migrating customisations
 
-### Move `types` to a service provider
+### Move `types`
 
 **Before:**
 
@@ -198,6 +193,8 @@ Available `UiConfig` flags:
 | `showToggleIncludeTrashed(bool)` | `true` | Toggle the "Include trashed" toggle |
 | `showHintBar(bool)` | `true` | Toggle the keyboard-shortcut hint bar |
 | `showIdleHint(bool)` | `true` | Toggle the idle-state hint |
+
+---
 
 ## Complete example
 

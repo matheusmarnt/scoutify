@@ -320,10 +320,17 @@ The MCP server exposes 8 tools: `search_docs`, `get_page`, `list_pages`, `get_an
 
 → [Full AI integration guide](https://matheusmarnt.github.io/scoutify/getting-started/ai-assistance/)
 
+## Upgrading
+
+Moving from v1.x to v2.x requires updating your `composer.json` constraint and removing legacy config keys **before** running `composer update`. Skipping this order causes a `RuntimeException` crash in the `post-update-cmd` step.
+
+→ [v1.x → v2.0 upgrade guide](https://matheusmarnt.github.io/scoutify/upgrading/v2/)
+
 ## Documentation
 
 - [Installation guide](docs/installation.md) — step-by-step setup, model registration, Tailwind config, customization
 - [Production deployment](docs/production.md) — per-driver production configuration (Meilisearch, Algolia, Typesense, Database)
+- [Upgrade guide](docs/upgrade.md) — v1.x → v2.0 migration steps
 
 ## Testing
 
