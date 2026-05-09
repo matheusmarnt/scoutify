@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Contracts\View\View;
 use Illuminate\Support\HtmlString;
 use Matheusmarnt\Scoutify\Livewire\Modal;
 use Matheusmarnt\Scoutify\Support\SlotContext;
@@ -54,4 +55,27 @@ it('wraps HtmlString closure result without double-escaping', function () {
     $result = SlotResolver::render($slot, makeSlotContext());
 
     expect((string) $result)->toBe('<b>bold</b>');
+});
+
+it('wraps closure returning View as HtmlString', function () {
+    $mockView = Mockery::mock(View::class);
+    $mockView->shouldReceive('render')->andReturn('<p>view content</p>');
+
+    $slot = fn (SlotContext $ctx) => $mockView;
+    $result = SlotResolver::render($slot, makeSlotContext());
+
+    expect($result)->toBeInstanceOf(HtmlString::class)
+        ->and((string) $result)->toBe('<p>view content</p>');
+});
+
+it('renders string view name via view() helper using ctx data', function () {
+    $viewPath = sys_get_temp_dir().'/scoutify_test_slot.blade.php';
+    file_put_contents($viewPath, '{{ $query }}');
+    app('view')->addLocation(sys_get_temp_dir());
+
+    $result = SlotResolver::render('scoutify_test_slot', makeSlotContext());
+
+    expect((string) $result)->toBe('test');
+
+    @unlink($viewPath);
 });
