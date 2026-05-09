@@ -1,5 +1,16 @@
 # Changelog
 
+## [2.0.0](https://github.com/matheusmarnt/scoutify/compare/v1.15.2...v2.0.0) (2026-05-09)
+
+
+### ⚠ BREAKING CHANGES
+
+* v2.0.0 — unified fluent UI/theme/types API ([#120](https://github.com/matheusmarnt/scoutify/issues/120))
+
+### Features
+
+* v2.0.0 — unified fluent UI/theme/types API ([#120](https://github.com/matheusmarnt/scoutify/issues/120)) ([6ae34c4](https://github.com/matheusmarnt/scoutify/commit/6ae34c40176128d00de54043d2945ef1234ebcdb))
+
 ## [1.15.2](https://github.com/matheusmarnt/scoutify/compare/v1.15.1...v1.15.2) (2026-05-08)
 
 
