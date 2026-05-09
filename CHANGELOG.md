@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.1.2](https://github.com/matheusmarnt/scoutify/compare/v2.1.1...v2.1.2) (2026-05-09)
+
+
+### Bug Fixes
+
+* **provider:** enrich assertNoLegacyConfigKeys exception with upgrade steps ([#130](https://github.com/matheusmarnt/scoutify/issues/130)) ([fce0741](https://github.com/matheusmarnt/scoutify/commit/fce07419ba7bb6b674ea353fd8c09a984098477b))
+
 ## [2.1.1](https://github.com/matheusmarnt/scoutify/compare/v2.1.0...v2.1.1) (2026-05-09)
 
 
