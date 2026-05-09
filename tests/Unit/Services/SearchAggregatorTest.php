@@ -139,8 +139,7 @@ it('uses fallback icon and color for non-GloballySearchable with no meta', funct
         ->and($dto->groupColor)->toBe('gray');
 });
 
-it('make() creates instance from config', function () {
-    config(['scoutify.types' => []]);
+it('make() creates instance from ScoutifyManager', function () {
     expect(SearchAggregator::make())->toBeInstanceOf(SearchAggregator::class);
 });
 

@@ -6,11 +6,16 @@ use Illuminate\Contracts\View\View;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\On;
 use Livewire\Component;
+use Matheusmarnt\Scoutify\ScoutifyManager;
 use Matheusmarnt\Scoutify\Services\PreviewResolver;
 use Matheusmarnt\Scoutify\Services\SearchAggregator;
 use Matheusmarnt\Scoutify\Support\GlobalSearchRegistry;
 use Matheusmarnt\Scoutify\Support\Highlighter;
 use Matheusmarnt\Scoutify\Support\PreviewDto;
+use Matheusmarnt\Scoutify\Support\SlotContext;
+use Matheusmarnt\Scoutify\Support\ThemeConfig;
+use Matheusmarnt\Scoutify\Support\TypesConfig;
+use Matheusmarnt\Scoutify\Support\UiConfig;
 
 class Modal extends Component
 {
@@ -206,6 +211,35 @@ class Modal extends Component
         return count($this->results);
     }
 
+    #[Computed]
+    public function resolvedUi(): UiConfig
+    {
+        return app(ScoutifyManager::class)->resolveUi();
+    }
+
+    #[Computed]
+    public function resolvedTheme(): ThemeConfig
+    {
+        return app(ScoutifyManager::class)->theme();
+    }
+
+    #[Computed]
+    public function resolvedTypes(): TypesConfig
+    {
+        return app(ScoutifyManager::class)->types();
+    }
+
+    public function slotContext(): SlotContext
+    {
+        return new SlotContext(
+            wire: $this,
+            query: $this->query,
+            results: $this->results,
+            hasResults: ! empty($this->results),
+            isIdle: blank($this->query),
+        );
+    }
+
     /**
      * @return array<int, array<string, mixed>>
      */
@@ -216,20 +250,22 @@ class Modal extends Component
             ? app(GlobalSearchRegistry::class)->all()
             : [];
 
-        $configTypes = config('scoutify.types', []);
-
-        // Merge: registry base, config overrides per-key metadata
+        // Merge: registry base, then fluent API overrides per-key metadata
+        $typesConfig = app(ScoutifyManager::class)->types();
         $merged = $registryTypes;
-        foreach ($configTypes as $class => $meta) {
+        foreach ($typesConfig->all() as $class => $meta) {
             $merged[$class] = array_merge($merged[$class] ?? [], $meta);
         }
 
+        $iconPrefix = $typesConfig->getIconPrefix() ?: 'heroicon-o-';
+
         return array_map(
-            function ($class, $meta) {
-                // Resolve label dynamically at request time so locale changes
-                // after boot are reflected correctly in the chip label.
+            function ($class, $meta) use ($iconPrefix) {
                 if (! isset($meta['label']) && method_exists($class, 'globalSearchLabel')) {
                     $meta['label'] = $class::globalSearchLabel();
+                }
+                if (isset($meta['icon']) && ! str_contains($meta['icon'], '-')) {
+                    $meta['icon'] = $iconPrefix.$meta['icon'];
                 }
 
                 return array_merge(['key' => $meta['key'] ?? $class], $meta);

@@ -3,8 +3,9 @@
 ])
 
 @php
-    $activeClass = config('scoutify.classes.toggle_active', '');
-    $inactiveClass = config('scoutify.classes.toggle_inactive', '');
+    $theme = app(\Matheusmarnt\Scoutify\ScoutifyManager::class)->theme();
+    $activeClass = $theme->getToggleActive() ?? 'bg-indigo-600 dark:bg-indigo-500';
+    $inactiveClass = $theme->getToggleInactive() ?? 'bg-zinc-200 dark:bg-zinc-700';
 @endphp
 
 <label class="inline-flex cursor-pointer select-none items-center gap-2">

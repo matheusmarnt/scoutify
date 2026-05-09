@@ -7,11 +7,11 @@
 
 @source "../views/**/*.blade.php";
 
-/* Dynamic badge color safelist (matches SearchableConfig 'color' values at runtime). */
-@source inline("bg-{blue,emerald,amber,rose,violet,teal,indigo,sky,zinc}-{50,100,500,600,700}");
-@source inline("text-{blue,emerald,amber,rose,violet,teal,indigo,sky,zinc}-{300,400,600,700}");
-@source inline("dark:bg-{blue,emerald,amber,rose,violet,teal,indigo,sky,zinc}-{800,900}");
-@source inline("dark:text-{blue,emerald,amber,rose,violet,teal,indigo,sky,zinc}-{300,400}");
+/* Dynamic badge color safelist (matches Color enum values at runtime). */
+@source inline("bg-{red,orange,amber,yellow,lime,green,emerald,teal,cyan,sky,blue,indigo,violet,purple,fuchsia,pink,rose,zinc}-{50,100,500,600,700}");
+@source inline("text-{red,orange,amber,yellow,lime,green,emerald,teal,cyan,sky,blue,indigo,violet,purple,fuchsia,pink,rose,zinc}-{200,300,400,600,700}");
+@source inline("dark:bg-{red,orange,amber,yellow,lime,green,emerald,teal,cyan,sky,blue,indigo,violet,purple,fuchsia,pink,rose,zinc}-{800,900}/60");
+@source inline("dark:text-{red,orange,amber,yellow,lime,green,emerald,teal,cyan,sky,blue,indigo,violet,purple,fuchsia,pink,rose,zinc}-{200,400}");
 
 @theme {
     --color-scoutify-accent: var(--color-neutral-800);

@@ -3,6 +3,7 @@
 namespace Matheusmarnt\Scoutify\Services;
 
 use BladeUI\Icons\Factory;
+use Matheusmarnt\Scoutify\ScoutifyManager;
 
 final class IconResolver
 {
@@ -10,7 +11,15 @@ final class IconResolver
 
     public static function make(?string $prefix = null): self
     {
-        return new self($prefix ?? config('scoutify.icon_prefix', 'heroicon-o-'));
+        if ($prefix !== null) {
+            return new self($prefix);
+        }
+
+        $fromManager = app()->bound(ScoutifyManager::class)
+            ? app(ScoutifyManager::class)->types()->getIconPrefix()
+            : '';
+
+        return new self($fromManager ?: 'heroicon-o-');
     }
 
     public function resolve(string $icon): string

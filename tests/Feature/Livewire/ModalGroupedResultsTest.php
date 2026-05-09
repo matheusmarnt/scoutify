@@ -4,6 +4,7 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 use Livewire\Livewire;
 use Matheusmarnt\Scoutify\Livewire\Modal;
+use Matheusmarnt\Scoutify\ScoutifyManager;
 use Matheusmarnt\Scoutify\Tests\Fixtures\Models\Article;
 
 beforeEach(function () {
@@ -18,11 +19,9 @@ beforeEach(function () {
 it('renders group-header for each type in results', function () {
     Article::create(['name' => 'Scout Article']);
 
-    config(['scoutify.types' => [Article::class => [
-        'label' => 'Articles',
-        'icon' => 'heroicon-o-document',
-        'color' => 'blue',
-    ]]]);
+    app(ScoutifyManager::class)->types()->register(Article::class,
+        label: 'Articles', icon: 'heroicon-o-document', color: 'blue'
+    );
 
     Livewire::test(Modal::class)
         ->set('query', 'Scout')
@@ -32,11 +31,9 @@ it('renders group-header for each type in results', function () {
 it('renders result rows within groups', function () {
     Article::create(['name' => 'Grouped Result']);
 
-    config(['scoutify.types' => [Article::class => [
-        'label' => 'Articles',
-        'icon' => 'heroicon-o-document',
-        'color' => 'blue',
-    ]]]);
+    app(ScoutifyManager::class)->types()->register(Article::class,
+        label: 'Articles', icon: 'heroicon-o-document', color: 'blue'
+    );
 
     Livewire::test(Modal::class)
         ->set('query', 'Grouped')
@@ -44,11 +41,9 @@ it('renders result rows within groups', function () {
 });
 
 it('shows empty-state when query returns no results', function () {
-    config(['scoutify.types' => [Article::class => [
-        'label' => 'Articles',
-        'icon' => 'heroicon-o-document',
-        'color' => 'blue',
-    ]]]);
+    app(ScoutifyManager::class)->types()->register(Article::class,
+        label: 'Articles', icon: 'heroicon-o-document', color: 'blue'
+    );
 
     Livewire::test(Modal::class)
         ->set('query', 'xyznonexistent123')

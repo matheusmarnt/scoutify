@@ -159,7 +159,7 @@ public static function globalSearchColor(): string  { return 'blue'; }
 > public static function globalSearchIcon(): string { return 'tabler-home'; }
 > ```
 >
-> Short names (e.g. `user`) get the configured prefix prepended (`heroicon-o-` by default, overridable via `icon_prefix` in `config/scoutify.php`).
+> Short names (e.g. `user`) get the registered prefix prepended (`heroicon-o-` by default). Override in a service provider via `Scoutify::types()->iconPrefix('ri-')`.
 
 > **`globalSearchSubtitle()` auto-discovery:** the trait automatically detects `description`, `subtitle`, `excerpt`, `summary`, `bio`, or `body` attributes. The value is **sanitized to plain text** (HTML tags stripped, entities decoded, whitespace collapsed) then truncated to 150 chars. CMS fields with HTML markup (`<p>`, `<strong>`, `<a>`, etc.) display cleanly in the result row without escaped tags. Override the method only when you need custom logic or a different attribute.
 
@@ -193,7 +193,7 @@ Flags: `--dry-run` (preview without writing), `--no-stubs` (skip injecting `glob
 php artisan scoutify:import
 ```
 
-Imports all discovered and configured models into the Scout index. No manual configuration needed — the command reads from both the auto-discovered type manifest and `config/scoutify.types`.
+Imports all discovered and registered models into the Scout index. No manual configuration needed — the command reads from the auto-discovered type manifest and the fluent types registry.
 
 Import a specific model:
 
@@ -347,40 +347,74 @@ Alternatively, switch to the `database` driver for `LIKE`-based substring search
 
 ## Customization
 
-### CSS class overrides
+Use the fluent API in `App\Providers\AppServiceProvider::boot()` (or any service provider).
 
-All UI classes are configurable via `config/scoutify.php`:
+### Types, icon prefix, and colors
 
 ```php
-'classes' => [
-    'trigger'         => 'flex items-center gap-2 ...',
-    'dialog_scrim'    => 'fixed inset-0 ...',
-    'dialog_panel'    => 'relative bg-white ...',
-    'input'           => 'w-full border-0 ...',
-    'toggle_active'   => 'bg-blue-100 text-blue-700 ...',
-    'toggle_inactive' => 'text-gray-500 ...',
-],
+use Matheusmarnt\Scoutify\Facades\Scoutify;
+
+public function boot(): void
+{
+    Scoutify::types()
+        ->iconPrefix('heroicon-o-')            // default prefix for short icon names
+        ->register(\App\Models\User::class, label: 'Users', icon: 'user',          color: 'indigo')
+        ->register(\App\Models\Post::class, label: 'Posts', icon: 'document-text', color: 'blue');
+}
+```
+
+### CSS class overrides
+
+```php
+use Matheusmarnt\Scoutify\Facades\Scoutify;
+
+public function boot(): void
+{
+    Scoutify::theme()
+        ->trigger('flex items-center gap-2 ...')
+        ->triggerMobile('p-2 ...')
+        ->dialogScrim('fixed inset-0 ...')
+        ->dialogPanel('relative bg-white dark:bg-zinc-900 ...')
+        ->input('w-full border-0 ...')
+        ->toggleActive('bg-blue-100 text-blue-700 ...')
+        ->toggleInactive('text-gray-500 ...');
+}
+```
+
+### Custom color tokens
+
+```php
+Scoutify::theme()->color('brand', 'bg-blue-100 text-blue-700', 'dark:bg-blue-900/60 dark:text-blue-200');
+```
+
+### UI visibility flags and slots
+
+```php
+use Matheusmarnt\Scoutify\Facades\Scoutify;
+use Matheusmarnt\Scoutify\Support\UiConfig;
+
+public function boot(): void
+{
+    Scoutify::configureUi(function (UiConfig $ui) {
+        $ui->showTypeChips(false)
+           ->showHintBar(false);
+    });
+}
 ```
 
 ### Default icon prefix
 
-Short icon names (without a pack prefix) get `icon_prefix` prepended. Override in `config/scoutify.php`:
-
-```php
-'icon_prefix' => 'heroicon-o-',
-```
-
-To use a different default pack:
+Short icon names (without a pack prefix) get the registered prefix prepended (`heroicon-o-` by default). Override via `Scoutify::types()->iconPrefix()`. To use a different default pack:
 
 ```bash
 composer require andreiio/blade-remix-icon
 ```
 
 ```php
-'icon_prefix' => 'ri-',
+Scoutify::types()->iconPrefix('ri-');
 ```
 
-Fully-qualified names (e.g. `heroicon-o-user`, `ri-customer-service-2-fill`, `tabler-home`) are auto-detected by matching against **all packs registered via Composer service providers** and passed through unchanged, regardless of `icon_prefix`. This includes packs that register themselves via `callAfterResolving` (most third-party packs) — not only those declared in `config/blade-icons.php`.
+Fully-qualified names (e.g. `heroicon-o-user`, `ri-customer-service-2-fill`, `tabler-home`) are auto-detected by matching against **all packs registered via Composer service providers** and passed through unchanged. This includes packs that register themselves via `callAfterResolving` (most third-party packs) — not only those declared in `config/blade-icons.php`.
 
 ### Publish views
 

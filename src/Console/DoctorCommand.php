@@ -7,6 +7,7 @@ use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Matheusmarnt\Scoutify\Contracts\GloballySearchable;
+use Matheusmarnt\Scoutify\ScoutifyManager;
 use Matheusmarnt\Scoutify\Support\GlobalSearchRegistry;
 use Matheusmarnt\Scoutify\Support\LivewireVersion;
 use Symfony\Component\Finder\Finder;
@@ -52,8 +53,10 @@ class DoctorCommand extends Command
             ? app(GlobalSearchRegistry::class)->all()
             : [];
 
-        $configTypes = config('scoutify.types', []);
-        $types = array_merge($registryTypes, $configTypes);
+        $fluentTypes = app()->bound(ScoutifyManager::class)
+            ? app(ScoutifyManager::class)->types()->all()
+            : [];
+        $types = array_merge($registryTypes, $fluentTypes);
 
         $ok = true;
 

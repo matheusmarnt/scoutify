@@ -43,6 +43,10 @@ class ScoutifyServiceProvider extends PackageServiceProvider
 
     public function packageBooted(): void
     {
+        $this->app->singleton(ScoutifyManager::class);
+
+        $this->assertNoLegacyConfigKeys();
+
         $this->app->singleton(GlobalSearchRegistry::class);
         $this->app->singleton(GlobalSearchAuthorizer::class);
         $this->app->singleton(PreviewResolver::class);
@@ -70,6 +74,27 @@ class ScoutifyServiceProvider extends PackageServiceProvider
             Livewire::addNamespace('scoutify', classNamespace: 'Matheusmarnt\\Scoutify\\Livewire');
         } elseif (class_exists(LivewireManager::class) && ($this->app->bound('livewire') || $this->app->bound(LivewireManager::class))) {
             Livewire::component('scoutify::modal', Modal::class);
+        }
+    }
+
+    private function assertNoLegacyConfigKeys(): void
+    {
+        $scoutify = $this->app['config']->get('scoutify', []);
+
+        foreach (['icon_prefix', 'types', 'classes', 'colors'] as $key) {
+            if (array_key_exists($key, $scoutify)) {
+                throw new \RuntimeException(
+                    "Scoutify v2: config key \"{$key}\" was removed. Use the fluent API instead. "
+                    .'See https://matheusmarnt.github.io/scoutify/upgrading/v2'
+                );
+            }
+        }
+
+        if (isset($scoutify['modal']['ui'])) {
+            throw new \RuntimeException(
+                'Scoutify v2: config key "modal.ui" was removed. Use Scoutify::configureUi() instead. '
+                .'See https://matheusmarnt.github.io/scoutify/upgrading/v2'
+            );
         }
     }
 }

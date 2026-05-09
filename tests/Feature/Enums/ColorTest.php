@@ -1,6 +1,7 @@
 <?php
 
 use Matheusmarnt\Scoutify\Enums\Color;
+use Matheusmarnt\Scoutify\ScoutifyManager;
 
 it('has a case for every official TailwindCSS v4 color', function () {
     $expected = [
@@ -28,8 +29,8 @@ it('chromatic colors carry bg and text classes for light and dark', function () 
     expect($classes)
         ->toContain('bg-blue-100')
         ->toContain('text-blue-600')
-        ->toContain('dark:bg-blue-900/40')
-        ->toContain('dark:text-blue-300');
+        ->toContain('dark:bg-blue-900/60')
+        ->toContain('dark:text-blue-200');
 });
 
 it('neutral colors use solid dark bg without opacity', function () {
@@ -71,13 +72,15 @@ it('resolveClasses returns tile classes when passed enum instance directly', fun
     expect(Color::resolveClasses(Color::Purple))->toBe(Color::Purple->tileClasses());
 });
 
-it('resolveClasses falls back to config for unknown color token', function () {
-    config(['scoutify.colors.coral' => 'bg-coral-100 text-coral-600']);
+it('resolveClasses falls back to ThemeConfig custom colors', function () {
+    $manager = app(ScoutifyManager::class);
+    $manager->theme()->color('coral', 'bg-coral-100 text-coral-600', 'dark:bg-coral-900/60 dark:text-coral-200');
 
-    expect(Color::resolveClasses('coral'))->toBe('bg-coral-100 text-coral-600');
+    expect(Color::resolveClasses('coral'))
+        ->toBe('bg-coral-100 text-coral-600 dark:bg-coral-900/60 dark:text-coral-200');
 });
 
-it('resolveClasses falls back to zinc classes when color unknown and not in config', function () {
+it('resolveClasses falls back to zinc classes when color unknown and not in ThemeConfig', function () {
     expect(Color::resolveClasses('nonexistent-color'))->toBe(Color::Zinc->tileClasses());
 });
 

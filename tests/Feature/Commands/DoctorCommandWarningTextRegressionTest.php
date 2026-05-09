@@ -4,7 +4,7 @@ use Matheusmarnt\Scoutify\Support\GlobalSearchRegistry;
 use Matheusmarnt\Scoutify\Tests\Fixtures\Models\Article;
 
 it('warns with registry-aware message when no types are discovered', function () {
-    config(['scout.driver' => 'database', 'scoutify.types' => []]);
+    config(['scout.driver' => 'database']);
 
     app()->offsetUnset(GlobalSearchRegistry::class);
     app()->singleton(GlobalSearchRegistry::class);
@@ -14,7 +14,7 @@ it('warns with registry-aware message when no types are discovered', function ()
 });
 
 it('warning message does not solely reference scoutify.types config key', function () {
-    config(['scout.driver' => 'database', 'scoutify.types' => []]);
+    config(['scout.driver' => 'database']);
 
     app()->offsetUnset(GlobalSearchRegistry::class);
     app()->singleton(GlobalSearchRegistry::class);
@@ -24,7 +24,7 @@ it('warning message does not solely reference scoutify.types config key', functi
 });
 
 it('no warning when registry has types', function () {
-    config(['scout.driver' => 'database', 'scoutify.types' => []]);
+    config(['scout.driver' => 'database']);
 
     $registry = app(GlobalSearchRegistry::class);
     $registry->register(Article::class, [

@@ -2,19 +2,16 @@
 
 use Livewire\Livewire;
 use Matheusmarnt\Scoutify\Livewire\Modal;
+use Matheusmarnt\Scoutify\ScoutifyManager;
 use Matheusmarnt\Scoutify\Support\GlobalSearchRegistry;
 
-it('availableTypes is empty when both registry and config are empty', function () {
-    config()->set('scoutify.types', []);
-
+it('availableTypes is empty when both registry and fluent API are empty', function () {
     $component = Livewire::test(Modal::class);
 
     expect($component->instance()->availableTypes())->toBe([]);
 });
 
-it('availableTypes returns types from registry when config is empty', function () {
-    config()->set('scoutify.types', []);
-
+it('availableTypes returns types from registry', function () {
     $registry = app(GlobalSearchRegistry::class);
     $registry->register('App\Models\User', [
         'key' => 'User',
@@ -31,7 +28,7 @@ it('availableTypes returns types from registry when config is empty', function (
         ->and($types[0]['label'])->toBe('Users');
 });
 
-it('availableTypes config overrides registry metadata per key', function () {
+it('availableTypes fluent API overrides registry metadata per key', function () {
     $registry = app(GlobalSearchRegistry::class);
     $registry->register('App\Models\User', [
         'key' => 'User',
@@ -40,9 +37,7 @@ it('availableTypes config overrides registry metadata per key', function () {
         'color' => 'gray',
     ]);
 
-    config()->set('scoutify.types', [
-        'App\Models\User' => ['color' => 'indigo', 'label' => 'Members'],
-    ]);
+    app(ScoutifyManager::class)->types()->register('App\Models\User', label: 'Members', color: 'indigo');
 
     $component = Livewire::test(Modal::class);
     $types = $component->instance()->availableTypes();

@@ -4,6 +4,7 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 use Livewire\Livewire;
 use Matheusmarnt\Scoutify\Livewire\Modal;
+use Matheusmarnt\Scoutify\ScoutifyManager;
 use Matheusmarnt\Scoutify\Tests\Fixtures\Models\Article;
 
 beforeEach(function () {
@@ -18,11 +19,9 @@ beforeEach(function () {
 it('renders mark tags around the matched query term in results', function () {
     Article::create(['name' => 'Laravel Scout Tutorial']);
 
-    config(['scoutify.types' => [Article::class => [
-        'label' => 'Articles',
-        'icon' => 'heroicon-o-document',
-        'color' => 'blue',
-    ]]]);
+    app(ScoutifyManager::class)->types()->register(Article::class,
+        label: 'Articles', icon: 'heroicon-o-document', color: 'blue'
+    );
 
     Livewire::test(Modal::class)
         ->set('query', 'Laravel')

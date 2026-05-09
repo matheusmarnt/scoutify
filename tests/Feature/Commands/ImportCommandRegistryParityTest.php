@@ -13,7 +13,6 @@ beforeEach(function () {
         $table->timestamps();
     });
 
-    config(['scoutify.types' => []]);
 });
 
 it('scoutify:import imports registry types even when config types is empty', function () {
