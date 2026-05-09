@@ -295,6 +295,31 @@ Optional parameters: `mime`, `filename`, `sizeBytes`, `view` (custom Blade view)
 | `scoutify:flush` | Flush registered models from Scout index |
 | `scoutify:sync` | Flush then re-import |
 
+## AI Assistance
+
+Scoutify ships a two-tier AI documentation mechanism so any AI assistant can access current, version-pinned documentation and scaffold correct PHP code.
+
+**Layer 1 — static files (any AI client, zero install):**
+
+```
+https://matheusmarnt.github.io/scoutify/llms.txt
+https://matheusmarnt.github.io/scoutify/llms-full.txt
+```
+
+**Layer 2 — MCP server (Claude Code, Cursor, Codex, Gemini, Windsurf, Copilot, Cline):**
+
+```bash
+# Claude Code
+claude mcp add scoutify -- npx -y @matheusmarnt/scoutify-mcp
+
+# All other MCP clients — add to your mcpServers config:
+# { "command": "npx", "args": ["-y", "@matheusmarnt/scoutify-mcp"] }
+```
+
+The MCP server exposes 8 tools: `search_docs`, `get_page`, `list_pages`, `get_antipatterns`, `scaffold_searchable_model`, `scaffold_visibility_rule`, `scaffold_theme_config`, `validate_snippet`.
+
+→ [Full AI integration guide](https://matheusmarnt.github.io/scoutify/getting-started/ai-assistance/)
+
 ## Documentation
 
 - [Installation guide](docs/installation.md) — step-by-step setup, model registration, Tailwind config, customization

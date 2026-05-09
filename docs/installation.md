@@ -458,3 +458,28 @@ php artisan scoutify:doctor
 ```
 
 Checks driver configuration and backend connectivity. Warns if no types are registered (config + registry both empty), if `@livewireScripts` is missing from layouts, and if Meilisearch's word-boundary search may cause unexpected empty results. Exit code `0` = healthy, `1` = issue found (usable in CI health checks).
+
+## AI Assistance
+
+Scoutify ships a two-tier AI documentation mechanism. Use it to get accurate, version-pinned guidance in any AI client.
+
+**Layer 1 — static files (any AI client):**
+
+```
+https://matheusmarnt.github.io/scoutify/llms.txt       # index + antipatterns
+https://matheusmarnt.github.io/scoutify/llms-full.txt  # full corpus (~58 KB)
+```
+
+**Layer 2 — MCP server (Claude Code, Cursor, Codex, Gemini, Windsurf, Copilot):**
+
+```bash
+# Claude Code
+claude mcp add scoutify -- npx -y @matheusmarnt/scoutify-mcp
+
+# Other MCP clients — add to your mcpServers config:
+# { "command": "npx", "args": ["-y", "@matheusmarnt/scoutify-mcp"] }
+```
+
+8 tools available: documentation search, page retrieval, antipattern lookup, and PHP scaffolding for models, visibility rules, and theme config.
+
+→ [Full AI integration guide](https://matheusmarnt.github.io/scoutify/getting-started/ai-assistance/)
