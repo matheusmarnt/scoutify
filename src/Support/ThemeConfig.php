@@ -20,6 +20,8 @@ class ThemeConfig
 
     protected ?string $dialogPanel = null;
 
+    protected ?string $dialogContent = null;
+
     /** @var array<string, array{light: string, dark: string}> */
     protected array $customColors = [];
 
@@ -79,6 +81,13 @@ class ThemeConfig
         return $this;
     }
 
+    public function dialogContent(string $value): static
+    {
+        $this->dialogContent = $value;
+
+        return $this;
+    }
+
     public function color(string $name, string $light, string $dark): static
     {
         $this->customColors[$name] = ['light' => $light, 'dark' => $dark];
@@ -124,6 +133,11 @@ class ThemeConfig
     public function getDialogPanel(): ?string
     {
         return $this->dialogPanel;
+    }
+
+    public function getDialogContent(): ?string
+    {
+        return $this->dialogContent;
     }
 
     public function resolveColorClasses(string $name): ?string

@@ -75,29 +75,50 @@ If a model returns a full icon name (e.g. `ri-user-line`) that does not start wi
 
 Returns the singleton `ThemeConfig` instance. Override any Tailwind class strings applied to modal elements. Unset methods fall back to the package defaults.
 
+<Aside type="caution">
+  **Full replacement, not merge.** Each setter replaces the *entire* class string of that element. When overriding, include every class you need — structural, spacing, color, and dark-mode variants. Copy the default string from the table below as your starting point, then modify only what you need.
+</Aside>
+
+### Available methods and defaults
+
+| Method | Element | Default classes |
+|---|---|---|
+| `dialogPanel(string)` | Outer positioning wrapper (no background) | `relative w-full md:max-w-2xl` |
+| `dialogContent(string)` | Inner content card (background, shadow, rounded corners) | `flex max-h-[90dvh] min-h-0 flex-col overflow-hidden rounded-t-2xl bg-white pb-[env(safe-area-inset-bottom)] md:max-h-[80vh] md:rounded-xl md:shadow-2xl md:ring-1 md:ring-zinc-900/5 dark:bg-zinc-900 dark:md:ring-white/10` |
+| `dialogScrim(string)` | Backdrop overlay | `absolute inset-0 bg-zinc-950/50` |
+| `input(string)` | Search input field | `block w-full rounded-lg border border-zinc-200 bg-white py-2 text-sm text-zinc-900 placeholder-zinc-400 outline-none transition focus-visible:border-zinc-300 focus-visible:ring-2 focus-visible:ring-scoutify-accent/30 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100 dark:placeholder-zinc-500 [&::-webkit-search-cancel-button]:hidden [&::-webkit-search-decoration]:hidden` |
+| `trigger(string)` | Desktop trigger button (`<x-scoutify::gs.trigger />`) | `group inline-flex h-9 min-w-16 items-center gap-2 rounded-lg border border-zinc-200 bg-white px-3 text-sm text-zinc-500 transition hover:border-zinc-300 hover:text-zinc-700 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-scoutify-accent/40 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-400 dark:hover:border-zinc-600 dark:hover:text-zinc-200` |
+| `triggerMobile(string)` | Mobile trigger button (`<x-scoutify::gs.trigger-mobile />`) | `lg:hidden inline-flex size-11 items-center justify-center rounded-lg border border-zinc-200 bg-white text-zinc-500 transition hover:border-zinc-300 hover:text-zinc-700 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-scoutify-accent/40 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-400 dark:hover:border-zinc-600 dark:hover:text-zinc-200` |
+| `toggleActive(string)` | Active state of filter toggle switch | `bg-indigo-600 dark:bg-indigo-500` |
+| `toggleInactive(string)` | Inactive state of filter toggle switch | `bg-zinc-200 dark:bg-zinc-700` |
+| `accent(string)` | Primary accent classes applied to highlighted elements | — |
+
+<Aside type="tip">
+  **`dialogPanel` vs `dialogContent`**: These are two separate elements. `dialogPanel` is the outer positioning wrapper — it controls max-width and layout position only, and has no background. `dialogContent` is the visible card inside it — it owns the background color, border-radius, and shadow. To change the modal's background, use `dialogContent()`, not `dialogPanel()`.
+</Aside>
+
+### Customizing the modal background
+
+Copy the default and change only the `bg-*` classes:
+
 ```php
 Scoutify::theme()
-    ->dialogPanel('relative bg-white dark:bg-zinc-900 rounded-xl shadow-2xl ring-1 ring-black/5')
-    ->dialogScrim('fixed inset-0 bg-black/40 backdrop-blur-sm')
-    ->input('w-full bg-transparent text-gray-900 dark:text-white placeholder-gray-400 text-base outline-none')
-    ->trigger('inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-sm')
-    ->triggerMobile('flex items-center justify-center w-9 h-9 rounded-lg')
-    ->toggleActive('rounded-md px-3 py-1 text-sm font-medium bg-indigo-100 text-indigo-700 dark:bg-indigo-900/60 dark:text-indigo-200')
-    ->toggleInactive('rounded-md px-3 py-1 text-sm font-medium text-gray-500 hover:text-gray-700 dark:text-zinc-400');
+    ->dialogContent(
+        'flex max-h-[90dvh] min-h-0 flex-col overflow-hidden rounded-t-2xl ' .
+        'bg-slate-800 ' .  // ← your custom background
+        'pb-[env(safe-area-inset-bottom)] md:max-h-[80vh] md:rounded-xl ' .
+        'md:shadow-2xl md:ring-1 md:ring-zinc-900/5 dark:bg-slate-900 dark:md:ring-white/10'
+    );
 ```
 
-### Available methods
+### Widening the modal
 
-| Method | What it styles |
-|---|---|
-| `dialogPanel(string)` | The modal dialog container (white card) |
-| `dialogScrim(string)` | The backdrop overlay behind the modal |
-| `input(string)` | The search input field |
-| `trigger(string)` | Desktop trigger button (`<x-scoutify::gs.trigger />`) |
-| `triggerMobile(string)` | Mobile trigger button (`<x-scoutify::gs.trigger-mobile />`) |
-| `toggleActive(string)` | Active state of filter chips / toggle buttons |
-| `toggleInactive(string)` | Inactive state of filter chips / toggle buttons |
-| `accent(string)` | Primary accent Tailwind classes applied to highlighted elements |
+`dialogPanel` controls max-width. Override only the sizing:
+
+```php
+Scoutify::theme()
+    ->dialogPanel('relative w-full md:max-w-4xl');
+```
 
 ### Custom color tokens
 
@@ -120,6 +141,8 @@ Scoutify::types()->register(\App\Models\Order::class, label: 'Orders', icon: 'sh
   /* resources/css/app.css */
   @source inline("bg-violet-100 text-violet-700 dark:bg-violet-900/60 dark:text-violet-200");
   ```
+
+  Classes set via `theme()` setters in `AppServiceProvider.php` are scanned by Tailwind automatically — but **run `npm run build`** (or keep `npm run dev` active) after changes so the compiled CSS reflects them.
 </Aside>
 
 ---
@@ -215,7 +238,7 @@ class AppServiceProvider extends ServiceProvider
             ->register(Order::class, label: 'Orders', icon: 'shopping-cart', color: 'brand');
 
         Scoutify::theme()
-            ->dialogPanel('relative bg-white dark:bg-zinc-900 rounded-xl shadow-2xl ring-1 ring-black/5')
+            ->dialogPanel('relative w-full md:max-w-4xl')
             ->color('brand', 'bg-violet-100 text-violet-700', 'dark:bg-violet-900/60 dark:text-violet-200');
 
         Scoutify::configureUi(function (UiConfig $ui) {
