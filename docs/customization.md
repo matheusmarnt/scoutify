@@ -70,7 +70,10 @@ Scoutify::types()->iconPrefix('heroicon-o-');
 | `triggerMobile(string)` | Mobile trigger button | `lg:hidden inline-flex size-11 items-center justify-center rounded-lg border border-zinc-200 bg-white text-zinc-500 transition hover:border-zinc-300 hover:text-zinc-700 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-scoutify-accent/40 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-400 dark:hover:border-zinc-600 dark:hover:text-zinc-200` |
 | `toggleActive(string)` | Active state of filter toggle switch | `bg-indigo-600 dark:bg-indigo-500` |
 | `toggleInactive(string)` | Inactive state of filter toggle switch | `bg-zinc-200 dark:bg-zinc-700` |
-| `accent(string)` | Primary accent classes applied to highlighted elements | — |
+| `accent(string)` | Modal wrapper — injects `--scoutify-accent` CSS custom property | No default override — package CSS defines the `scoutify-accent` token |
+| `previewButton(string)` | Eye button on result rows (opens preview pane) — **appended** | `inline-flex size-7 shrink-0 items-center justify-center rounded-md text-zinc-400 transition hover:bg-zinc-100 hover:text-zinc-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40 dark:hover:bg-zinc-800 dark:hover:text-zinc-300` |
+| `downloadButton(string)` | Download button on result rows and preview header — **appended** | `inline-flex size-7 shrink-0 items-center justify-center rounded-md text-zinc-400 transition hover:bg-zinc-100 hover:text-zinc-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40 dark:hover:bg-zinc-800 dark:hover:text-zinc-300` (result rows); preview header uses `size-8` variant |
+| `previewBackButton(string)` | Back arrow button in preview pane header — **appended** | `inline-flex size-8 shrink-0 items-center justify-center rounded-lg text-zinc-500 transition hover:bg-zinc-100 hover:text-zinc-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40 dark:hover:bg-zinc-800 dark:hover:text-zinc-200` |
 | `color(name, light, dark)` | Register a named custom color token | — |
 
 ### Customizing the modal background
@@ -95,6 +98,28 @@ Scoutify::theme()
 ```php
 Scoutify::theme()
     ->dialogPanel('relative w-full md:max-w-4xl');
+```
+
+### Overriding the accent color
+
+`accent()` accepts any CSS color value. It injects `--scoutify-accent` as an inline CSS custom property on the modal wrapper, which propagates to all child elements via cascade — no Tailwind safelist needed:
+
+```php
+Scoutify::theme()->accent('#7c3aed');
+// or: ->accent('var(--color-violet-600)')  // Tailwind CSS 4 token
+```
+
+All focus rings, input borders, and highlighted elements reference `--scoutify-accent` through the package's `scoutify-accent` token.
+
+### Customizing preview buttons
+
+`previewButton()`, `downloadButton()`, and `previewBackButton()` **append** classes to the element's existing base classes — they do not replace them. Use them to add hover effects, backgrounds, or Tailwind overrides on top of the defaults:
+
+```php
+Scoutify::theme()
+    ->previewButton('hover:bg-indigo-100 dark:hover:bg-indigo-900')
+    ->downloadButton('hover:bg-emerald-100 dark:hover:bg-emerald-900')
+    ->previewBackButton('hover:bg-zinc-200 dark:hover:bg-zinc-700');
 ```
 
 ### Custom color tokens
@@ -131,9 +156,16 @@ Scoutify::configureUi(function (UiConfig $ui) {
 | `showToggleOnlyActive(bool)` | `true` | "Active only" toggle |
 | `showToggleIncludeTrashed(bool)` | `true` | "Include trashed" toggle |
 | `showHintBar(bool)` | `true` | Keyboard-shortcut hint bar |
-| `showIdleHint(bool)` | `true` | Idle-state hint |
+| `showIdleHint(bool)` | `true` | Prompt text paragraph in the idle state — does not hide the magnifying-glass icon or `recent-list` |
 
 ### Slots
+
+| Slot key | Position | Behavior |
+|---|---|---|
+| `header_trailing` | After search input in modal header | Appended |
+| `idle_extra` | After idle state (before user types) | Appended |
+| `after_results` | After last result group | Appended |
+| `empty-state` | When a non-blank query returns 0 results | **Replaces** default "No results" component; receives `$ctx->query` |
 
 ```php
 use Matheusmarnt\Scoutify\Support\SlotContext;

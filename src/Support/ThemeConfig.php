@@ -22,6 +22,12 @@ class ThemeConfig
 
     protected ?string $dialogContent = null;
 
+    protected ?string $previewButton = null;
+
+    protected ?string $downloadButton = null;
+
+    protected ?string $previewBackButton = null;
+
     /** @var array<string, array{light: string, dark: string}> */
     protected array $customColors = [];
 
@@ -88,6 +94,27 @@ class ThemeConfig
         return $this;
     }
 
+    public function previewButton(string $value): static
+    {
+        $this->previewButton = $value;
+
+        return $this;
+    }
+
+    public function downloadButton(string $value): static
+    {
+        $this->downloadButton = $value;
+
+        return $this;
+    }
+
+    public function previewBackButton(string $value): static
+    {
+        $this->previewBackButton = $value;
+
+        return $this;
+    }
+
     public function color(string $name, string $light, string $dark): static
     {
         $this->customColors[$name] = ['light' => $light, 'dark' => $dark];
@@ -138,6 +165,21 @@ class ThemeConfig
     public function getDialogContent(): ?string
     {
         return $this->dialogContent;
+    }
+
+    public function getPreviewButton(): ?string
+    {
+        return $this->previewButton;
+    }
+
+    public function getDownloadButton(): ?string
+    {
+        return $this->downloadButton;
+    }
+
+    public function getPreviewBackButton(): ?string
+    {
+        return $this->previewBackButton;
     }
 
     public function resolveColorClasses(string $name): ?string

@@ -1,5 +1,7 @@
+@php $accentOverride = app(\Matheusmarnt\Scoutify\ScoutifyManager::class)->theme()->getAccent(); @endphp
 <div
     x-data="scoutifyModal()"
+    @if($accentOverride) style="--scoutify-accent: {{ $accentOverride }}"@endif
     @keydown.window.prevent.ctrl.k="if (!isOpen) $wire.call('open')"
     @keydown.window.prevent.cmd.k="if (!isOpen) $wire.call('open')"
     @keydown.window="if (event.key === '/' && !['INPUT','TEXTAREA','SELECT'].includes(document.activeElement?.tagName) && !document.activeElement?.isContentEditable) { event.preventDefault(); if (!isOpen) $wire.call('open'); }"
@@ -77,7 +79,11 @@
                             {!! \Matheusmarnt\Scoutify\Support\SlotResolver::render($this->resolvedUi->getSlot('idle_extra'), $this->slotContext()) !!}
                         @endif
                     @elseif (empty($this->results))
-                        <x-scoutify::gs.empty-state />
+                        @if ($this->resolvedUi->getSlot('empty-state'))
+                            {!! \Matheusmarnt\Scoutify\Support\SlotResolver::render($this->resolvedUi->getSlot('empty-state'), $this->slotContext()) !!}
+                        @else
+                            <x-scoutify::gs.empty-state />
+                        @endif
                     @else
                         @php $globalIdx = 0; @endphp
                         @foreach (collect($this->results)->groupBy('group') as $groupKey => $groupResults)
