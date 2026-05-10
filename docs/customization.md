@@ -162,10 +162,12 @@ Scoutify::configureUi(function (UiConfig $ui) {
 
 | Slot key | Position | Behavior |
 |---|---|---|
-| `header_trailing` | After search input in modal header | Appended |
-| `idle_extra` | After idle state (before user types) | Appended |
-| `after_results` | After last result group | Appended |
+| `header-trailing` | After search input in modal header | Appended |
+| `idle-extra` | After idle state (before user types) | Appended |
+| `after-results` | After last result group | Appended |
 | `empty-state` | When a non-blank query returns 0 results | **Replaces** default "No results" component; receives `$ctx->query` |
+
+Slot keys accept either hyphen (`header-trailing`) or underscore (`header_trailing`) notation — both are equivalent.
 
 ```php
 use Matheusmarnt\Scoutify\Support\SlotContext;
@@ -175,7 +177,7 @@ $ui->slot('empty-state', function (SlotContext $ctx) { /* ... */ });     // Clos
 $ui->slot('empty-state', \App\View\Components\SearchEmptyState::class);  // Component class
 ```
 
-`SlotContext` properties: `$wire`, `$query`, `$results`, `$hasResults`, `$isIdle`.
+`SlotContext` properties: `$wire`, `$query`, `$results` (`Collection`), `$hasResults`, `$isIdle`. Use `$ctx->results->count()`, `->first()`, `->filter()`, etc.
 
 ---
 
