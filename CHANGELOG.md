@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.3.2](https://github.com/matheusmarnt/scoutify/compare/v2.3.1...v2.3.2) (2026-05-10)
+
+
+### Bug Fixes
+
+* **ui:** wire accent, empty-state slot, showIdleHint, and preview button theme setters ([#139](https://github.com/matheusmarnt/scoutify/issues/139)) ([487d5bf](https://github.com/matheusmarnt/scoutify/commit/487d5bf915c7e2875bdc226c811ce0e3dc11aa64))
+
 ## [2.3.1](https://github.com/matheusmarnt/scoutify/compare/v2.3.0...v2.3.1) (2026-05-09)
 
 
