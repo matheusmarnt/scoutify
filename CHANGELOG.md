@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.3.3](https://github.com/matheusmarnt/scoutify/compare/v2.3.2...v2.3.3) (2026-05-10)
+
+
+### Bug Fixes
+
+* **slots:** normalize slot key hyphens/underscores and type $results as Collection ([#141](https://github.com/matheusmarnt/scoutify/issues/141)) ([0999936](https://github.com/matheusmarnt/scoutify/commit/09999365b064a294c78ef52907c86050baf7c4b9))
+
 ## [2.3.2](https://github.com/matheusmarnt/scoutify/compare/v2.3.1...v2.3.2) (2026-05-10)
 
 
