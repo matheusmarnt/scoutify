@@ -234,7 +234,7 @@ class Modal extends Component
         return new SlotContext(
             wire: $this,
             query: $this->query,
-            results: $this->results,
+            results: collect($this->results),
             hasResults: ! empty($this->results),
             isIdle: blank($this->query),
         );
