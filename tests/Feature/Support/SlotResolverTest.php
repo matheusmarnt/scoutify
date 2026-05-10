@@ -11,7 +11,7 @@ function makeSlotContext(): SlotContext
     return new SlotContext(
         wire: Mockery::mock(Modal::class),
         query: 'test',
-        results: [],
+        results: collect([]),
         hasResults: false,
         isIdle: false,
     );

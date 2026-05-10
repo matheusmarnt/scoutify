@@ -54,7 +54,7 @@ class UiConfig
 
     public function slot(string $name, mixed $value): static
     {
-        $this->slots[$name] = $value;
+        $this->slots[$this->normalizeSlotKey($name)] = $value;
 
         return $this;
     }
@@ -86,6 +86,11 @@ class UiConfig
 
     public function getSlot(string $name): mixed
     {
-        return $this->slots[$name] ?? null;
+        return $this->slots[$this->normalizeSlotKey($name)] ?? null;
+    }
+
+    private function normalizeSlotKey(string $name): string
+    {
+        return str_replace('-', '_', $name);
     }
 }

@@ -205,10 +205,14 @@ Inject custom content into named positions inside the modal. Slots receive a `Sl
 
 | Slot key | Position | Behavior |
 |---|---|---|
-| `header_trailing` | After the search input in the modal header | Appended |
-| `idle_extra` | After the idle state (before the user types) | Appended |
-| `after_results` | After the last result group | Appended |
+| `header-trailing` | After the search input in the modal header | Appended |
+| `idle-extra` | After the idle state (before the user types) | Appended |
+| `after-results` | After the last result group | Appended |
 | `empty-state` | When a non-blank query returns 0 results | **Replaces** the default "No results" component; `$ctx->query` available |
+
+:::note
+Slot keys accept either hyphen (`header-trailing`) or underscore (`header_trailing`) notation — both are equivalent.
+:::
 
 ```php
 use Matheusmarnt\Scoutify\Support\SlotContext;
@@ -236,7 +240,7 @@ Scoutify::configureUi(function (UiConfig $ui) {
 |---|---|---|
 | `$wire` | `Modal` | Livewire component instance |
 | `$query` | `string` | Current search query string |
-| `$results` | `array` | Current grouped results array |
+| `$results` | `Collection` | Current results as a Laravel Collection — supports `->count()`, `->first()`, `->filter()`, etc. |
 | `$hasResults` | `bool` | Whether results are non-empty |
 | `$isIdle` | `bool` | Whether the user has not typed yet |
 

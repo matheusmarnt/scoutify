@@ -2,6 +2,7 @@
 
 namespace Matheusmarnt\Scoutify\Support;
 
+use Illuminate\Support\Collection;
 use Matheusmarnt\Scoutify\Livewire\Modal;
 
 final readonly class SlotContext
@@ -9,7 +10,7 @@ final readonly class SlotContext
     public function __construct(
         public Modal $wire,
         public string $query,
-        public array $results,
+        public Collection $results,
         public bool $hasResults,
         public bool $isIdle,
     ) {}

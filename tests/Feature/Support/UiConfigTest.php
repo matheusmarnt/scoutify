@@ -64,3 +64,49 @@ it('accepts string, closure, and class-string as slot values', function () {
         ->and($ui->getSlot('b'))->toBeCallable()
         ->and($ui->getSlot('c'))->toBe($class);
 });
+
+it('normalizes hyphen to underscore when registering slot', function () {
+    $ui = new UiConfig;
+    $fn = fn ($ctx) => 'hello';
+
+    $ui->slot('header-trailing', $fn);
+
+    expect($ui->getSlot('header_trailing'))->toBe($fn);
+});
+
+it('normalizes hyphen to underscore when looking up slot', function () {
+    $ui = new UiConfig;
+    $fn = fn ($ctx) => 'hello';
+
+    $ui->slot('header_trailing', $fn);
+
+    expect($ui->getSlot('header-trailing'))->toBe($fn);
+});
+
+it('normalizes all known slot keys with hyphens', function () {
+    $ui = new UiConfig;
+    $fn = fn ($ctx) => '';
+
+    $ui->slot('after-results', $fn)
+        ->slot('idle-extra', $fn);
+
+    expect($ui->getSlot('after_results'))->toBe($fn)
+        ->and($ui->getSlot('idle_extra'))->toBe($fn);
+});
+
+it('empty-state slot works with hyphen notation (backward compat)', function () {
+    $ui = new UiConfig;
+    $fn = fn ($ctx) => '';
+
+    $ui->slot('empty-state', $fn);
+
+    expect($ui->getSlot('empty-state'))->toBe($fn)
+        ->and($ui->getSlot('empty_state'))->toBe($fn);
+});
+
+it('unregistered slot returns null regardless of notation', function () {
+    $ui = new UiConfig;
+
+    expect($ui->getSlot('nonexistent'))->toBeNull()
+        ->and($ui->getSlot('non-existent'))->toBeNull();
+});
