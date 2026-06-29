@@ -95,3 +95,47 @@ PHP);
         ->and($manifest[$modelClass]['key'])->toBe('articles')
         ->and($manifest[$modelClass]['color'])->toBe('blue');
 });
+
+it('build discovers model with a PHP 8 attribute using ::class before the class definition', function () {
+    // Regression: a `::class` constant fetch inside an attribute (e.g. #[ObservedBy(Foo::class)])
+    // emits a T_CLASS token before the actual class declaration. The parser must not mistake it
+    // for the class name and skip the model. See issue #145.
+    $dir = sys_get_temp_dir().'/scoutify-test-'.uniqid();
+    mkdir($dir);
+
+    $modelClass = 'Matheusmarnt\Scoutify\Tests\Fixtures\Models\AttributedArticle';
+    $file = $dir.'/AttributedArticle.php';
+
+    file_put_contents($file, <<<PHP
+<?php
+namespace Matheusmarnt\Scoutify\Tests\Fixtures\Models;
+
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
+use Illuminate\Database\Eloquent\Model;
+use Matheusmarnt\Scoutify\Concerns\Searchable;
+use Matheusmarnt\Scoutify\Contracts\GloballySearchable;
+
+#[ObservedBy(AttributedArticleObserver::class)]
+class AttributedArticle extends Model implements GloballySearchable
+{
+    use Searchable;
+
+    protected \$fillable = ['name', 'body'];
+
+    public static function globalSearchGroup(): string { return 'attributed-articles'; }
+    public static function globalSearchIcon(): string { return 'heroicon-o-document'; }
+    public static function globalSearchColor(): string { return 'green'; }
+}
+PHP);
+
+    config()->set('scoutify.discovery.paths', [$dir]);
+
+    $manifest = TypeManifest::build();
+
+    unlink($file);
+    rmdir($dir);
+
+    expect($manifest)->toHaveKey($modelClass)
+        ->and($manifest[$modelClass]['key'])->toBe('attributed-articles')
+        ->and($manifest[$modelClass]['color'])->toBe('green');
+});

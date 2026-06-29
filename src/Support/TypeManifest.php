@@ -87,9 +87,19 @@ final class TypeManifest
                 }
             }
             if ($tokens[$i][0] === T_CLASS) {
-                $i += 2;
-                $class = is_array($tokens[$i]) ? $tokens[$i][1] : '';
-                break;
+                // Skip whitespace, then require a T_STRING (the class name).
+                // A `::class` constant fetch (e.g. inside an attribute such as
+                // #[ObservedBy(Foo::class)]) also emits a T_CLASS token but is
+                // not followed by an identifier, so it is safely ignored here.
+                $j = $i + 1;
+                while (isset($tokens[$j]) && is_array($tokens[$j]) && $tokens[$j][0] === T_WHITESPACE) {
+                    $j++;
+                }
+
+                if (isset($tokens[$j]) && is_array($tokens[$j]) && $tokens[$j][0] === T_STRING) {
+                    $class = $tokens[$j][1];
+                    break;
+                }
             }
         }
 
