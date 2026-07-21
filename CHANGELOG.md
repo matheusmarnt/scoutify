@@ -1,5 +1,14 @@
 # Changelog
 
+## [2.3.4](https://github.com/matheusmarnt/scoutify/compare/v2.3.3...v2.3.4) (2026-07-21)
+
+
+### Miscellaneous Chores
+
+* **deps:** bump actions/checkout from 6 to 7 ([#144](https://github.com/matheusmarnt/scoutify/issues/144)) ([605522b](https://github.com/matheusmarnt/scoutify/commit/605522be480fe09baf548318c531b47cbfb5a580))
+* **deps:** bump actions/setup-node from 6 to 7 ([58e1e1c](https://github.com/matheusmarnt/scoutify/commit/58e1e1c4544bb18830036eb4f81a42872acdb1f5))
+* **deps:** bump actions/setup-node from 6 to 7 ([007ae93](https://github.com/matheusmarnt/scoutify/commit/007ae934d8f290d69e71d612daf9e15be6aa158e))
+
 ## [2.3.3](https://github.com/matheusmarnt/scoutify/compare/v2.3.2...v2.3.3) (2026-05-10)
 
 
