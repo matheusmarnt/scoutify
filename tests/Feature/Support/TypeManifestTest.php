@@ -95,3 +95,45 @@ PHP);
         ->and($manifest[$modelClass]['key'])->toBe('articles')
         ->and($manifest[$modelClass]['color'])->toBe('blue');
 });
+
+it('build discovers model with a ::class attribute argument before the class declaration', function () {
+    // Regression test for #145: `#[Attr(Other::class)]` before `class Foo`
+    // emits T_CLASS twice (once for the ::class fetch, once for the decl);
+    // classFromFile() must not stop at the first (wrong) one.
+    $dir = sys_get_temp_dir().'/scoutify-test-'.uniqid();
+    mkdir($dir);
+
+    $modelClass = 'Matheusmarnt\Scoutify\Tests\Fixtures\Models\Article';
+    $file = $dir.'/Article.php';
+
+    file_put_contents($file, <<<PHP
+<?php
+namespace Matheusmarnt\Scoutify\Tests\Fixtures\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Matheusmarnt\Scoutify\Concerns\Searchable;
+use Matheusmarnt\Scoutify\Contracts\GloballySearchable;
+
+#[SomeAttribute(SomeObserver::class)]
+class Article extends Model implements GloballySearchable
+{
+    use Searchable;
+
+    protected \$fillable = ['name', 'body'];
+
+    public static function globalSearchGroup(): string { return 'articles'; }
+    public static function globalSearchIcon(): string { return 'heroicon-o-document'; }
+    public static function globalSearchColor(): string { return 'blue'; }
+}
+PHP);
+
+    config()->set('scoutify.discovery.paths', [$dir]);
+
+    $manifest = TypeManifest::build();
+
+    unlink($file);
+    rmdir($dir);
+
+    expect($manifest)->toHaveKey($modelClass)
+        ->and($manifest[$modelClass]['key'])->toBe('articles');
+});
