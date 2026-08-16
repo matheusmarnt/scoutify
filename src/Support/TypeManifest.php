@@ -87,9 +87,16 @@ final class TypeManifest
                 }
             }
             if ($tokens[$i][0] === T_CLASS) {
-                $i += 2;
-                $class = is_array($tokens[$i]) ? $tokens[$i][1] : '';
-                break;
+                // `::class` fetches also emit T_CLASS, so only treat it as a
+                // declaration when actually followed by an identifier.
+                $j = $i + 1;
+                while (isset($tokens[$j]) && is_array($tokens[$j]) && $tokens[$j][0] === T_WHITESPACE) {
+                    $j++;
+                }
+                if (isset($tokens[$j]) && is_array($tokens[$j]) && $tokens[$j][0] === T_STRING) {
+                    $class = $tokens[$j][1];
+                    break;
+                }
             }
         }
 
