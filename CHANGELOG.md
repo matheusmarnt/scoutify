@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.3.5](https://github.com/matheusmarnt/scoutify/compare/v2.3.4...v2.3.5) (2026-08-16)
+
+
+### Bug Fixes
+
+* correctly parse class name when a PHP 8 attribute uses ::class before the declaration ([#149](https://github.com/matheusmarnt/scoutify/issues/149)) ([7732673](https://github.com/matheusmarnt/scoutify/commit/77326735dc1f833f0c334c49a79d598f481b7818)), closes [#145](https://github.com/matheusmarnt/scoutify/issues/145)
+
 ## [2.3.4](https://github.com/matheusmarnt/scoutify/compare/v2.3.3...v2.3.4) (2026-07-21)
 
 
